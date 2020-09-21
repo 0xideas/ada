@@ -58,12 +58,12 @@ class EpsilonEnsembleLocal[ModelData, ModelAction](epsilon: Double,
     def act(data: ModelData): ModelAction = actRoot(data, modelRewards)
 }
 
-object EpsilonEnsembleLocal{
+object EpsilonEnsembleLocal {
     def apply[ModelData, ModelAction](epsilon: Double,
               models: Iterable[Model[ModelData, ModelAction]],
               newReward: (AggregateReward, Reward) => AggregateReward): EpsilonEnsembleLocal[ModelData, ModelAction] = {
-        val ModelRewardsMap = MutableMap(models.toList.zip(List.fill(models.size)(1.0)):_*)
-        new EpsilonEnsembleLocal(epsilon, models, newReward, ModelRewardsMap)
+        val modelRewardsMap = MutableMap(models.toList.zip(List.fill(models.size)(1.0)):_*)
+        new EpsilonEnsembleLocal(epsilon, models, newReward, modelRewardsMap)
     }
     def apply[ModelData, ModelAction](epsilon: Double,
               models: Iterable[Model[ModelData, ModelAction]],
