@@ -1,60 +1,70 @@
 package epsilon
 
+abstract class EpsilonEnsembleRoot[ModelData, ModelAction](epsilon: Double, models: Iterable[Model[ModelData, ModelAction]]) 
+    extends EpsilonEnsembleInterface(epsilon, models) {
 
-//reward must be positive
-class EpsilonEnsemble(epsilon: Double,
-                      models: Iterable[Model],
-                      val update: (Model, Reward) => Unit,
-                      modelRewards: Model => AggregateReward) extends EpsilonEnsembleInterface(epsilon, models) {
-    
-    def apply(epsilon: Double,
-                models: Iterable[Model],
-                update: (Model, Reward) => Unit,
-                modelRewards: Model => AggregateReward): EpsilonEnsemble = 
-        new EpsilonEnsemble(epsilon, models, update, modelRewards)
+    def update(model: Model[ModelData, ModelAction], reward: Reward): Unit
+    def act(data: ModelData): ModelAction 
 
-    private val rnd = new scala.util.Random
-
-    def act(data: ModelData): ModelAction = {
-        val modelsSorted = models.map(model => (model, modelRewards(model)))
-                                 .toList
-                                 .sortWith(_._2 > _._2)
-        
-        if(rnd.nextDouble() > epsilon) {println("exploiting..."); modelsSorted.head._1.act(data) }
-        else explore(modelsSorted.tail, data)
-    }
-
-    def explore(modelsExplore: List[(Model, AggregateReward)], data: ModelData): ModelAction = {
+    protected val rnd = new scala.util.Random
+    def explore(modelsExplore: List[(Model[ModelData, ModelAction], AggregateReward)], data: ModelData): ModelAction = {
         val totalReward: AggregateReward = modelsExplore.foldLeft(0.0)((agg, tup) => agg + tup._2)
         printEpsilon(totalReward.toString)
         print(modelsExplore.toString())
         val cumulativeProb: List[(Probability, Probability)] = modelsExplore.scanLeft((0.0, 0.0))((acc, item) =>  (acc._2, acc._2 + item._2/totalReward)).tail
         //Softmax
-        val modelsCumulativeProb: List[(Model, (Probability, Probability))] = modelsExplore.map(_._1).zip(cumulativeProb)
+        val modelsCumulativeProb: List[(Model[ModelData, ModelAction], (Probability, Probability))] = modelsExplore.map(_._1).zip(cumulativeProb)
         val selector = rnd.nextDouble()
-        val selectedModel: Model = modelsCumulativeProb.filter{case(model, bounds) => (selector >= bounds._1) && (selector <= bounds._2)}(0)._1
+        //select by relative probability
+        val selectedModel: Model[ModelData, ModelAction] = modelsCumulativeProb.filter{case(model, bounds) => (selector >= bounds._1) && (selector <= bounds._2)}(0)._1
         printEpsilon("exploring... " + selectedModel.toString)
         selectedModel.act(data)
     }
 
+    def actRoot(data: ModelData, modelRewards: Model[ModelData, ModelAction] => AggregateReward): ModelAction = {
+        val modelsSorted = models.map(model => (model, modelRewards(model)))
+                                 .toList
+                                 .sortWith(_._2 > _._2)
+        if(rnd.nextDouble() > epsilon) {printEpsilon("exploiting..."); modelsSorted.head._1.act(data) }
+        else explore(modelsSorted.tail, data)
+    }
 }
 
-class EpsilonEnsembleLocal(epsilon: Double,
-                            models: Iterable[Model],
-                            newReward: (AggregateReward, Reward) => AggregateReward) extends EpsilonEnsembleInterface(epsilon, models) {
+
+//reward must be positive
+class EpsilonEnsemble[ModelData, ModelAction](epsilon: Double,
+                      models: Iterable[Model[ModelData, ModelAction]],
+                      updateFn: (Model[ModelData, ModelAction], Reward) => Unit,
+                      modelRewards: Model[ModelData, ModelAction] => AggregateReward) extends EpsilonEnsembleRoot(epsilon, models) {
+    
     def apply(epsilon: Double,
-              models: Iterable[Model],
-              newReward: (AggregateReward, Reward) => AggregateReward): EpsilonEnsembleLocal = 
+                models: Iterable[Model[ModelData, ModelAction]],
+                update: (Model[ModelData, ModelAction], Reward) => Unit,
+                modelRewards: Model[ModelData, ModelAction] => AggregateReward): EpsilonEnsemble[ModelData, ModelAction] = 
+        new EpsilonEnsemble(epsilon, models, update, modelRewards)
+
+    def update(model: Model[ModelData, ModelAction], reward: Reward): Unit = updateFn(model, reward)
+
+    def act(data: ModelData): ModelAction = actRoot(data, modelRewards)
+}
+
+class EpsilonEnsembleLocal[ModelData, ModelAction](epsilon: Double,
+                            models: Iterable[Model[ModelData, ModelAction]],
+                            newReward: (AggregateReward, Reward) => AggregateReward) extends EpsilonEnsembleRoot(epsilon, models) {
+    def apply(epsilon: Double,
+              models: Iterable[Model[ModelData, ModelAction]],
+              newReward: (AggregateReward, Reward) => AggregateReward): EpsilonEnsembleLocal[ModelData, ModelAction] = 
         new EpsilonEnsembleLocal(epsilon, models, newReward)
     
-    val modelRewards: MutableMap[Model, AggregateReward] = MutableMap(models.toList.zip(List.fill(models.size)(1.0)):_*)
+    val modelRewardsMap: MutableMap[Model[ModelData, ModelAction], AggregateReward] = MutableMap(models.toList.zip(List.fill(models.size)(1.0)):_*)
 
-    val updateFunction: (Model, Reward) => Unit = (model, reward) => {modelRewards(model) = newReward(modelRewards(model), reward); ()}
+    def update(model: Model[ModelData, ModelAction], reward: Reward): Unit = {
+        modelRewardsMap(model) = newReward(modelRewards(model), reward)
+    }
 
-    val epsilonEnsemble = new EpsilonEnsemble(epsilon, models, updateFunction, (model) => modelRewards(model))
+    val modelRewards = (model) => modelRewardsMap(model)
 
-    def act(data: ModelData): ModelAction = {println(modelRewards.toString); epsilonEnsemble.act(data)}
-
-    def update(model: Model, reward: Reward): Unit = epsilonEnsemble.update(model, reward)
+    def act(data: ModelData): ModelAction = actRoot(data, modelRewards)
 }
+
 

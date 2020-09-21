@@ -1,15 +1,13 @@
 package epsilon
 
 import scala.collection.mutable.{Map => MutableMap}
-trait Model {
+trait Model[ModelData, ModelAction]{
     def act(data: ModelData): ModelAction
 }
 
-abstract class EpsilonEnsembleInterface (epsilon: Double, models: Iterable[Model]) {
-    def act(data: ModelData): ModelAction
-
-    def modelRewardsFromHistory(rewardHistory: Model => Iterable[Reward],
-                                aggregateRewards: Iterable[Reward] => AggregateReward): Model => AggregateReward = {
-        (aggregateRewards compose rewardHistory)
-    }
+abstract class EpsilonEnsembleInterface[ModelData, ModelAction](epsilon: Double, models: Iterable[Model[ModelData, ModelAction]]) {
+    def update(model: Model[ModelData, ModelAction], reward: Reward): Unit
+    def act(data: ModelData): ModelAction 
 }
+
+
