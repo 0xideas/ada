@@ -36,35 +36,31 @@ class EpsilonEnsemble[ModelData, ModelAction](epsilon: Double,
                       models: Iterable[Model[ModelData, ModelAction]],
                       updateFn: (Model[ModelData, ModelAction], Reward) => Unit,
                       modelRewards: Model[ModelData, ModelAction] => AggregateReward) extends EpsilonEnsembleRoot(epsilon, models) {
-    
-    def apply(epsilon: Double,
-                models: Iterable[Model[ModelData, ModelAction]],
-                update: (Model[ModelData, ModelAction], Reward) => Unit,
-                modelRewards: Model[ModelData, ModelAction] => AggregateReward): EpsilonEnsemble[ModelData, ModelAction] = 
-        new EpsilonEnsemble(epsilon, models, update, modelRewards)
 
     def update(model: Model[ModelData, ModelAction], reward: Reward): Unit = updateFn(model, reward)
-
     def act(data: ModelData): ModelAction = actRoot(data, modelRewards)
 }
+
 
 class EpsilonEnsembleLocal[ModelData, ModelAction](epsilon: Double,
                             models: Iterable[Model[ModelData, ModelAction]],
                             newReward: (AggregateReward, Reward) => AggregateReward) extends EpsilonEnsembleRoot(epsilon, models) {
-    def apply(epsilon: Double,
-              models: Iterable[Model[ModelData, ModelAction]],
-              newReward: (AggregateReward, Reward) => AggregateReward): EpsilonEnsembleLocal[ModelData, ModelAction] = 
-        new EpsilonEnsembleLocal(epsilon, models, newReward)
-    
+
     val modelRewardsMap: MutableMap[Model[ModelData, ModelAction], AggregateReward] = MutableMap(models.toList.zip(List.fill(models.size)(1.0)):_*)
+    val modelRewards = (model) => modelRewardsMap(model)
 
     def update(model: Model[ModelData, ModelAction], reward: Reward): Unit = {
         modelRewardsMap(model) = newReward(modelRewards(model), reward)
     }
 
-    val modelRewards = (model) => modelRewardsMap(model)
 
     def act(data: ModelData): ModelAction = actRoot(data, modelRewards)
 }
 
+object EpsilonEnsembleLocal{
+    def apply[ModelData, ModelAction](epsilon: Double,
+              models: Iterable[Model[ModelData, ModelAction]],
+              newReward: (AggregateReward, Reward) => AggregateReward): EpsilonEnsembleLocal[ModelData, ModelAction] = 
+        new EpsilonEnsembleLocal(epsilon, models, newReward)
+}
 
