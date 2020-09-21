@@ -1,3 +1,5 @@
 .*/*
 .metals/*
 models/*
+data/*
+notebooks/.ipynb_checkpoints/*
