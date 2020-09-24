@@ -1,5 +1,5 @@
 
-class DummyModel(possibleValues: List[Int]) extends Model[List[Int], Boolean]{
+/*class DummyModel(possibleValues: List[Int]) extends Model[List[Int], Boolean]{
     private val rnd = new scala.util.Random
 
     def act(data: List[Int]): Boolean = {
@@ -16,4 +16,4 @@ object Debugging {
     val m2 = new DummyModel(List(2))
     val m3 = new DummyModel(List(3))
     val ensemble = EpsilonEnsembleLocal(0.4, List(m1, m2, m3), (aggReward, reward) => (aggReward * 0.8) + reward*0.2 )  
-}
+}*/

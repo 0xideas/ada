@@ -1,0 +1,1 @@
+scalac -bootclasspath /home/leon/.sbt/boot/scala-2.12.10/lib/scala-library.jar -classpath /home/leon/projects/epsilon-ensemble/src/main/scala/target/scala-2.12/classes /home/leon/projects/epsilon-ensemble/src/main/scala/Main.scala

@@ -1,0 +1,4 @@
+[0m[[0m[33mwarn[0m] [0m[0m/home/leon/projects/epsilon-ensemble/src/main/scala/Main.scala:3:16: imported `EpsilonEnsembleLearnerLocal' is permanently hidden by definition of object EpsilonEnsembleLearnerLocal in package epsilon[0m
+[0m[[0m[33mwarn[0m] [0m[0mimport epsilon.EpsilonEnsembleLearnerLocal[0m
+[0m[[0m[33mwarn[0m] [0m[0m               ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m

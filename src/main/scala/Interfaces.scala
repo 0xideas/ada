@@ -1,6 +1,5 @@
 package epsilon
 
-import scala.collection.mutable.{Map => MutableMap}
 trait Model[ModelData, ModelAction]{
     def act(data: ModelData): ModelAction
 }

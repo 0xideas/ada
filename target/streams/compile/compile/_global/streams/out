@@ -1,0 +1,4 @@
+[0m[[0m[33mwarn[0m] [0m[0m/home/leon/projects/epsilon-ensemble/src/main/scala/Main.scala:3:16: Unused import[0m
+[0m[[0m[33mwarn[0m] [0m[0mimport epsilon.EpsilonEnsembleLearnerLocal[0m
+[0m[[0m[33mwarn[0m] [0m[0m               ^[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
