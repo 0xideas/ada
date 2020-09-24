@@ -3,3 +3,5 @@
 models/*
 data/*
 notebooks/.ipynb_checkpoints/*
+project/*
+target/*
