@@ -5,7 +5,8 @@ package object epsilon {
     type Probability = Double
 
     def printEpsilon(s: String): Unit =
-        println(s)
+        ()
+        //println(s)
 
 }
 
