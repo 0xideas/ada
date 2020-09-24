@@ -35,7 +35,7 @@ class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double 
 class SimpleLinearRegressionModel(private var m: Double = 0.0, private var b: Double = 0.0)
     extends SimpleLinearRegression(m, b)
     with Model[Double, Double] {
-        
+
     def act(x: Double) = predict(x)
              
 }
