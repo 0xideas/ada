@@ -16,7 +16,7 @@ abstract class EpsilonEnsembleRoot[ModelData, ModelAction, ModelId](epsilon: Dou
 
     def act(data: ModelData): (ModelAction, ModelId)
     def evaluate(action: ModelAction, correctAction: ModelAction): Reward
-    def update(modelId: ModelId, action: ModelAction, correctAction: ModelAction): Unit = update(modelId, evaluate(action, correctAction))
+    def update(modelId: ModelId, action: ModelAction, correctAction: ModelAction): Unit
     def update(modelId: ModelId, reward: Reward): Unit
 
 
@@ -67,7 +67,7 @@ trait EpsilonLearner[ModelData, ModelAction, ModelId] extends EpsilonEnsembleRoo
                 .map{    case(modelId, reward) => (modelId, getModel(modelId)) }
                 .map{    case(modelId, model) => {
                     val modelAction = model.act(data)
-                    update(modelId, evaluation(correct, modelAction)) 
+                    update(modelId, modelAction, correct) 
                 }}
     }
 }
@@ -80,6 +80,8 @@ class EpsilonEnsemble[ModelData, ModelAction, ModelId](epsilon: Double,
                       evaluationFn: (ModelAction, ModelAction) => Reward ) extends EpsilonEnsembleRoot(epsilon, models) {
 
     def update(modelId: ModelId, reward: Reward): Unit = updateFn(modelId, reward)
+    def update(modelId: ModelId, action: ModelAction, correctAction: ModelAction): Unit = update(modelId, evaluationFn(action, correctAction))
+
     def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
     def evaluate(action: ModelAction, correctAction: ModelAction): Reward = evaluationFn(action, correctAction)
 }
@@ -111,8 +113,13 @@ class EpsilonEnsembleLearnerLocal[ModelData, ModelAction, ModelId](epsilon: Doub
     def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
     def evaluate(action: ModelAction, correctAction: ModelAction): Reward = evaluationFn(action, correctAction)
     def update(modelId: ModelId, reward: Reward): Unit = {
-        modelRewardsMap(modelId) = newReward(modelRewards(modelId), reward)
+        val oldReward = modelRewards(modelId)
+        val newRewardV =  newReward(oldReward, reward)
+        printEpsilon(f"$modelId: $oldReward + $reward => $newRewardV")
+        modelRewardsMap(modelId) = newRewardV
     }
+    def update(modelId: ModelId, action: ModelAction, correctAction: ModelAction): Unit = update(modelId, evaluationFn(action, correctAction))
+
 
     def learn(data: ModelData,
               correct: ModelAction,

@@ -29,7 +29,9 @@ class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double 
 		x*m + b
     }
     
-    def getM: Double = m
+	def getM: Double = m
+	
+	override def toString: String = s"$m*x + $b"
 }
 
 class SimpleLinearRegressionModel(private var m: Double = 0.0, private var b: Double = 0.0)
@@ -37,5 +39,5 @@ class SimpleLinearRegressionModel(private var m: Double = 0.0, private var b: Do
     with Model[Double, Double] {
 
     def act(x: Double) = predict(x)
-             
+
 }
