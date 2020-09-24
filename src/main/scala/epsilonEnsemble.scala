@@ -4,18 +4,18 @@ import scala.collection.mutable.{Map => MutableMap}
 abstract class EpsilonEnsembleRoot[ModelData, ModelAction, ModelId](epsilon: Double, models: Map[ModelId, Model[ModelData, ModelAction]]) 
     extends EpsilonEnsembleInterface(epsilon, models) {
 
-    private val modelToIdMap = models.map{ case(k, v) => (v, k)}
-    private val modelIdsList = idToModel.keys.toList
 
-    protected def idToModel: Map[ModelId, Model[ModelData, ModelAction]] = models
-    protected def modelToId: Map[Model[ModelData, ModelAction], ModelId] = modelToIdMap
-    protected def modelIds: List[ModelId] = modelIdsList
+    private val idToModel: Map[ModelId, Model[ModelData, ModelAction]] = models
+    private val modelToId: Map[Model[ModelData, ModelAction], ModelId] = models.map{ case(k, v) => (v, k)}
+    private val modelIds: List[ModelId] = idToModel.keys.toList
 
     def getModelId(model: Model[ModelData, ModelAction]): ModelId = modelToId(model)
     def getModel(id: ModelId): Model[ModelData, ModelAction]  = idToModel(id)
 
-    def update(model: ModelId, reward: Reward): Unit
     def act(data: ModelData): (ModelAction, ModelId)
+    def evaluate(action: ModelAction, correctAction: ModelAction): Reward
+    def update(modelId: ModelId, action: ModelAction, correctAction: ModelAction): Unit = update(modelId, evaluate(action, correctAction))
+    def update(modelId: ModelId, reward: Reward): Unit
 
 
     protected val rnd = new scala.util.Random
@@ -47,26 +47,11 @@ abstract class EpsilonEnsembleRoot[ModelData, ModelAction, ModelId](epsilon: Dou
         else explore(modelsSorted.tail, data)
     }
 
-}
-
-abstract class EpsilonEnsembleLearningRoot[ModelData, ModelAction, ModelId](epsilon: Double, models: Map[ModelId, Model[ModelData, ModelAction]]) 
-    extends EpsilonEnsembleRoot(epsilon, models) {
-
-    def update(model: ModelId, reward: Reward): Unit
-    def act(data: ModelData): (ModelAction, ModelId)
-
-
-    def learn(data: ModelData,
-              correct: ModelAction,
-              evaluation: (ModelAction, ModelAction) => Reward,
-              modelRewards: ModelId => AggregateReward,
-              which: AggregateReward => Boolean): Unit
-
     def learnRoot(data: ModelData,
                     correct: ModelAction,
+                    which: AggregateReward => Boolean,
                     evaluation: (ModelAction, ModelAction) => Reward,
-                    modelRewards: ModelId => AggregateReward,
-                    which: AggregateReward => Boolean): Unit = {
+                    modelRewards: ModelId => AggregateReward): Unit = {
         modelIds.map(modelId => (modelId, modelRewards(modelId)))
                 .filter{ case(modelId, reward) => which(reward)}
                 .map{    case(modelId, reward) => (modelId, getModel(modelId)) }
@@ -77,16 +62,36 @@ abstract class EpsilonEnsembleLearningRoot[ModelData, ModelAction, ModelId](epsi
     }
 }
 
+trait EpsilonLearner[ModelData, ModelAction, ModelId]{
+    def learn(data: ModelData,
+            correct: ModelAction,
+            which: AggregateReward => Boolean ): Unit
+}
+
 //reward must be positive
 class EpsilonEnsemble[ModelData, ModelAction, ModelId](epsilon: Double,
                       models: Map[ModelId, Model[ModelData, ModelAction]],
                       updateFn: (ModelId, Reward) => Unit,
-                      modelRewards: ModelId => AggregateReward) extends EpsilonEnsembleRoot(epsilon, models) {
+                      modelRewards: ModelId => AggregateReward,
+                      evaluationFn: (ModelAction, ModelAction) => Reward ) extends EpsilonEnsembleRoot(epsilon, models) {
 
     def update(modelId: ModelId, reward: Reward): Unit = updateFn(modelId, reward)
     def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+    def evaluate(action: ModelAction, correctAction: ModelAction): Reward = evaluationFn(action, correctAction)
 }
 
+
+class EpsilonEnsembleLearner[ModelData, ModelAction, ModelId](epsilon: Double,
+                      models: Map[ModelId, Model[ModelData, ModelAction]],
+                      updateFn: (ModelId, Reward) => Unit,
+                      modelRewards: ModelId => AggregateReward,
+                      evaluationFn: (ModelAction, ModelAction) => Reward) extends EpsilonEnsemble(epsilon, models, updateFn, modelRewards, evaluationFn)
+                                                                with EpsilonLearner[ModelData, ModelAction, ModelId]{
+
+    def learn(data: ModelData,
+              correct: ModelAction,
+              which: AggregateReward => Boolean = aggReward => true): Unit = learnRoot(data, correct, which, evaluationFn, modelRewards)
+}
 
 class EpsilonEnsembleLocal[ModelData, ModelAction, ModelId](epsilon: Double,
                             models: Map[ModelId, Model[ModelData, ModelAction]],
