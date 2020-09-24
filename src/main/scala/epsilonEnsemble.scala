@@ -1,4 +1,5 @@
 package epsilon
+import scala.collection.mutable.{Map => MutableMap}
 
 abstract class EpsilonEnsembleRoot[ModelData, ModelAction](epsilon: Double, models: Iterable[Model[ModelData, ModelAction]]) 
     extends EpsilonEnsembleInterface(epsilon, models) {
@@ -60,15 +61,15 @@ class EpsilonEnsembleLocal[ModelData, ModelAction](epsilon: Double,
 
 object EpsilonEnsembleLocal {
     def apply[ModelData, ModelAction](epsilon: Double,
-              models: Iterable[Model[ModelData, ModelAction]],
-              newReward: (AggregateReward, Reward) => AggregateReward): EpsilonEnsembleLocal[ModelData, ModelAction] = {
+                                      models: Iterable[Model[ModelData, ModelAction]],
+                                      newReward: (AggregateReward, Reward) => AggregateReward): EpsilonEnsembleLocal[ModelData, ModelAction] = {
         val modelRewardsMap = MutableMap(models.toList.zip(List.fill(models.size)(1.0)):_*)
         new EpsilonEnsembleLocal(epsilon, models, newReward, modelRewardsMap)
     }
     def apply[ModelData, ModelAction](epsilon: Double,
-              models: Iterable[Model[ModelData, ModelAction]],
-              newReward: (AggregateReward, Reward) => AggregateReward,
-              modelRewardsMap: MutableMap[Model[ModelData, ModelAction], AggregateReward]): EpsilonEnsembleLocal[ModelData, ModelAction] = {
+                                      models: Iterable[Model[ModelData, ModelAction]],
+                                      newReward: (AggregateReward, Reward) => AggregateReward,
+                                      modelRewardsMap: MutableMap[Model[ModelData, ModelAction], AggregateReward]): EpsilonEnsembleLocal[ModelData, ModelAction] = {
         new EpsilonEnsembleLocal(epsilon, models, newReward,  modelRewardsMap)
     }
 }
