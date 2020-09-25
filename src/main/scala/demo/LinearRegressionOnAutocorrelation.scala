@@ -17,7 +17,7 @@ object DemoAutocorrelation{
                                                                (aggRew, rew) => rew,
                                                                evaluationFn)
 
-    val generator = new AutoregressionGenerator(2, 0.1)
+    val generator = new AutoregressionGenerator(10, 0.2)
 
     
     def run(): Unit = {
@@ -33,10 +33,8 @@ object DemoAutocorrelation{
 
             models.zipWithIndex.map{ case(model, i) => model.fitReverse(dataRun.take(model.steps))}
             next = generator.next
+
             val (action, selectedModel) = ensemble.act(-999)
-            //ensemble.update(selectedModel, action, next )
-            ensemble.learn(-999, next, aw => true)
-            dataRun = next :: dataRun
 
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
@@ -46,9 +44,12 @@ object DemoAutocorrelation{
                     else rewardString :: r
                     }
                 }
-                selectedModels = selectedModel.toString :: selectedModels
-                
+                selectedModels = selectedModel.toString :: selectedModels            
             }
+
+            //ensemble.update(selectedModel, action, next )
+            dataRun = next :: dataRun
+            ensemble.learn(-999, next, aw => true)
 
             i = i + 1.0
         }
@@ -59,7 +60,9 @@ object DemoAutocorrelation{
         println("rewards")
         println(rewards.map(r => r.reverse.mkString("")).mkString("\n"))
         println("selected model")
-        println(" " + selectedModels.mkString(" "))
+        println(" " + selectedModels.reverse.mkString(" "))
+        println("model frequencies")
+        println(selectedModels.reverse.groupBy(identity).view.mapValues(_.size).toMap.toList.sortWith(_._2 > _._2).map{case(a,b) => s"Model $a -> $b"}.mkString("\n"))
 
         //val first150 = dataRun.take(150)
         //println("\n" + Chart(first150.max.toInt, first150.min.toInt, 0, first150.length).plotLine(first150, "F").render())
