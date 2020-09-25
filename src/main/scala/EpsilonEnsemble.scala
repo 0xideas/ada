@@ -1,11 +1,10 @@
 package epsilon
 
 import scala.collection.mutable.{Map => MutableMap}
-import epsilon.EpsilonEnsembleInterface
+import epsilon.{EpsilonEnsembleInterface, EpsilonLearner}
 
-abstract class EpsilonEnsembleRoot[ModelData, ModelAction, ModelId](epsilon: Double, models: Map[ModelId, Model[ModelData, ModelAction]]) 
+abstract class EpsilonEnsembleGreedySoftmax[ModelId, ModelData, ModelAction](epsilon: Double, models: Map[ModelId, Model[ModelData, ModelAction]]) 
     extends EpsilonEnsembleInterface(epsilon, models) {
-
 
     private val idToModel: Map[ModelId, Model[ModelData, ModelAction]] = models
     private val modelToId: Map[Model[ModelData, ModelAction], ModelId] = models.map{ case(k, v) => (v, k)}
@@ -15,13 +14,12 @@ abstract class EpsilonEnsembleRoot[ModelData, ModelAction, ModelId](epsilon: Dou
     def getModel(id: ModelId): Model[ModelData, ModelAction]  = idToModel(id)
 
     def act(data: ModelData): (ModelAction, ModelId)
-    def evaluate(action: ModelAction, correctAction: ModelAction): Reward
-    def update(modelId: ModelId, action: ModelAction, correctAction: ModelAction): Unit
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
     def update(modelId: ModelId, reward: Reward): Unit
 
 
     protected val rnd = new scala.util.Random
-    def explore(modelsExplore: List[(ModelId, AggregateReward)], data: ModelData): (ModelAction, ModelId) = {
+    def exploreSoftmax(modelsExplore: List[(ModelId, AggregateReward)], data: ModelData): (ModelAction, ModelId) = {
         val totalReward: AggregateReward = modelsExplore.foldLeft(0.0)((agg, tup) => agg + tup._2)
         printEpsilon(totalReward.toString)
         printEpsilon(modelsExplore.toString())
@@ -46,44 +44,24 @@ abstract class EpsilonEnsembleRoot[ModelData, ModelAction, ModelId](epsilon: Dou
             val selectedModel = getModel(selectedModelId)
             (selectedModel.act(data), selectedModelId)
         }
-        else explore(modelsSorted.tail, data)
+        else exploreSoftmax(modelsSorted.tail, data)
     }
 
 }
 
-trait EpsilonLearner[ModelData, ModelAction, ModelId] extends EpsilonEnsembleRoot[ModelData, ModelAction, ModelId]{
-    def learn(data: ModelData,
-            correct: ModelAction,
-            which: AggregateReward => Boolean ): Unit
 
-    def learnRoot(modelIds: List[ModelId],
-                    data: ModelData,
-                    correct: ModelAction,
-                    which: AggregateReward => Boolean,
-                    evaluation: (ModelAction, ModelAction) => Reward,
-                    modelRewards: ModelId => AggregateReward): Unit = {
-        modelIds.map(modelId => (modelId, modelRewards(modelId)))
-                .filter{ case(modelId, reward) => which(reward)}
-                .map{    case(modelId, reward) => (modelId, getModel(modelId)) }
-                .map{    case(modelId, model) => {
-                    val modelAction = model.act(data)
-                    update(modelId, modelAction, correct) 
-                }}
-    }
-}
 
 //reward must be positive
-class EpsilonEnsemble[ModelData, ModelAction, ModelId](epsilon: Double,
+class EpsilonEnsemble[ModelId, ModelData, ModelAction](epsilon: Double,
                       models: Map[ModelId, Model[ModelData, ModelAction]],
                       updateFn: (ModelId, Reward) => Unit,
                       modelRewards: ModelId => AggregateReward,
-                      evaluationFn: (ModelAction, ModelAction) => Reward ) extends EpsilonEnsembleRoot(epsilon, models) {
+                      evaluationFn: (ModelAction, ModelAction) => Reward ) extends EpsilonEnsembleGreedySoftmax(epsilon, models) {
 
     def update(modelId: ModelId, reward: Reward): Unit = updateFn(modelId, reward)
-    def update(modelId: ModelId, action: ModelAction, correctAction: ModelAction): Unit = update(modelId, evaluationFn(action, correctAction))
 
     def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
-    def evaluate(action: ModelAction, correctAction: ModelAction): Reward = evaluationFn(action, correctAction)
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
 }
 
 
@@ -92,7 +70,7 @@ class EpsilonEnsembleLearner[ModelData, ModelAction, ModelId](epsilon: Double,
                       updateFn: (ModelId, Reward) => Unit,
                       modelRewards: ModelId => AggregateReward,
                       evaluationFn: (ModelAction, ModelAction) => Reward) extends EpsilonEnsemble(epsilon, models, updateFn, modelRewards, evaluationFn)
-                                                                with EpsilonLearner[ModelData, ModelAction, ModelId]{
+                                                                with EpsilonLearner[ModelId, ModelData, ModelAction]{
 
     def learn(data: ModelData,
               correct: ModelAction,
@@ -103,22 +81,21 @@ class EpsilonEnsembleLearnerLocal[ModelData, ModelAction, ModelId](epsilon: Doub
                             models: Map[ModelId, Model[ModelData, ModelAction]],
                             newReward: (AggregateReward, Reward) => AggregateReward,
                             evaluationFn: (ModelAction, ModelAction) => Reward,
-                            modelRewardsMap: MutableMap[ModelId, AggregateReward]) extends EpsilonEnsembleRoot(epsilon, models)
-                                                                                   with EpsilonLearner[ModelData, ModelAction, ModelId]{
+                            modelRewardsMap: MutableMap[ModelId, AggregateReward]) extends EpsilonEnsembleGreedySoftmax(epsilon, models)
+                                                                                   with EpsilonLearner[ModelId, ModelData, ModelAction]{
 
     def getModelRewardsMap = modelRewardsMap
     val modelRewards = (modelId) => modelRewardsMap(modelId)
 
 
     def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
-    def evaluate(action: ModelAction, correctAction: ModelAction): Reward = evaluationFn(action, correctAction)
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
     def update(modelId: ModelId, reward: Reward): Unit = {
         val oldReward = modelRewards(modelId)
         val newRewardV =  newReward(oldReward, reward)
         printEpsilon(f"$modelId: $oldReward + $reward => $newRewardV")
         modelRewardsMap(modelId) = newRewardV
     }
-    def update(modelId: ModelId, action: ModelAction, correctAction: ModelAction): Unit = update(modelId, evaluationFn(action, correctAction))
 
 
     def learn(data: ModelData,
