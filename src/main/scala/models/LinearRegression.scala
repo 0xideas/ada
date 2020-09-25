@@ -31,7 +31,14 @@ class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double 
     
 	def getM: Double = m
 	
-	override def toString: String = s"$m*x + $b"
+	override def toString: String = if(b > 0) s"$m*x + $b" else {val nb = -b; s"$m*x - $nb"}
+	def toStringShort: String = {
+		val mm= m.toInt
+		if(b > 0) {val bb = b.toInt; s"$mm*x+$bb"} 
+		else {val nb = -b.toInt; s"$mm*x-$nb"}
+	}
+	def toStringM:String =  if(m.toInt >= 0) " " + m.toInt.toString else m.toInt.toString 
+
 }
 
 class SimpleAutoRegressionModel(val steps: Int, private var m: Double = 0.0, private var b: Double = 0.0)
