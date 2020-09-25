@@ -1,6 +1,6 @@
 package epsilon
 
-import epsilon.Demo
+import epsilon.DemoAutocorrelation
 object Main extends App{
-    Demo.run()
+    DemoAutocorrelation.run()
 }
