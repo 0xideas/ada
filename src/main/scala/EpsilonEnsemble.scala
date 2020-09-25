@@ -52,7 +52,7 @@ abstract class EpsilonEnsembleGreedySoftmax[ModelId, ModelData, ModelAction](eps
 
 
 //reward must be positive
-class EpsilonEnsemble[ModelId, ModelData, ModelAction](epsilon: Double,
+class EpsilonEnsembleGreedySoftmaxGeneral[ModelId, ModelData, ModelAction](epsilon: Double,
                       models: Map[ModelId, Model[ModelData, ModelAction]],
                       updateFn: (ModelId, Reward) => Unit,
                       modelRewards: ModelId => AggregateReward,
@@ -65,19 +65,7 @@ class EpsilonEnsemble[ModelId, ModelData, ModelAction](epsilon: Double,
 }
 
 
-class EpsilonEnsembleLearner[ModelData, ModelAction, ModelId](epsilon: Double,
-                      models: Map[ModelId, Model[ModelData, ModelAction]],
-                      updateFn: (ModelId, Reward) => Unit,
-                      modelRewards: ModelId => AggregateReward,
-                      evaluationFn: (ModelAction, ModelAction) => Reward) extends EpsilonEnsemble(epsilon, models, updateFn, modelRewards, evaluationFn)
-                                                                with EpsilonLearner[ModelId, ModelData, ModelAction]{
-
-    def learn(data: ModelData,
-              correct: ModelAction,
-              which: AggregateReward => Boolean = aggReward => true): Unit = learnRoot(modelIds, data, correct, which, evaluationFn, modelRewards)
-}
-
-class EpsilonEnsembleLearnerLocal[ModelData, ModelAction, ModelId](epsilon: Double,
+class EpsilonEnsembleGreedySoftmaxLocal[ModelData, ModelAction, ModelId](epsilon: Double,
                             models: Map[ModelId, Model[ModelData, ModelAction]],
                             newReward: (AggregateReward, Reward) => AggregateReward,
                             evaluationFn: (ModelAction, ModelAction) => Reward,
@@ -103,20 +91,20 @@ class EpsilonEnsembleLearnerLocal[ModelData, ModelAction, ModelId](epsilon: Doub
               which: AggregateReward => Boolean = aggReward => true): Unit = learnRoot(modelIds, data, correct, which, evaluationFn, modelRewards)
 }
 
-object EpsilonEnsembleLearnerLocal {
-    def apply[ModelData, ModelAction, ModelId](epsilon: Double,
+object EpsilonEnsembleGreedySoftmaxLocal {
+    def apply[ModelId, ModelData, ModelAction](epsilon: Double,
                                       models: Map[ModelId, Model[ModelData, ModelAction]],
                                       newReward: (AggregateReward, Reward) => AggregateReward,
-                                      evaluationFn: (ModelAction, ModelAction) => Reward): EpsilonEnsembleLearnerLocal[ModelData, ModelAction, ModelId] = {
+                                      evaluationFn: (ModelAction, ModelAction) => Reward): EpsilonEnsembleGreedySoftmaxLocal[ModelData, ModelAction, ModelId] = {
         val modelRewardsMap = MutableMap(models.keys.toList.zip(List.fill(models.size)(1.0)):_*)
-        new EpsilonEnsembleLearnerLocal(epsilon, models, newReward, evaluationFn, modelRewardsMap)
+        new EpsilonEnsembleGreedySoftmaxLocal(epsilon, models, newReward, evaluationFn, modelRewardsMap)
     }
-    def apply[ModelData, ModelAction, ModelId](epsilon: Double,
+    def apply[ModelId, ModelData, ModelAction](epsilon: Double,
                                       models: Map[ModelId, Model[ModelData, ModelAction]],
                                       newReward: (AggregateReward, Reward) => AggregateReward,
                                       evaluationFn: (ModelAction, ModelAction) => Reward,
-                                      modelRewardsMap: MutableMap[ModelId, AggregateReward]): EpsilonEnsembleLearnerLocal[ModelData, ModelAction, ModelId] = {
-        new EpsilonEnsembleLearnerLocal(epsilon, models, newReward, evaluationFn, modelRewardsMap)
+                                      modelRewardsMap: MutableMap[ModelId, AggregateReward]): EpsilonEnsembleGreedySoftmaxLocal[ModelData, ModelAction, ModelId] = {
+        new EpsilonEnsembleGreedySoftmaxLocal(epsilon, models, newReward, evaluationFn, modelRewardsMap)
     }
 }
 

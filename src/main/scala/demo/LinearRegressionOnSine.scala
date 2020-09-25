@@ -1,7 +1,7 @@
 package epsilon
 
 import epsilon.SimpleAutoRegressionModel
-import epsilon.EpsilonEnsembleLearnerLocal
+import epsilon.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.SineGenerator
 
 object DemoSine{
@@ -14,7 +14,7 @@ object DemoSine{
                     new SimpleAutoRegressionModel(1, 3.0))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = EpsilonEnsembleLearnerLocal[Double, Double, Int](0.2,
+    val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double](0.2,
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
                                                                (aggRew, rew) => rew,
                                                                evaluationFn)
