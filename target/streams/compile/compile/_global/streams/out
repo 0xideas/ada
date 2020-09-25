@@ -1,4 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0m/home/leon/projects/epsilon-ensemble/src/main/scala/demo/LinearRegressionOnAutocorrelation.scala:58:9: Missing closing brace `}` assumed here[0m
-[0m[[0m[31merror[0m] [0m[0m        chars.map(row => row.mkString("")).mkString("\n")[0m
-[0m[[0m[31merror[0m] [0m[0m        ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m

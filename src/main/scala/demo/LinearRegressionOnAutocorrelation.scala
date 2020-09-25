@@ -18,11 +18,11 @@ object DemoAutocorrelation{
                                                                (aggRew, rew) => rew,
                                                                evaluationFn)
 
-    val generator = new AutoregressionGenerator(100, 0.3)
+    val generator = new AutoregressionGenerator(2, 0.1)
 
     
     def run(): Unit = {
-        var dataRun: List[Double] = List.fill(15)(0.0)
+        var dataRun: List[Double] = List.fill(15)(1000.0)
         var next = 0.0
         var i = 0.0
         while(i < 1000){
@@ -37,7 +37,8 @@ object DemoAutocorrelation{
             print(selectedModel.toString + "-")
 
         }
-        println("\n" + plotLine(dataRun.take(1000)))
+        dataRun = dataRun.take(1000).reverse
+        println("\n" + plotLine(dataRun))
         println("\n" + plotLine(dataRun.take(150)))
         println("\n" + plotLine(dataRun.drop(150).take(150), 150))
 
