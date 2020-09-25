@@ -1,6 +1,7 @@
 package epsilon
 
-import scala.collection.mutable.ListBuffer
+import plotting.Chart
+
 import epsilon.SimpleAutoRegressionModel
 import epsilon.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.AutoregressionGenerator
@@ -38,37 +39,15 @@ object DemoAutocorrelation{
 
         }
         dataRun = dataRun.take(1000).reverse
-        println("\n" + plotLine(dataRun))
-        println("\n" + plotLine(dataRun.take(150)))
-        println("\n" + plotLine(dataRun.drop(150).take(150), 150))
+        println("\n" + Chart(dataRun.max.toInt, dataRun.min.toInt, 0, dataRun.length).plotLine(dataRun, "M").render())
+        val first150 = dataRun.take(150)
+        println("\n" + Chart(first150.max.toInt, first150.min.toInt, 0, first150.length).plotLine(first150, "F").render())
+
+        //println("\n" + plotLine(dataRun))
+        //println("\n" + plotLine(dataRun.take(150)))
+        //println("\n" + plotLine(dataRun.drop(150).take(150), 150))
 
         println("")
-
-    }
-
-    def plotLine(data: List[Double], xAxisStart: Int = 0, width: Int = 150, height: Int = 40): String = {
-        val max = data.max
-        val min = data.min
-
-        def bucket(x: Double): Int = (((x-min)/(max -min))*(height-0.001)).toInt
-
-        val chars = ListBuffer.fill(height-1)(ListBuffer("|") :++ ListBuffer.fill(width-1)(" ")) :+ (ListBuffer("|") :++ ListBuffer.fill(width-1)("_"))
-        val incr = math.max(1, math.ceil(data.length.toDouble/(width.toDouble)).toInt)
-
-        var plotMax = 0
-        data.zipWithIndex
-            .filter{case(x, i) => i%incr == 0}
-            .map(_._1)
-            .zipWithIndex
-            .tail
-            .map{ case(x, i) =>{plotMax = math.max(plotMax, i); chars(bucket(x))(i) = "-" }}
-
-        max.toInt.toString.toList.zipWithIndex.map{ case(c, i) => chars(0)(i) = c.toString}
-        (min.toInt.toString + "/" + xAxisStart.toInt).toList.zipWithIndex.map{ case(c, i) => chars(height-1)(i) = c.toString}
-        (data.length + xAxisStart).toString.toList.zipWithIndex.map{ case(c, i) => chars(height-1)(plotMax- data.length.toString.length+i) = c.toString}
-
-        (plotMax until width).map(i => chars(height-1)(i) = " ")
-        chars.map(row => row.mkString("")).mkString("\n")
 
     }
 
