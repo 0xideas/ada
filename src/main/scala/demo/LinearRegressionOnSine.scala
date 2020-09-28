@@ -13,11 +13,14 @@ object DemoSine{
                     new SimpleAutoRegressionModel(1, 2.0),
                     new SimpleAutoRegressionModel(1, 3.0))
 
+
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double](0.2,
-                                                               models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               (aggRew, rew) => rew,
-                                                               evaluationFn)
+    val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](epsilon=0.2,
+                                                               models=models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
+                                                               newReward=(aggRew, rew) => rew,
+                                                               evaluationFn=evaluationFn,
+                                                               draw=(aggRew:Double) => aggRew,
+                                                               initAggregateReward=0.0)
 
     val generator = new SineGenerator(2.8, 150)
 

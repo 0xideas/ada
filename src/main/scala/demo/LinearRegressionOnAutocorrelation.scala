@@ -12,10 +12,12 @@ object DemoAutocorrelation{
                      new SimpleAutoRegressionModel(30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double](0.0,
+    val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](0.0,
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
                                                                (aggRew, rew) => rew,
-                                                               evaluationFn)
+                                                               evaluationFn,
+                                                               aggRew => aggRew,
+                                                               0.0)
 
     val generator = new AutoregressionGenerator(10, 0.2)
 

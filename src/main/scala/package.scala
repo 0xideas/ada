@@ -1,8 +1,7 @@
 
 package object epsilon {
-    type Reward = Double
-    type AggregateReward = Double
     type Probability = Double
+    type Reward = Double
 
     def printEpsilon(s: String): Unit =
         ()
