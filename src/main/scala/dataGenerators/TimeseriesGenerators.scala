@@ -1,6 +1,6 @@
-package epsilon
+package epsilon.generators
 
-import epsilon.SimpleLinearRegression
+import epsilon.models.SimpleLinearRegression
 
 trait TimeseriesGenerator{
 	def next: Double

@@ -1,4 +1,6 @@
-package epsilon
+package epsilon.interfaces
+
+import epsilon._
 
 trait Model[ModelData, ModelAction]{
     def act(data: ModelData): ModelAction

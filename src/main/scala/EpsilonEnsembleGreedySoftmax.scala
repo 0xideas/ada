@@ -1,7 +1,9 @@
-package epsilon
+package epsilon.ensembles
 
 import scala.collection.mutable.{Map => MutableMap}
-import epsilon.{EpsilonEnsembleInterface, EpsilonLearner}
+import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonLearner, Model}
+
+import epsilon._
 
 abstract class EpsilonEnsembleGreedySoftmax[ModelId, ModelData, ModelAction, AggregateReward](epsilon: Double,
     models: Map[ModelId, Model[ModelData, ModelAction]], draw: AggregateReward => Double) 

@@ -1,6 +1,6 @@
-package epsilon
+package epsilon.models
 
-import epsilon.Model
+import epsilon.interfaces.Model
 
 class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double = 0.0){
 	private val eta = 0.0000000000001

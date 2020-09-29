@@ -1,8 +1,8 @@
 package epsilon
 
-import epsilon.SimpleAutoRegressionModel
-import epsilon.EpsilonEnsembleGreedySoftmaxLocal
-import epsilon.SineGenerator
+import epsilon.models.SimpleAutoRegressionModel
+import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
+import epsilon.generators.SineGenerator
 
 object DemoSine{
     val models = List(new SimpleAutoRegressionModel(1, -3.0),

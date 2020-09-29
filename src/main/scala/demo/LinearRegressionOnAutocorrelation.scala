@@ -2,9 +2,9 @@ package epsilon
 
 import plotting.Chart
 
-import epsilon.SimpleAutoRegressionModel
-import epsilon.EpsilonEnsembleGreedySoftmaxLocal
-import epsilon.AutoregressionGenerator
+import epsilon.models.SimpleAutoRegressionModel
+import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
+import epsilon.generators.AutoregressionGenerator
 
 object DemoAutocorrelation{
     val models = List(new SimpleAutoRegressionModel(3),
