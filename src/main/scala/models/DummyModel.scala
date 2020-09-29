@@ -1,12 +1,11 @@
-package models.models
+package epsilon.models
 import epsilon.interfaces.Model
 
-class DummyModel(possibleValues: List[Int]) extends Model[List[Int], Boolean]{
-    private val rnd = new scala.util.Random
+class DummyModel(value: Double) extends Model[Double, Double]{
 
-    def act(data: List[Int]): Boolean = {
-        val i = math.abs(rnd.nextInt)
-        data.min > possibleValues(i % possibleValues.size)
-    }
-    override def toString: String = "$Model: " + possibleValues.toString() + "$"
+    def act(data: Double): Double = value
+
+    def update(value: Double): DummyModel = new DummyModel(value)
+
+    override def toString: String = "$Model: " + value.toString() + "$"
 } 

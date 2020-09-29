@@ -1,6 +1,7 @@
 package epsilon.generators
 
 import epsilon.models.SimpleLinearRegression
+import java.sql.Time
 
 trait TimeseriesGenerator{
 	def next: Double
@@ -28,4 +29,8 @@ class SineGenerator(amplitude: Double = 1.0, resolution: Double = 100) extends T
 		math.sin(state)*amplitude
 	} 
 }
+
+class ConstantGenerator(const: Double) extends  TimeseriesGenerator {
+    def next: Double = const
+} 
 

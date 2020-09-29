@@ -23,7 +23,7 @@ abstract class EpsilonEnsembleInterface[ModelId, ModelData, ModelAction, Aggrega
 trait EpsilonLearner[ModelId, ModelData, ModelAction, AggregateReward]
     extends EpsilonEnsembleInterface[ModelId, ModelData, ModelAction, AggregateReward]{
     def learn(data: ModelData,
-            correct: ModelAction,
+            optimalAction: ModelAction,
             which: AggregateReward => Boolean ): Unit
 
     def learnRoot(modelIds: Iterable[ModelId],

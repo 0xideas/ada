@@ -21,7 +21,7 @@ abstract class EpsilonEnsembleGreedySoftmax[ModelId, ModelData, ModelAction, Agg
     def update(modelId: ModelId, reward: Reward): Unit
 
 
-    protected val rnd = new scala.util.Random
+    protected val rnd = new scala.util.Random(101)
     def exploreSoftmax(aggregateRewardsDouble: List[(ModelId, Double)], data: ModelData): (ModelAction, ModelId) = {
         val totalReward: Double = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
         printEpsilon(totalReward.toString)
@@ -69,7 +69,7 @@ class EpsilonEnsembleGreedySoftmaxGeneral[ModelId, ModelData, ModelAction, Aggre
 }
 
 
-class EpsilonEnsembleGreedySoftmaxLocal[ModelData, ModelAction, ModelId, AggregateReward]
+class EpsilonEnsembleGreedySoftmaxLocal[ModelId, ModelData, ModelAction, AggregateReward]
     (epsilon: Double,
      models: Map[ModelId, Model[ModelData, ModelAction]],
      newReward: (AggregateReward, Reward) => AggregateReward,
@@ -103,7 +103,7 @@ object EpsilonEnsembleGreedySoftmaxLocal {
                                       newReward: (AggregateReward, Reward) => AggregateReward,
                                       evaluationFn: (ModelAction, ModelAction) => Reward,
                                       draw: AggregateReward => Double,
-                                      initAggregateReward: AggregateReward): EpsilonEnsembleGreedySoftmaxLocal[ModelData, ModelAction, ModelId,  AggregateReward] = {
+                                      initAggregateReward: AggregateReward): EpsilonEnsembleGreedySoftmaxLocal[ModelId, ModelData, ModelAction,   AggregateReward] = {
         val modelRewardsMap = MutableMap(models.keys.toList.zip(List.fill(models.size)(initAggregateReward)):_*)
         new EpsilonEnsembleGreedySoftmaxLocal(epsilon, models, newReward, evaluationFn, draw, modelRewardsMap)
     }
@@ -112,7 +112,7 @@ object EpsilonEnsembleGreedySoftmaxLocal {
                                       newReward: (AggregateReward, Reward) => AggregateReward,
                                       evaluationFn: (ModelAction, ModelAction) => Reward,
                                       draw: AggregateReward => Double,
-                                      modelRewardsMap: MutableMap[ModelId, AggregateReward]): EpsilonEnsembleGreedySoftmaxLocal[ModelData, ModelAction, ModelId, AggregateReward] = {
+                                      modelRewardsMap: MutableMap[ModelId, AggregateReward]): EpsilonEnsembleGreedySoftmaxLocal[ModelId, ModelData, ModelAction, AggregateReward] = {
         new EpsilonEnsembleGreedySoftmaxLocal(epsilon, models, newReward, evaluationFn, draw, modelRewardsMap)
     }
 }
