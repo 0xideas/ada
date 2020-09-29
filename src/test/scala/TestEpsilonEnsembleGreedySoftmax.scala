@@ -42,7 +42,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("Test") {
         etaSource <- Gen.choose(1, 1000)
     } yield((const.toDouble, math.abs(etaSource.toDouble/1500.0)))
 
-    def report(eta: Double, rounds: List[(Double, Int)], tests:List[Boolean], ensemble: EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double]): Unit = {
+    private def report(eta: Double, rounds: List[(Double, Int)], tests:List[Boolean], ensemble: EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double]): Unit = {
         println("-----")
         println(ensemble.getModelRewardsMap)
         println(f"eta: $eta")
