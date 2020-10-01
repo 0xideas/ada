@@ -19,31 +19,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
         math.abs(n1 - n2) <= (math.max(math.abs(n1), math.abs(n2)) * 0.1) + 0.05
     }
 
-    //val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
     def evaluationFn[ActionType](action: ActionType, correctAction: ActionType): Double =  if(action == correctAction) 1.0 else 0.1
-
-
-    def getConstObjects(const: Double, eta: Double): (Generator[Double], List[Model[Double, Double]], EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double]) = {
-        val generator = new ConstantGenerator(const)
-
-        val models = List(new DummyModel(const - 1.0),
-                        new DummyModel(const),
-                        new DummyModel(const - 1.0))
-
-        val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](eta,
-                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                                (aggRew, rew) => rew,
-                                                                evaluationFn[Double],
-                                                                aggRew => aggRew,
-                                                                MutableMap(0 -> 1.0, 1 -> 1.0, 2 -> 3.0))
-        return((generator, models, ensemble))
-    }
-
-    val constEta = for {
-        const <- Gen.choose(1, 1000)
-        etaSource <- Gen.choose(1, 1000)
-    } yield((const.toDouble, math.abs(etaSource.toDouble/1500.0)))
-
 
     def makeGenerator[ModelId, ModelData, ModelAction](idGenerator: Gen[ModelId], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
         val generator = for{
@@ -125,6 +101,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
                            ("modelId -> String, ModelData -> Double, ModelData -> Double",  makeGenerator(arbitrary[Int], arbitrary[Double], arbitrary[Int])))
 
     testTypedEEGreedySoftmax("SDD", 1000, arbitrary[String], arbitrary[Double], arbitrary[Double])
-    testTypedEEGreedySoftmax("IDI", 1000, arbitrary[String], arbitrary[Int], arbitrary[Int])
+    testTypedEEGreedySoftmax("SII", 1000, arbitrary[String], arbitrary[Int], arbitrary[Int])
+    testTypedEEGreedySoftmax("IDI", 1000, arbitrary[Int], arbitrary[Double], Gen.pick(5, (0 until 1000).toSet))
 
 }
