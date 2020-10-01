@@ -75,15 +75,15 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
         generator
     }
 
-    private def report(eta: Double, rounds: List[(Double, Int)], tests:List[Boolean], ensemble: EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double]): Unit = {
+    private def report(eta: Double, rounds: List[(Any, Any)], tests:List[Boolean], rewardsMap: List[(Any, Any)]): Unit = {
         println("-----")
-        println(ensemble.getModelRewardsMap)
+        println(rewardsMap.toMap)
         println(f"eta: $eta")
         println(rounds.map(_._2).groupBy(identity).mapValues(_.size).mapValues(1000*_/rounds.length).toMap)
         tests.map(println)
     }
 
-    val generator =  makeGenerator(arbitrary[Int], arbitrary[Double], arbitrary[Double])
+    val generator =  makeGenerator(arbitrary[String], arbitrary[Double], arbitrary[Double])
 
     val nActions = 1000
     property("proportions of model selections correspond to eta value - initial reward") = forAll(generator){
@@ -98,7 +98,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
             val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
             val result = test1 && test2 
 
-            if(result == false) report(eta, rounds.toList, List(test1, test2), ensemble)
+            if(result == false) report(eta, rounds.toList, List(test1, test2), ensemble.getModelRewardsMap.toList)
             result
         }
     }
@@ -117,7 +117,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
             val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
             val result = test1 && test2
 
-            if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble)
+            if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble.getModelRewardsMap.toList)
             result
         }
     }
