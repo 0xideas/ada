@@ -82,44 +82,49 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
         println(rounds.map(_._2).groupBy(identity).mapValues(_.size).mapValues(1000*_/rounds.length).toMap)
         tests.map(println)
     }
-
-    val generator =  makeGenerator(arbitrary[String], arbitrary[Double], arbitrary[Double])
-
-    val nActions = 1000
-    property("proportions of model selections correspond to eta value - initial reward") = forAll(generator){
-        tuple => {
-            val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
     
-            val rounds = for {
-                i <- (0 until nActions)
-            } yield( ensemble.act(i))
+    def testTypedEEGreedySoftmax[ModelId, ModelData, ModelAction](name:String, nActions: Int, idGenerator: Gen[ModelId], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
+        val generator = makeGenerator(arbitrary[String], arbitrary[Double], arbitrary[Double])
 
-            val test1 = isclose(rounds.count(_._2 == id3).toDouble, nActions*(1-eta))
-            val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
-            val result = test1 && test2 
+        property(name + " - proportions of model selections correspond to eta value - initial reward") = forAll(generator){
+            tuple => {
+                val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
 
-            if(result == false) report(eta, rounds.toList, List(test1, test2), ensemble.getModelRewardsMap.toList)
-            result
+                val rounds = for {
+                    i <- (0 until nActions)
+                } yield( ensemble.act(i))
+
+                val test1 = isclose(rounds.count(_._2 == id3).toDouble, nActions*(1-eta))
+                val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
+                val result = test1 && test2 
+
+                if(result == false) report(eta, rounds.toList, List(test1, test2), ensemble.getModelRewardsMap.toList)
+                result
+            }
+        }
+        property(name + " - proportions of model selections correspond to eta value - after learning") = forAll(generator){
+            tuple => {
+                val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
+
+                ensemble.learn(0, const1, any => true)
+
+                val rounds = for {
+                    i <- (0 until nActions)
+                } yield( ensemble.act(i))
+
+                val test1 = isclose(rounds.count(_._2 == id1).toDouble, nActions*(1-eta))
+                val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
+                val result = test1 && test2
+
+                if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble.getModelRewardsMap.toList)
+                result
+            }
         }
     }
+    val generators = List( ("modelId -> String, ModelData -> Double, ModelData -> Double",  makeGenerator(arbitrary[String], arbitrary[Double], arbitrary[Double])),
+                           ("modelId -> String, ModelData -> Double, ModelData -> Double",  makeGenerator(arbitrary[Int], arbitrary[Double], arbitrary[Int])))
 
-    property("proportions of model selections correspond to eta value - after learning") = forAll(generator){
-        tuple => {
-            val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
-
-            ensemble.learn(0, const1, any => true)
-
-            val rounds = for {
-                i <- (0 until nActions)
-            } yield( ensemble.act(i))
-
-            val test1 = isclose(rounds.count(_._2 == id1).toDouble, nActions*(1-eta))
-            val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
-            val result = test1 && test2
-
-            if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble.getModelRewardsMap.toList)
-            result
-        }
-    }
+    testTypedEEGreedySoftmax("SDD", 1000, arbitrary[String], arbitrary[Double], arbitrary[Double])
+    testTypedEEGreedySoftmax("IDI", 1000, arbitrary[String], arbitrary[Int], arbitrary[Int])
 
 }
