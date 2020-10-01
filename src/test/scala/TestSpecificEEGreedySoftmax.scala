@@ -49,10 +49,10 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
         val generator = for{
             modelData <- dataGenerator
             const1 <- actionGenerator
-            const2 <- actionGenerator
+            const2 <- actionGenerator suchThat(_ != const1)
             id1 <- idGenerator
-            id2 <- idGenerator
-            id3 <- idGenerator
+            id2 <- idGenerator suchThat(_ != id1)
+            id3 <- idGenerator suchThat(id => id != id1 && id != id2)
             etaSource <- Gen.choose(1, 1000)
         } yield {
             val eta = etaSource.toDouble/1500.0
@@ -83,7 +83,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
         tests.map(println)
     }
 
-    val generator = makeGenerator(arbitrary[Int], arbitrary[Double], arbitrary[Double])
+    val generator =  makeGenerator(arbitrary[Int], arbitrary[Double], arbitrary[Double])
 
     val nActions = 1000
     property("proportions of model selections correspond to eta value - initial reward") = forAll(generator){
@@ -96,7 +96,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
 
             val test1 = isclose(rounds.count(_._2 == id3).toDouble, nActions*(1-eta))
             val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
-            val result = test1 && test2 || ensemble.getModelRewardsMap.toList.length != 3
+            val result = test1 && test2 
 
             if(result == false) report(eta, rounds.toList, List(test1, test2), ensemble)
             result
@@ -115,7 +115,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
 
             val test1 = isclose(rounds.count(_._2 == id1).toDouble, nActions*(1-eta))
             val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
-            val result = test1 && test2 || ensemble.getModelRewardsMap.toList.length != 3
+            val result = test1 && test2
 
             if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble)
             result
