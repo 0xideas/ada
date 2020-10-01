@@ -13,7 +13,7 @@ import epsilon.generators.{AutoregressionGenerator, ConstantGenerator}
 import epsilon.generators.TimeseriesGenerator
 import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonLearner, Model}
 
-class TestEpsilonEnsembleGreedySoftmax extends Properties("Test") {
+class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
     def isclose(n1: Double, n2: Double): Boolean = {
         math.abs(n1 - n2) <= (math.max(math.abs(n1), math.abs(n2)) * 0.1) + 0.05
