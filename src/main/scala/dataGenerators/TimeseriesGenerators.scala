@@ -3,7 +3,11 @@ package epsilon.generators
 import epsilon.models.SimpleLinearRegression
 import java.sql.Time
 
-trait TimeseriesGenerator{
+trait Generator[ModelAction]{
+	def next: ModelAction
+}
+
+trait TimeseriesGenerator extends Generator[Double]{
 	def next: Double
 }
 
@@ -30,7 +34,7 @@ class SineGenerator(amplitude: Double = 1.0, resolution: Double = 100) extends T
 	} 
 }
 
-class ConstantGenerator(const: Double) extends  TimeseriesGenerator {
-    def next: Double = const
+class ConstantGenerator[ModelAction](const: ModelAction) extends  Generator[ModelAction]{
+    def next: ModelAction = const
 } 
 
