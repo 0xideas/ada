@@ -70,7 +70,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
                                                                     aggRew => aggRew,
                                                                     MutableMap(id1 -> 1.0, id2 -> 1.0, id3 -> 3.0))
             
-            (eta, (id1, id2, id3), (generator, models, ensemble))
+            (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble))
         }
         generator
     }
@@ -88,7 +88,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
     val nActions = 1000
     property("proportions of model selections correspond to eta value - initial reward") = forAll(generator){
         tuple => {
-            val (eta, (id1, id2, id3), (generator, models, ensemble)) = tuple
+            val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
     
             val rounds = for {
                 i <- (0 until nActions)
@@ -96,34 +96,29 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
 
             val test1 = isclose(rounds.count(_._2 == id3).toDouble, nActions*(1-eta))
             val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
-
             val result = test1 && test2 || ensemble.getModelRewardsMap.toList.length != 3
 
             if(result == false) report(eta, rounds.toList, List(test1, test2), ensemble)
-
             result
         }
     }
 
-    property("proportions of model selections correspond to eta value - after learning") = forAll(constEta){
+    property("proportions of model selections correspond to eta value - after learning") = forAll(generator){
         tuple => {
-            val (const, eta) = tuple
-            require(eta >= 0)
+            val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
 
-            val (generator, models, ensemble) = getConstObjects(const, eta)
-
-            ensemble.learn(0, const, any => true)
+            ensemble.learn(0, const1, any => true)
 
             val rounds = for {
                 i <- (0 until nActions)
             } yield( ensemble.act(i))
 
-            val test1 = isclose(rounds.count(_._2 == 1).toDouble, nActions*(1-eta))
-            val test2 = isclose(rounds.count(t => t._2 == 0).toDouble/rounds.length, rounds.count(t => t._2 == 2).toDouble/rounds.length)
+            val test1 = isclose(rounds.count(_._2 == id1).toDouble, nActions*(1-eta))
+            val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
+            val result = test1 && test2 || ensemble.getModelRewardsMap.toList.length != 3
 
-            if ((test1 && test2) == false) report(eta, rounds.toList, List(test1, test2), ensemble)
-
-            test1 && test2
+            if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble)
+            result
         }
     }
 
