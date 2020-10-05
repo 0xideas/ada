@@ -7,7 +7,7 @@ import epsilon._
 
 abstract class EpsilonEnsembleGreedySoftmax[ModelId, ModelData, ModelAction, AggregateReward](epsilon: Double,
     models: Map[ModelId, Model[ModelData, ModelAction]], draw: AggregateReward => Double) 
-    extends EpsilonEnsembleInterface(epsilon, models, draw) {
+    extends EpsilonEnsembleInterface(models, draw) {
 
     private val idToModel: Map[ModelId, Model[ModelData, ModelAction]] = models
     private val modelToId: Map[Model[ModelData, ModelAction], ModelId] = models.map{ case(k, v) => (v, k)}

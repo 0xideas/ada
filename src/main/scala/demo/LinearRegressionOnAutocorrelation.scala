@@ -1,10 +1,13 @@
 package epsilon
 
-import plotting.Chart
-
 import epsilon.models.SimpleAutoRegressionModel
 import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.generators.AutoregressionGenerator
+
+
+import plotting.Chart
+
+
 
 object DemoAutocorrelation{
     val models = List(new SimpleAutoRegressionModel(3),

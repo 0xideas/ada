@@ -97,11 +97,10 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
             }
         }
     }
-    val generators = List( ("modelId -> String, ModelData -> Double, ModelData -> Double",  makeGenerator(arbitrary[String], arbitrary[Double], arbitrary[Double])),
-                           ("modelId -> String, ModelData -> Double, ModelData -> Double",  makeGenerator(arbitrary[Int], arbitrary[Double], arbitrary[Int])))
 
+    //these are the actual test executions
     testTypedEEGreedySoftmax("SDD", 1000, arbitrary[String], arbitrary[Double], arbitrary[Double])
     testTypedEEGreedySoftmax("SII", 1000, arbitrary[String], arbitrary[Int], arbitrary[Int])
-    testTypedEEGreedySoftmax("IDI", 1000, arbitrary[Int], arbitrary[Double], Gen.pick(5, (0 until 1000).toSet))
+    testTypedEEGreedySoftmax("IDIX", 1000, arbitrary[Int], arbitrary[Double], Gen.pick(5, (0 until 1000).toSet))
 
 }

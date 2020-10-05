@@ -7,7 +7,7 @@ trait Model[ModelData, ModelAction]{
 }
 
 abstract class EpsilonEnsembleInterface[ModelId, ModelData, ModelAction, AggregateReward]
-    (epsilon: Double, models: Map[ModelId, Model[ModelData, ModelAction]], draw: AggregateReward => Double) {
+    (models: Map[ModelId, Model[ModelData, ModelAction]], draw: AggregateReward => Double) {
     def act(data: ModelData): (ModelAction, ModelId)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
     def update(modelId: ModelId, reward: Reward): Unit
