@@ -20,7 +20,7 @@ object DemoSine{
                                                                newReward=(aggRew, rew) => rew,
                                                                evaluationFn=evaluationFn,
                                                                draw=(aggRew:Double) => aggRew,
-                                                               initAggregateReward=0.0)
+                                                               initAggregateReward=1.0)
 
     val generator = new SineGenerator(2.8, 150)
 

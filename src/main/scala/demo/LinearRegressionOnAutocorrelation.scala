@@ -17,7 +17,7 @@ object DemoAutocorrelation{
                                                                (aggRew, rew) => rew,
                                                                evaluationFn,
                                                                aggRew => aggRew,
-                                                               0.0)
+                                                               1.0)
 
     val generator = new AutoregressionGenerator(10, 0.2)
 

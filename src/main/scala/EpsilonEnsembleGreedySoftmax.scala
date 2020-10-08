@@ -22,7 +22,7 @@ abstract class EpsilonEnsembleGreedySoftmax[ModelId, ModelData, ModelAction, Agg
 
 
     protected val rnd = new scala.util.Random(101)
-    def exploreSoftmax(aggregateRewardsDouble: List[(ModelId, Double)], data: ModelData): (ModelAction, ModelId) = {
+    def exploreWithSoftmax(aggregateRewardsDouble: List[(ModelId, Double)], data: ModelData): (ModelAction, ModelId) = {
         val totalReward: Double = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
         printEpsilon(totalReward.toString)
         val cumulativeProb: List[(Probability, Probability)] = aggregateRewardsDouble.scanLeft((0.0, 0.0))((acc, item) =>  (acc._2, acc._2 + item._2/totalReward)).tail
@@ -47,7 +47,7 @@ abstract class EpsilonEnsembleGreedySoftmax[ModelId, ModelData, ModelAction, Agg
             val selectedModel = getModel(selectedModelId)
             (selectedModel.act(data), selectedModelId)
         }
-        else exploreSoftmax(modelsSorted.tail, data)
+        else exploreWithSoftmax(modelsSorted.tail, data)
     }
 
 }
