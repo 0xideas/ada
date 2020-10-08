@@ -1,6 +1,6 @@
 package epsilon.demos
 
-import epsilon.models.SimpleAutoRegressionModel
+import epsilon.models.{SimpleAutoRegressionModel, DummyModel}
 import epsilon.ensembles.{EpsilonEnsembleThompsonSamplingLocal, BetaDistribution}
 import epsilon.generators.AutoregressionGenerator
 
@@ -13,14 +13,14 @@ object DemoAutocorrelationWithThompsonSampling{
                     new SimpleAutoRegressionModel(10),
                      new SimpleAutoRegressionModel(30))
 
-    val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
+    val evaluationFn = (action: Double, correctAction: Double) => math.max(0.0, (20.0-math.pow(action-correctAction, 2))/20)
     val ensemble = EpsilonEnsembleThompsonSamplingLocal[Int, Double, Double](
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
                                                                (prior, rew) => {prior.update(rew); prior},
                                                                evaluationFn,
-                                                               1, 1)
+                                                               100, 100)
 
-    val generator = new AutoregressionGenerator(10, 0.2)
+    val generator = new AutoregressionGenerator(3, 0.2)
 
     
     def run(): Unit = {
@@ -38,11 +38,10 @@ object DemoAutocorrelationWithThompsonSampling{
             next = generator.next
 
             val (action, selectedModel) = ensemble.act(-999)
-
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
                 rewards = rewards.zipWithIndex.map{case(r, i) => {
-                    val rewardString = ensemble.getModelRewardsMap(i).draw.toInt.toString
+                    val rewardString = (ensemble.getModelRewardsMap(i).draw *100).toInt.toString
                     if (rewardString.length == 1) " " + rewardString :: r
                     else rewardString :: r
                     }
@@ -52,7 +51,7 @@ object DemoAutocorrelationWithThompsonSampling{
 
             //ensemble.update(selectedModel, action, next )
             dataRun = next :: dataRun
-            ensemble.learn(-999, next, aw => true)
+            ensemble.update(selectedModel, action, next)
 
             i = i + 1.0
         }

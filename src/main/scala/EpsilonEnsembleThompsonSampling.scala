@@ -14,11 +14,19 @@ trait Distribution[Reward <: Double]{
 }
 
 class BetaDistribution[Reward <: Double](private var alpha: Double, private var beta: Double)
-        extends Beta(alpha, beta) with Distribution[Reward]{
-    override def update(reward:Reward):Unit = {
+    extends Distribution[Reward]{
+    private var betaDistribution = Beta(alpha, beta)
+    override def toString: String = {
+        f"alpha: $alpha beta: $beta"
+    }
+
+    def draw = betaDistribution.draw()
+
+    def update(reward:Reward):Unit = {
         val rewardNormed = math.max(math.min(reward, 1), 0)
         alpha = alpha + rewardNormed
         beta = beta + (1.0-rewardNormed)
+        betaDistribution = Beta(alpha, beta)
     }
 }
 
@@ -38,9 +46,14 @@ abstract class EpsilonEnsembleThompsonSampling[ModelId, ModelData, ModelAction, 
     def update(modelId: ModelId, reward: Reward): Unit
 
     def actRoot(data: ModelData, modelRewards: ModelId => Distr): (ModelAction, ModelId) = {
-        val modelsSorted = modelIds.map(modelId => (modelId, draw(modelRewards(modelId))))
-                                        .toList
-                                        .sortWith(_._2 > _._2)
+        val modelsSorted = modelIds.map(modelId => {
+                                        val reward = draw(modelRewards(modelId))
+                                        val rewardPrint = (reward * 10).toInt
+                                        //println(f"$modelId: $rewardPrint")
+                                        (modelId, reward)
+                                    }) 
+                                    .toList
+                                    .sortWith(_._2 > _._2)
 
         val selectedModelId = modelsSorted.head._1
         val selectedModel = getModel(selectedModelId)
@@ -87,7 +100,7 @@ object EpsilonEnsembleThompsonSamplingLocal {
                 evaluationFn: (ModelAction, ModelAction) => Reward,
                 alpha: Double,
                 beta: Double): EpsilonEnsembleThompsonSamplingLocal[ModelId, ModelData, ModelAction] = {
-        val modelRewardsMap = MutableMap(models.keys.toList.zip(List.fill(models.size)(new BetaDistribution[Reward](alpha, beta))):_*)
+        val modelRewardsMap = MutableMap(models.keys.toList.map{key => (key,new BetaDistribution[Reward](alpha, beta))}:_*)
         new EpsilonEnsembleThompsonSamplingLocal[ModelId, ModelData, ModelAction](models,
             newReward,
             evaluationFn,
