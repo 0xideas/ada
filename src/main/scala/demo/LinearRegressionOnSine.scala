@@ -1,4 +1,4 @@
-package epsilon
+package epsilon.demos
 
 import epsilon.models.SimpleAutoRegressionModel
 import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal

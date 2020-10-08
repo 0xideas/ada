@@ -1,23 +1,24 @@
 package epsilon.demos
 
 import epsilon.models.SimpleAutoRegressionModel
-import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
+import epsilon.ensembles.{EpsilonEnsembleThompsonSamplingLocal, BetaDistribution}
 import epsilon.generators.AutoregressionGenerator
 
 import plotting.Chart
 
-object DemoAutocorrelation{
+
+
+object DemoAutocorrelationWithThompsonSampling{
     val models = List(new SimpleAutoRegressionModel(3),
                     new SimpleAutoRegressionModel(10),
                      new SimpleAutoRegressionModel(30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](0.0,
+    val ensemble = EpsilonEnsembleThompsonSamplingLocal[Int, Double, Double](
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               (aggRew, rew) => rew,
+                                                               (prior, rew) => {prior.update(rew); prior},
                                                                evaluationFn,
-                                                               aggRew => aggRew,
-                                                               0.0)
+                                                               1, 1)
 
     val generator = new AutoregressionGenerator(10, 0.2)
 
@@ -41,7 +42,7 @@ object DemoAutocorrelation{
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
                 rewards = rewards.zipWithIndex.map{case(r, i) => {
-                    val rewardString = ensemble.getModelRewardsMap(i).toInt.toString
+                    val rewardString = ensemble.getModelRewardsMap(i).draw.toInt.toString
                     if (rewardString.length == 1) " " + rewardString :: r
                     else rewardString :: r
                     }

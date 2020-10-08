@@ -1,6 +1,6 @@
-package epsilon
+package epsilon.demos
 
-import epsilon.DemoAutocorrelation
+import epsilon.demos.{DemoAutocorrelationWithThompsonSampling => Demo}
 object Main extends App{
-    DemoAutocorrelation.run()
+    Demo.run()
 }
