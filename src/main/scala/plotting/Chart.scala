@@ -30,7 +30,7 @@ class Chart(chars : ListBuffer[ListBuffer[String]],
 }
 object Chart{
     def apply(top: Int, bottom: Int, left: Int, right: Int, width: Int = 150, height: Int = 40): Chart = {
-        val chars= ListBuffer.fill(height-1)(ListBuffer("|") :++ ListBuffer.fill(width-1)(" ")) :+ (ListBuffer("|") :++ ListBuffer.fill(width-1)("_"))
+        val chars= ListBuffer.fill(height-1)(ListBuffer("|") ++: ListBuffer.fill(width-1)(" ")) :+ (ListBuffer("|") ++: ListBuffer.fill(width-1)("_"))
         top.toString.toList.zipWithIndex.map{ case(c, i) => chars(0)(i) = c.toString}
         (bottom.toString + "/" + left.toString).toList.zipWithIndex.map{ case(c, i) => chars(height-1)(i) = c.toString}
         new Chart(chars, top, bottom, left, right, width, height)

@@ -41,9 +41,9 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
 
             val ensemble = EpsilonEnsembleGreedySoftmaxLocal[ModelId, ModelData, ModelAction, Double](eta,
                                                                     Map(id1 -> models(0), id2 -> models(1), id3 -> models(2)),
-                                                                    (aggRew, rew) => rew,
-                                                                    evaluationFn[ModelAction],
-                                                                    aggRew => aggRew,
+                                                                    (aggRew:Double, rew) => rew,
+                                                                    evaluationFn[ModelAction](_,_),
+                                                                    (aggRew:Double) => aggRew,
                                                                     MutableMap(id1 -> 1.0, id2 -> 1.0, id3 -> 3.0))
             
             (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble))

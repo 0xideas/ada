@@ -14,9 +14,9 @@ object DemoAutocorrelation{
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
     val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](0.0,
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               (aggRew, rew) => rew,
+                                                               (aggRew:Double, rew) => rew,
                                                                evaluationFn,
-                                                               aggRew => aggRew,
+                                                               (aggRew:Double) => aggRew,
                                                                1.0)
 
     val generator = new AutoregressionGenerator(10, 0.2)
@@ -64,10 +64,7 @@ object DemoAutocorrelation{
         println("selected model")
         println(" " + selectedModels.reverse.mkString(" "))
         println("model frequencies")
-        println(selectedModels.reverse.groupBy(identity).view.mapValues(_.size).toMap.toList.sortWith(_._2 > _._2).map{case(a,b) => s"Model $a -> $b"}.mkString("\n"))
-
-        //val first150 = dataRun.take(150)
-        //println("\n" + Chart(first150.max.toInt, first150.min.toInt, 0, first150.length).plotLine(first150, "F").render())
+        println(selectedModels.reverse.groupBy(identity).view.map{case(k,v) => (k, v.size)}.toMap.toList.sortWith(_._2 > _._2).map{case(a,b) => s"Model $a -> $b"}.mkString("\n"))
 
     }
 
