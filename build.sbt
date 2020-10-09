@@ -1,8 +1,9 @@
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.12"
 
 libraryDependencies  ++= Seq(
   "org.apache.spark" %% "spark-core" % "2.4.3",
   "org.apache.spark" %% "spark-sql" % "2.4.3",
+  "org.apache.spark" %% "spark-mllib" % "3.0.1",
   "org.scalacheck" %% "scalacheck" % "1.14.1",
   "org.scalanlp" %% "breeze" % "1.1",
   "org.scalanlp" %% "breeze-natives" % "1.1",
