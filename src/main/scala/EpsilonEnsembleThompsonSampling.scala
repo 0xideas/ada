@@ -48,8 +48,6 @@ abstract class EpsilonEnsembleThompsonSampling[ModelId, ModelData, ModelAction, 
     def actRoot(data: ModelData, modelRewards: ModelId => Distr): (ModelAction, ModelId) = {
         val modelsSorted = modelIds.map(modelId => {
                                         val reward = draw(modelRewards(modelId))
-                                        val rewardPrint = (reward * 10).toInt
-                                        //println(f"$modelId: $rewardPrint")
                                         (modelId, reward)
                                     }) 
                                     .toList
