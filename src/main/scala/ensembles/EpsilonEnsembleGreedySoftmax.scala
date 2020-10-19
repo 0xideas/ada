@@ -37,9 +37,6 @@ abstract class EpsilonEnsembleGreedySoftmax[ModelID, ModelData, ModelAction, Agg
 }
 
 
-
-
-
 class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward]
     (epsilon: Double,
      models: Map[ModelID, Model[ModelData, ModelAction]],
@@ -73,7 +70,7 @@ object EpsilonEnsembleGreedySoftmaxLocal {
                                       updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward,
                                       evaluationFn: (ModelAction, ModelAction) => Reward,
                                       draw: AggregateReward => Double,
-                                      initAggregateReward: AggregateReward): EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction,   AggregateReward] = {
+                                      initAggregateReward: AggregateReward): EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward] = {
         val modelRewardsMap = MutableMap(models.keys.toList.zip(List.fill(models.size)(initAggregateReward)):_*)
         new EpsilonEnsembleGreedySoftmaxLocal(epsilon, models, updateAggregateRewardFn, evaluationFn, draw, modelRewardsMap)
     }

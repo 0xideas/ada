@@ -18,7 +18,6 @@ abstract class EpsilonEnsembleInterface[ModelID, ModelData, ModelAction, Aggrega
     def update(modelId: ModelID, reward: Reward): Unit
     def update(modelId: ModelID, action: ModelAction, optimalAction: ModelAction): Unit = update(modelId, evaluate(action, optimalAction))
 
-
 }
 
 trait EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, AggregateReward]

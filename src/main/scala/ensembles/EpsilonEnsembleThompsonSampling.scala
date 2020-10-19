@@ -1,34 +1,13 @@
 package epsilon.ensembles
 
 import scala.collection.mutable.{Map => MutableMap}
-import breeze.stats.distributions.{Beta, Bernoulli}
 
 
 import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonEnsemblePassive, Model}
 import epsilon._
+import epsilon.distributions.{Distribution, BetaDistribution}
 
 
-trait Distribution[Reward <: Double]{
-    def draw: Double
-    def update(reward: Reward): Unit
-}
-
-class BetaDistribution[Reward <: Double](private var alpha: Double, private var beta: Double)
-    extends Distribution[Reward]{
-    private var betaDistribution = Beta(alpha, beta)
-    override def toString: String = {
-        f"alpha: $alpha beta: $beta"
-    }
-
-    def draw = betaDistribution.draw()
-
-    def update(reward:Reward):Unit = {
-        val rewardNormed = math.max(math.min(reward, 1), 0)
-        alpha = alpha + rewardNormed
-        beta = beta + (1.0-rewardNormed)
-        betaDistribution = Beta(alpha, beta)
-    }
-}
 
 abstract class EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: Distribution[Reward] ](
     models: Map[ModelID, Model[ModelData, ModelAction]], draw: Distr => Double = (distr:Distr) => distr.draw) 

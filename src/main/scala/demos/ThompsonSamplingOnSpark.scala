@@ -6,7 +6,8 @@ import org.apache.spark.sql.{Dataset, Row}
 import org.apache.spark.ml.feature.VectorAssembler
 
 import epsilon.models.{LinearRegressionEE, LinearRegressionModelEE}
-import epsilon.ensembles.{EpsilonEnsembleThompsonSamplingLocal, BetaDistribution}
+import epsilon.ensembles.EpsilonEnsembleThompsonSamplingLocal
+import epsilon.distributions.BetaDistribution
 import epsilon.generators.AutoregressionGenerator
 import plotting.Chart
 

@@ -1,7 +1,8 @@
 package epsilon.demos
 
 import epsilon.models.{SimpleAutoRegressionModel, DummyModel}
-import epsilon.ensembles.{EpsilonEnsembleThompsonSamplingLocal, BetaDistribution}
+import epsilon.ensembles.EpsilonEnsembleThompsonSamplingLocal
+import epsilon.distributions.BetaDistribution
 import epsilon.generators.AutoregressionGenerator
 
 import plotting.Chart
