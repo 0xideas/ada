@@ -41,7 +41,7 @@ abstract class EpsilonEnsembleThompsonSampling[ModelId, ModelData, ModelAction, 
     def getModelId(model: Model[ModelData, ModelAction]): ModelId = modelToId(model)
     def getModel(id: ModelId): Model[ModelData, ModelAction]  = idToModel(id)
 
-    def act(data: ModelData): (ModelAction, ModelId)
+    def actWithID(data: ModelData): (ModelAction, ModelId)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
     def update(modelId: ModelId, reward: Reward): Unit
 
@@ -67,7 +67,7 @@ class EpsilonEnsembleThompsonSamplingGeneral[ModelId, ModelData, ModelAction, Di
 
     def update(modelId: ModelId, reward: Reward): Unit =  {modelRewards(modelId).update(reward)}
 
-    def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+    def actWithID(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
 }
 
@@ -83,7 +83,7 @@ class EpsilonEnsembleThompsonSamplingLocal[ModelId, ModelData, ModelAction]
     def getModelRewardsMap = modelRewardsMap
     val modelRewards = (modelId) => modelRewardsMap(modelId)
 
-    def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+    def actWithID(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
     def update(modelId: ModelId, reward: Reward): Unit =  {modelRewardsMap(modelId).update(reward)}
     def learn(data: ModelData,

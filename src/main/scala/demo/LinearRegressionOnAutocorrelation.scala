@@ -36,7 +36,7 @@ object DemoAutocorrelation{
             models.zipWithIndex.map{ case(model, i) => model.fitReverse(dataRun.take(model.steps))}
             next = generator.next
 
-            val (action, selectedModel) = ensemble.act(-999)
+            val (action, selectedModel) = ensemble.actWithID(-999)
 
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}

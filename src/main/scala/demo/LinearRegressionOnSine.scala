@@ -32,7 +32,7 @@ object DemoSine{
         while(i < 1000){
             print("")
             next = generator.next
-            val (action, selectedModel) = ensemble.act(-999)
+            val (action, selectedModel) = ensemble.actWithID(-999)
             ensemble.update(selectedModel, action, next )
             //ensemble.learn(-999, next, aw => true)
             i = i + 1.0

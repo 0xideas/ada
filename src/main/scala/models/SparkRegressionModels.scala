@@ -33,24 +33,3 @@ class LinearRegressionEE extends LinearRegression{
     override def fit(dataset: Dataset[_], paramMap: ParamMap): LinearRegressionModelEE = new LinearRegressionModelEE(super.fit(dataset, paramMap), this)
     override def fit(dataset: Dataset[_]): LinearRegressionModelEE =  new LinearRegressionModelEE(super.fit(dataset), this)*/
 }
-
- /*
-class SparkLinearRegressionModel {
-    implicit def toModel(m: LinearRegressionModel): LinearRegressionModelEE = new LinearRegressionModelEE(m)
-
-    val spark: SparkSession = SparkSession.builder.master("local").appName("test").getOrCreate()
-    import spark.implicits._
-
-    val lr = new LinearRegressionEE()
-
-
-    lr.setMaxIter(10)
-        .setRegParam(0.3)
-        .setElasticNetParam(0.8)
-
-    val training = spark.read.format("libsvm")
-      .load("data/mllib/sample_linear_regression_data.txt")
-
-    val model: LinearRegressionModelEE = lr.fit(training)
-
-}*/

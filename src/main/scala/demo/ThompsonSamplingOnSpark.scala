@@ -69,15 +69,15 @@ object ThompsonSamlingOnSpark{
       val incr = math.max(1, math.ceil(1000.0/150.0).toInt*2)
       var rewards: List[List[String]] = List.fill(models.length)(List())
       var selectedModels: List[String] = List()
-      while(i < 1000){
-          print("")
+      while(i < 10000){
+          print(i)
 
           data1 = assembler.transform(Seq(dataTuples.takeRight(20+i):_*).toDF("-3", "-2", "-1", "target"))
     
           next = generator.next
           dataTuples = tuplify(dataRun)
 
-          val (action, selectedModel) = ensemble.act(Vectors.dense(dataRun.takeRight(3).toArray))
+          val (action, selectedModel) = ensemble.actWithID(Vectors.dense(dataRun.takeRight(3).toArray))
           if (i % incr == 0) {
               rewards = rewards.zipWithIndex.map{case(r, i) => {
                   val rewardString = (ensemble.getModelRewardsMap(i).draw *100).toInt.toString
@@ -101,9 +101,9 @@ object ThompsonSamlingOnSpark{
       println(" " + selectedModels.reverse.mkString(" "))
       println("model frequencies")
       println(selectedModels.reverse.groupBy(identity).view.map{case(k,v) => (k, v.size)}.toMap.toList.sortWith(_._2 > _._2).map{case(a,b) => s"Model $a -> $b"}.mkString("\n"))
+      spark.close()
 
   }
-  spark.close()
 
 }
 

@@ -16,7 +16,8 @@ abstract class EpsilonEnsembleGreedySoftmax[ModelId, ModelData, ModelAction, Agg
     def getModelId(model: Model[ModelData, ModelAction]): ModelId = modelToId(model)
     def getModel(id: ModelId): Model[ModelData, ModelAction]  = idToModel(id)
 
-    def act(data: ModelData): (ModelAction, ModelId)
+    def actWithID(data: ModelData): (ModelAction, ModelId)
+
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
     def update(modelId: ModelId, reward: Reward): Unit
 
@@ -64,7 +65,8 @@ class EpsilonEnsembleGreedySoftmaxGeneral[ModelId, ModelData, ModelAction, Aggre
 
     def update(modelId: ModelId, reward: Reward): Unit = updateFn(modelId, reward)
 
-    def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+    def actWithID(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
 }
 
@@ -83,7 +85,8 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelId, ModelData, ModelAction, Aggrega
     val modelRewards = (modelId) => modelRewardsMap(modelId)
 
 
-    def act(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+    def actWithID(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
     def update(modelId: ModelId, reward: Reward): Unit = {
         val oldReward = modelRewards(modelId)
