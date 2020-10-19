@@ -52,7 +52,7 @@ object DemoAutocorrelationWithThompsonSampling{
             //ensemble.update(selectedModel, action, next )
             dataRun = next :: dataRun
             //ensemble.update(selectedModel, action, next)
-            ensemble.learn(-999, next, aw => true)
+            ensemble.updateAll(-999, next)
 
             i = i + 1.0
         }

@@ -6,35 +6,32 @@ trait Model[ModelData, ModelAction]{
     def act(data: ModelData): ModelAction
 }
 
-abstract class EpsilonEnsembleInterface[ModelId, ModelData, ModelAction, AggregateReward]
-    (models: Map[ModelId, Model[ModelData, ModelAction]], draw: AggregateReward => Double) extends Model[ModelData, ModelAction]{
+abstract class EpsilonEnsembleInterface[ModelID, ModelData, ModelAction, AggregateReward]
+    (models: Map[ModelID, Model[ModelData, ModelAction]], draw: AggregateReward => Double) extends Model[ModelData, ModelAction]{
+
+    def getModel(id: ModelID): Model[ModelData, ModelAction]  = models(id)
+
     def act(data: ModelData): ModelAction = actWithID(data)._1
-    def actWithID(data: ModelData): (ModelAction, ModelId)
+    def actWithID(data: ModelData): (ModelAction, ModelID)
+
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
-    def update(modelId: ModelId, reward: Reward): Unit
+    def update(modelId: ModelID, reward: Reward): Unit
+    def update(modelId: ModelID, action: ModelAction, optimalAction: ModelAction): Unit = update(modelId, evaluate(action, optimalAction))
 
-    def update(modelId: ModelId, action: ModelAction, optimalAction: ModelAction): Unit = update(modelId, evaluate(action, optimalAction))
-
-    def getModelId(model: Model[ModelData, ModelAction]): ModelId
-    def getModel(modelId: ModelId): Model[ModelData, ModelAction]
 
 }
 
+trait EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, AggregateReward]
+    extends EpsilonEnsembleInterface[ModelID, ModelData, ModelAction, AggregateReward]{
+    def updateAll(data: ModelData,
+            optimalAction: ModelAction): Unit
 
-trait EpsilonLearner[ModelId, ModelData, ModelAction, AggregateReward]
-    extends EpsilonEnsembleInterface[ModelId, ModelData, ModelAction, AggregateReward]{
-    def learn(data: ModelData,
-            optimalAction: ModelAction,
-            which: AggregateReward => Boolean ): Unit
-
-    def learnRoot(modelIds: Iterable[ModelId],
+    def _updateAllImpl(modelIds: Iterable[ModelID],
                     data: ModelData,
                     optimalAction: ModelAction,
-                    which: AggregateReward => Boolean,
-                    evaluation: (ModelAction, ModelAction) => Reward,
-                    modelRewards: ModelId => AggregateReward): Unit = {
+                    evaluationFn: (ModelAction, ModelAction) => Reward,
+                    modelRewards: ModelID => AggregateReward): Unit = {
         modelIds.map(modelId => (modelId, modelRewards(modelId)))
-                .filter{ case(modelId, reward) => which(reward)}
                 .map{    case(modelId, _) => (modelId, getModel(modelId)) }
                 .map{    case(modelId, model) => {
                     val modelAction = model.act(data)

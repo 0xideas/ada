@@ -4,7 +4,7 @@ import scala.collection.mutable.{Map => MutableMap}
 import breeze.stats.distributions.{Beta, Bernoulli}
 
 
-import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonLearner, Model}
+import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonEnsemblePassive, Model}
 import epsilon._
 
 
@@ -30,22 +30,13 @@ class BetaDistribution[Reward <: Double](private var alpha: Double, private var 
     }
 }
 
-abstract class EpsilonEnsembleThompsonSampling[ModelId, ModelData, ModelAction, Distr <: Distribution[Reward] ](
-    models: Map[ModelId, Model[ModelData, ModelAction]], draw: Distr => Double = (distr:Distr) => distr.draw) 
+abstract class EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: Distribution[Reward] ](
+    models: Map[ModelID, Model[ModelData, ModelAction]], draw: Distr => Double = (distr:Distr) => distr.draw) 
     extends EpsilonEnsembleInterface(models, draw) {
 
-    private val idToModel: Map[ModelId, Model[ModelData, ModelAction]] = models
-    private val modelToId: Map[Model[ModelData, ModelAction], ModelId] = models.map{ case(k, v) => (v, k)}
-    protected val modelIds: List[ModelId] = idToModel.keys.toList
+    protected val modelIds: List[ModelID] = models.keys.toList
 
-    def getModelId(model: Model[ModelData, ModelAction]): ModelId = modelToId(model)
-    def getModel(id: ModelId): Model[ModelData, ModelAction]  = idToModel(id)
-
-    def actWithID(data: ModelData): (ModelAction, ModelId)
-    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
-    def update(modelId: ModelId, reward: Reward): Unit
-
-    def actRoot(data: ModelData, modelRewards: ModelId => Distr): (ModelAction, ModelId) = {
+    def actRoot(data: ModelData, modelRewards: ModelID => Distr): (ModelAction, ModelID) = {
         val modelsSorted = modelIds.map(modelId => {
                                         val reward = draw(modelRewards(modelId))
                                         (modelId, reward)
@@ -57,49 +48,47 @@ abstract class EpsilonEnsembleThompsonSampling[ModelId, ModelData, ModelAction, 
         val selectedModel = getModel(selectedModelId)
         (selectedModel.act(data), selectedModelId)
     }
-
 }
 
-class EpsilonEnsembleThompsonSamplingGeneral[ModelId, ModelData, ModelAction, Distr <: Distribution[Reward]](
-                      models: Map[ModelId, Model[ModelData, ModelAction]],
-                      modelRewards: ModelId => Distr,
+class EpsilonEnsembleThompsonSamplingGeneral[ModelID, ModelData, ModelAction, Distr <: Distribution[Reward]](
+                      models: Map[ModelID, Model[ModelData, ModelAction]],
+                      modelRewards: ModelID => Distr,
                       evaluationFn: (ModelAction, ModelAction) => Reward ) extends EpsilonEnsembleThompsonSampling(models) {
 
-    def update(modelId: ModelId, reward: Reward): Unit =  {modelRewards(modelId).update(reward)}
+    def update(modelId: ModelID, reward: Reward): Unit =  {modelRewards(modelId).update(reward)}
 
-    def actWithID(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+    def actWithID(data: ModelData): (ModelAction, ModelID) = actRoot(data, modelRewards)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
 }
 
 
-class EpsilonEnsembleThompsonSamplingLocal[ModelId, ModelData, ModelAction]
-    (models: Map[ModelId, Model[ModelData, ModelAction]],
+class EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction]
+    (models: Map[ModelID, Model[ModelData, ModelAction]],
      newReward: (BetaDistribution[Reward], Reward) => BetaDistribution[Reward],
      evaluationFn: (ModelAction, ModelAction) => Reward,
-     modelRewardsMap: MutableMap[ModelId, BetaDistribution[Reward]])
-     extends EpsilonEnsembleThompsonSampling[ModelId, ModelData, ModelAction, BetaDistribution[Reward]](models)
-     with EpsilonLearner[ModelId, ModelData, ModelAction, BetaDistribution[Reward]]{
+     modelRewardsMap: MutableMap[ModelID, BetaDistribution[Reward]])
+     extends EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, BetaDistribution[Reward]](models)
+     with EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, BetaDistribution[Reward]]{
 
     def getModelRewardsMap = modelRewardsMap
     val modelRewards = (modelId) => modelRewardsMap(modelId)
 
-    def actWithID(data: ModelData): (ModelAction, ModelId) = actRoot(data, modelRewards)
+    def actWithID(data: ModelData): (ModelAction, ModelID) = actRoot(data, modelRewards)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
-    def update(modelId: ModelId, reward: Reward): Unit =  {modelRewardsMap(modelId).update(reward)}
-    def learn(data: ModelData,
-              correct: ModelAction,
-              which: BetaDistribution[Reward] => Boolean = aggReward => true): Unit = learnRoot(modelIds, data, correct, which, evaluationFn, modelRewards)
+    def update(modelId: ModelID, reward: Reward): Unit =  {modelRewardsMap(modelId).update(reward)}
+    def updateAll(data: ModelData,
+              correct: ModelAction): Unit = _updateAllImpl(modelIds, data, correct, evaluationFn, modelRewards)
 }
 
 
 object EpsilonEnsembleThompsonSamplingLocal {
-    def apply[ModelId, ModelData, ModelAction](models: Map[ModelId, Model[ModelData, ModelAction]],
+    def apply[ModelID, ModelData, ModelAction](models: Map[ModelID, Model[ModelData, ModelAction]],
                 newReward: (BetaDistribution[Reward], Reward) => BetaDistribution[Reward],
                 evaluationFn: (ModelAction, ModelAction) => Reward,
                 alpha: Double,
-                beta: Double): EpsilonEnsembleThompsonSamplingLocal[ModelId, ModelData, ModelAction] = {
+                beta: Double): EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction] = {
         val modelRewardsMap = MutableMap(models.keys.toList.map{key => (key,new BetaDistribution[Reward](alpha, beta))}:_*)
-        new EpsilonEnsembleThompsonSamplingLocal[ModelId, ModelData, ModelAction](models,
+        new EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction](models,
             newReward,
             evaluationFn,
             modelRewardsMap)

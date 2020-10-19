@@ -69,7 +69,7 @@ object ThompsonSamlingOnSpark{
       val incr = math.max(1, math.ceil(1000.0/150.0).toInt*2)
       var rewards: List[List[String]] = List.fill(models.length)(List())
       var selectedModels: List[String] = List()
-      while(i < 10000){
+      while(i < 1000){
           print(i)
 
           data1 = assembler.transform(Seq(dataTuples.takeRight(20+i):_*).toDF("-3", "-2", "-1", "target"))

@@ -11,7 +11,7 @@ import epsilon.models.{SimpleAutoRegressionModel, DummyModel, GenericDummyModel}
 import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.generators.{AutoregressionGenerator, ConstantGenerator}
 import epsilon.generators.Generator
-import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonLearner, Model}
+import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonEnsemblePassive, Model}
 
 class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
@@ -68,7 +68,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
 
                 val rounds = for {
                     i <- (0 until nActions)
-                } yield( ensemble.act(i))
+                } yield( ensemble.actWithID(i))
 
                 val test1 = isclose(rounds.count(_._2 == id3).toDouble, nActions*(1-eta))
                 val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
@@ -82,11 +82,11 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
             tuple => {
                 val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
 
-                ensemble.learn(0, const1, any => true)
+                ensemble.updateAll(0, const1)
 
                 val rounds = for {
                     i <- (0 until nActions)
-                } yield( ensemble.act(i))
+                } yield( ensemble.actWithID(i))
 
                 val test1 = isclose(rounds.count(_._2 == id1).toDouble, nActions*(1-eta))
                 val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
