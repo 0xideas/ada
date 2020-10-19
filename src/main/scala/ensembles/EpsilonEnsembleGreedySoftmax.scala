@@ -43,12 +43,10 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
      updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward,
      evaluationFn: (ModelAction, ModelAction) => Reward,
      draw: AggregateReward => Double,
-     modelRewardsMap: MutableMap[ModelID, AggregateReward])
+     val modelRewards: MutableMap[ModelID, AggregateReward])
      extends EpsilonEnsembleGreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward](epsilon, models, draw)
      with EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, AggregateReward]{
 
-    def getModelRewardsMap = modelRewardsMap
-    val modelRewards = (modelId) => modelRewardsMap(modelId)
 
 
     def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(data, modelRewards)
@@ -57,12 +55,15 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
     def update(modelId: ModelID, reward: Reward): Unit = {
         val oldReward = modelRewards(modelId)
         val newReward =  updateAggregateRewardFn(oldReward, reward)
-        modelRewardsMap(modelId) = newReward
+        modelRewards(modelId) = newReward
     }
 
     def updateAll(data: ModelData,
               correct: ModelAction): Unit = _updateAllImpl(modelIds, data, correct, evaluationFn, modelRewards)
 }
+
+
+
 
 object EpsilonEnsembleGreedySoftmaxLocal {
     def apply[ModelID, ModelData, ModelAction, AggregateReward](epsilon: Double,

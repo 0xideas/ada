@@ -74,7 +74,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
                 val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
                 val result = test1 && test2 
 
-                if(result == false) report(eta, rounds.toList, List(test1, test2), ensemble.getModelRewardsMap.toList)
+                if(result == false) report(eta, rounds.toList, List(test1, test2), ensemble.modelRewards.toList)
                 result
             }
         }
@@ -92,7 +92,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
                 val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
                 val result = test1 && test2
 
-                if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble.getModelRewardsMap.toList)
+                if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble.modelRewards.toList)
                 result
             }
         }

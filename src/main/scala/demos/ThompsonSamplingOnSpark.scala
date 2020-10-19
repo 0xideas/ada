@@ -81,7 +81,7 @@ object ThompsonSamlingOnSpark{
           val (action, selectedModel) = ensemble.actWithID(Vectors.dense(dataRun.takeRight(3).toArray))
           if (i % incr == 0) {
               rewards = rewards.zipWithIndex.map{case(r, i) => {
-                  val rewardString = (ensemble.getModelRewardsMap(i).draw *100).toInt.toString
+                  val rewardString = (ensemble.modelRewards(i).draw *100).toInt.toString
                   if (rewardString.length == 1) " " + rewardString :: r
                   else rewardString :: r
                   }
