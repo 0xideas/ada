@@ -18,7 +18,7 @@ object DemoSine{
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
     val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](epsilon=0.2,
                                                                models=models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               newReward=(aggRew:Double, rew:Reward) => rew,
+                                                               updateAggregateRewardFn=(aggRew:Double, rew:Reward) => rew,
                                                                evaluationFn=evaluationFn,
                                                                draw=(aggRew:Double) => aggRew,
                                                                initAggregateReward=1.0)
