@@ -43,20 +43,3 @@ trait LocalEnsemble[ModelID, ModelData, ModelAction, AggregateReward] {
         modelRewardsMap(modelId) = newReward
     }
 }
-
- /*
-abstract class EpsilonEnsembleInterface2[ModelID, ModelData, ModelAction, AggregateReward]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
-    draw: AggregateReward => Double,
-    modelRewards: ModelID => AggregateReward,
-    _actImpl: (ModelData, (ModelID) => AggregateReward) => (ModelAction, ModelID)) extends Model[ModelData, ModelAction]{
-
-    def getModel(id: ModelID): Model[ModelData, ModelAction]  = models(id)
-    def act(data: ModelData): ModelAction = actWithID(data)._1
-    def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(data, modelRewards)
-
-    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
-    def update(modelId: ModelID, reward: Reward): Unit
-    def update(modelId: ModelID, action: ModelAction, optimalAction: ModelAction): Unit = update(modelId, evaluate(action, optimalAction))
-
-}*/
