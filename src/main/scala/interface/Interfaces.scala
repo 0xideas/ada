@@ -8,6 +8,7 @@ trait Model[ModelData, ModelAction]{
     def act(data: ModelData): ModelAction
 }
 
+
 trait EpsilonEnsembleActive[ModelID, ModelData, ModelAction, AggregateReward]
     extends Model[ModelData, ModelAction]{
     def actWithID(data: ModelData): (ModelAction, ModelID)
