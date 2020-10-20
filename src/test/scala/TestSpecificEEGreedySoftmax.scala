@@ -11,7 +11,7 @@ import epsilon.models.{SimpleAutoRegressionModel, DummyModel, GenericDummyModel}
 import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.generators.{AutoregressionGenerator, ConstantGenerator}
 import epsilon.generators.Generator
-import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonEnsemblePassive, Model}
+import epsilon.interfaces.{EpsilonEnsembleActive, EpsilonEnsemblePassive, Model}
 
 class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 

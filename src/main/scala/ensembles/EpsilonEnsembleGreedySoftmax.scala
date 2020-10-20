@@ -1,13 +1,13 @@
 package epsilon.ensembles
 
 import scala.collection.mutable.{Map => MutableMap}
-import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonEnsemblePassive, Model}
+import epsilon.interfaces.{EpsilonEnsemblePassive, Model}
 
 import epsilon._
 
 abstract class EpsilonEnsembleGreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward](epsilon: Double,
     models: Map[ModelID, Model[ModelData, ModelAction]], draw: AggregateReward => Double) 
-    extends EpsilonEnsembleInterface(models, draw) {
+    extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, AggregateReward]{
 
     protected val modelIds: List[ModelID] = models.keys.toList
 
@@ -18,7 +18,7 @@ abstract class EpsilonEnsembleGreedySoftmax[ModelID, ModelData, ModelAction, Agg
         val modelsCumulativeProb: List[(ModelID, (Probability, Probability))] = aggregateRewardsDouble.map(_._1).zip(cumulativeProb)
         val selector = rnd.nextDouble()
         val selectedModelId: ModelID = modelsCumulativeProb.filter{case(model, bounds) => (selector >= bounds._1) && (selector <= bounds._2)}(0)._1
-        val selectedModel: Model[ModelData, ModelAction] = getModel(selectedModelId)
+        val selectedModel: Model[ModelData, ModelAction] = models(selectedModelId)
         (selectedModel.act(data), selectedModelId)
     }
 
@@ -28,7 +28,7 @@ abstract class EpsilonEnsembleGreedySoftmax[ModelID, ModelData, ModelAction, Agg
                                         .sortWith(_._2 > _._2)
         if(rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
-            val selectedModel = getModel(selectedModelId)
+            val selectedModel = models(selectedModelId)
             (selectedModel.act(data), selectedModelId)
         }
         else _exploreWithSoftmax(modelsSorted.tail, data)
@@ -59,7 +59,7 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
     }
 
     def updateAll(data: ModelData,
-              correct: ModelAction): Unit = _updateAllImpl(modelIds, data, correct, evaluationFn, modelRewards)
+              correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewards)
 }
 
 
@@ -85,6 +85,8 @@ object EpsilonEnsembleGreedySoftmaxLocal {
     }
 }
 
+
+
 //reward must be positive
 class EpsilonEnsembleGreedySoftmaxGeneral[ModelID, ModelData, ModelAction, AggregateReward]
                     (epsilon: Double,
@@ -99,4 +101,7 @@ class EpsilonEnsembleGreedySoftmaxGeneral[ModelID, ModelData, ModelAction, Aggre
     def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(data, modelRewardsFn)
 
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
+
+    def updateAll(data: ModelData,
+              correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewardsFn)
 }

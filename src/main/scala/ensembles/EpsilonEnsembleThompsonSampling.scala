@@ -3,7 +3,7 @@ package epsilon.ensembles
 import scala.collection.mutable.{Map => MutableMap}
 
 
-import epsilon.interfaces.{EpsilonEnsembleInterface, EpsilonEnsemblePassive, Model}
+import epsilon.interfaces.{EpsilonEnsembleActive, EpsilonEnsemblePassive, Model}
 import epsilon._
 import epsilon.distributions.{Distribution, BetaDistribution}
 
@@ -11,7 +11,7 @@ import epsilon.distributions.{Distribution, BetaDistribution}
 
 abstract class EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: Distribution[Reward] ](
     models: Map[ModelID, Model[ModelData, ModelAction]], draw: Distr => Double = (distr:Distr) => distr.draw) 
-    extends EpsilonEnsembleInterface(models, draw) {
+    extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, Distr] {
 
     protected val modelIds: List[ModelID] = models.keys.toList
 
@@ -24,7 +24,7 @@ abstract class EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, 
                                     .sortWith(_._2 > _._2)
 
         val selectedModelId = modelsSorted.head._1
-        val selectedModel = getModel(selectedModelId)
+        val selectedModel = models(selectedModelId)
         (selectedModel.act(data), selectedModelId)
     }
 }
@@ -43,7 +43,7 @@ class EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction]
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
     def update(modelId: ModelID, reward: Reward): Unit =  {modelRewards(modelId).update(reward)}
     def updateAll(data: ModelData,
-              correct: ModelAction): Unit = _updateAllImpl(modelIds, data, correct, evaluationFn, modelRewards)
+              correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewards)
 }
 
 
@@ -71,5 +71,7 @@ class EpsilonEnsembleThompsonSamplingGeneral[ModelID, ModelData, ModelAction, Di
 
     def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(data, modelRewards)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
+    def updateAll(data: ModelData,
+              correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewards)
 }
 
