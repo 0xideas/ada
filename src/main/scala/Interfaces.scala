@@ -1,5 +1,7 @@
 package epsilon.interfaces
 
+import scala.collection.mutable.{Map => MutableMap}
+
 import epsilon._
 
 trait Model[ModelData, ModelAction]{
@@ -30,6 +32,15 @@ trait EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, AggregateReward]
                 update(id, modelAction, optimalAction) 
             }
         } 
+    }
+}
+
+trait LocalEnsemble[ModelID, ModelData, ModelAction, AggregateReward] {
+    def updateFn(modelId: ModelID, reward: Reward, modelRewardsMap: MutableMap[ModelID,AggregateReward],
+                    updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward) = {
+        val oldReward = modelRewardsMap(modelId)
+        val newReward =  updateAggregateRewardFn(oldReward, reward)
+        modelRewardsMap(modelId) = newReward
     }
 }
 

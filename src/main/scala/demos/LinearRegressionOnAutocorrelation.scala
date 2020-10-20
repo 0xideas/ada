@@ -4,7 +4,10 @@ import epsilon.models.SimpleAutoRegressionModel
 import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.generators.AutoregressionGenerator
 
+import scala.collection.mutable.{Map => MutableMap}
+
 import plotting.Chart
+
 
 object DemoAutocorrelation{
     val models = List(new SimpleAutoRegressionModel(3),
@@ -12,12 +15,13 @@ object DemoAutocorrelation{
                      new SimpleAutoRegressionModel(30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](0.0,
-                                                               models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               (aggRew:Double, rew) => rew,
-                                                               evaluationFn,
-                                                               (aggRew:Double) => aggRew,
-                                                               1.0)
+    val ensemble = new EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](
+        models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
+        MutableMap(models.zipWithIndex.toSeq.map{case(k,v) => (v, 1.0)}:_*),
+        (aggRew:Double) => aggRew,
+        0.0,
+        evaluationFn,
+        (aggRew:Double, rew:Double) => rew)
 
     val generator = new AutoregressionGenerator(10, 0.2)
 
@@ -41,7 +45,7 @@ object DemoAutocorrelation{
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
                 rewards = rewards.zipWithIndex.map{case(r, i) => {
-                    val rewardString = ensemble.modelRewards(i).toInt.toString
+                    val rewardString = ensemble.getModelRewards(i).toInt.toString
                     if (rewardString.length == 1) " " + rewardString :: r
                     else rewardString :: r
                     }
