@@ -1,6 +1,6 @@
 package epsilon.demos
 
-import epsilon.demos.{ThompsonSamlingOnSpark=> Demo}
+import epsilon.demos.{DemoAutocorrelation=> Demo}
 object Main extends App{
     Demo.run()
 }

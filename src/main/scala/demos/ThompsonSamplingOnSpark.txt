@@ -1,4 +1,4 @@
-package epsilon.demos
+"""package epsilon.demos
 
 import org.apache.spark.ml.linalg.{Vector, Vectors}
 import org.apache.spark.ml.regression.{LinearRegression, LinearRegressionModel}
@@ -108,3 +108,4 @@ object ThompsonSamlingOnSpark{
 
 }
 
+"""
