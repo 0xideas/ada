@@ -15,3 +15,4 @@ libraryDependencies  ++= Seq(
 
 testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v", "-s")
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oF")
+

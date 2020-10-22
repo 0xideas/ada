@@ -29,7 +29,7 @@ trait EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: 
 
 
 class EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    (val models: Map[ModelID, Model[ModelData, ModelAction]],
      updateAggregateRewardFn: (BetaDistribution[Reward], Reward) => BetaDistribution[Reward],
      val evaluationFn: (ModelAction, ModelAction) => Reward,
      val modelRewards: MutableMap[ModelID, BetaDistribution[Reward]])
@@ -42,6 +42,11 @@ class EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction]
     def update(modelId: ModelID, reward: Reward): Unit =  {modelRewards(modelId).update(reward)}
     def updateAll(data: ModelData,
               correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewards)
+
+    override def report: String = {
+        val modelAttributes = (modelRewards.toList ++ models.toList.map{case(k,v) => (k, v.report)} ).groupBy(_._1).map{case(k, v) => k -> v.map(_._2).toSeq}
+        modelAttributes.mkString("\n")
+    }
 }
 
 

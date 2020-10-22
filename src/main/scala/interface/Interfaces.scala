@@ -6,6 +6,7 @@ import epsilon._
 
 trait Model[ModelData, ModelAction]{
     def act(data: ModelData): ModelAction
+    def report: String = this.toString
 }
 
 
