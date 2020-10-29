@@ -4,12 +4,34 @@ import scala.collection.mutable.{Map => MutableMap}
 import epsilon.interfaces.{EpsilonEnsemblePassive, Model, LocalEnsemble}
 
 import epsilon._
+import breeze.stats.mode
 
 
-trait GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
+trait SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
     protected val rnd = new scala.util.Random(101)
 
-    def _exploreWithSoftmax(models: Map[ModelID, Model[ModelData, ModelAction]], aggregateRewardsDouble: List[(ModelID, Double)], data: ModelData): (ModelAction, ModelID) = {
+    def _sortModel(models: Map[ModelID, Model[ModelData, ModelAction]],
+                 modelRewards: ModelID => AggregateReward,
+                 draw: AggregateReward => Double): List[(ModelID, Double)] = {
+        val modelIds = models.keys
+        val modelsSorted = modelIds.map(modelId => (modelId, draw(modelRewards(modelId))))
+                                        .toList
+                                        .sortWith(_._2 > _._2)
+        modelsSorted
+    }
+
+
+    def _selectModel(models: Map[ModelID, Model[ModelData, ModelAction]],
+            aggregateRewardsDouble: List[(ModelID, Double)],
+            data: ModelData): (ModelAction, ModelID)
+}
+
+trait ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]
+    extends SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
+
+    def _selectModel(models: Map[ModelID, Model[ModelData, ModelAction]],
+                            aggregateRewardsDouble: List[(ModelID, Double)],
+                            data: ModelData): (ModelAction, ModelID) = {
         val totalReward: Double = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
         val cumulativeProb: List[(Probability, Probability)] = aggregateRewardsDouble.scanLeft((0.0, 0.0))((acc, item) =>  (acc._2, acc._2 + item._2/totalReward)).tail
         val modelsCumulativeProb: List[(ModelID, (Probability, Probability))] = aggregateRewardsDouble.map(_._1).zip(cumulativeProb)
@@ -18,25 +40,44 @@ trait GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
         val selectedModel: Model[ModelData, ModelAction] = models(selectedModelId)
         (selectedModel.act(data), selectedModelId)
     }
+}
 
+trait Softmax[ModelID, ModelData, ModelAction, AggregateReward]
+    extends ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
+    def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
+                 modelRewards: ModelID => AggregateReward,
+                 draw: AggregateReward => Double,
+                 data: ModelData): (ModelAction, ModelID) = {
+        val modelsSorted = _sortModel(models, modelRewards, draw)
+        _selectModel(models, modelsSorted, data)
+
+    }
+
+}
+
+
+trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward] extends SelectModel[ModelID, ModelData, ModelAction, AggregateReward] {
     def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
                 modelRewards: ModelID => AggregateReward,
                 draw: AggregateReward => Double,
                 epsilon: Double,
                 data: ModelData): (ModelAction, ModelID) = {
 
-        val modelIds = models.keys
-        val modelsSorted = modelIds.map(modelId => (modelId, draw(modelRewards(modelId))))
-                                        .toList
-                                        .sortWith(_._2 > _._2)
+        val modelsSorted = _sortModel(models, modelRewards, draw)
+        
         if(rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
             val selectedModel = models(selectedModelId)
             (selectedModel.act(data), selectedModelId)
         }
-        else _exploreWithSoftmax(models, modelsSorted.tail, data)
+        else _selectModel(models, modelsSorted.tail, data)
     }
 }
+
+trait GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward] 
+    extends AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
+    with ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]
+
 
 class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],

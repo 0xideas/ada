@@ -29,7 +29,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
             id1 <- idGenerator
             id2 <- idGenerator suchThat(_ != id1)
             id3 <- idGenerator suchThat(id => id != id1 && id != id2)
-            etaSource <- Gen.choose(1, 1000)
+            etaSource <- Gen.choose(10, 1000)
         } yield {
             val eta = etaSource.toDouble/1500.0
 
