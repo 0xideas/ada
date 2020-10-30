@@ -19,7 +19,6 @@ object DemoAutocorrelationWithThompsonSampling{
     val evaluationFn = (action: Double, correctAction: Double) => math.max(0.0, (20.0-math.pow(action-correctAction, 2))/20)
     val ensemble = EpsilonEnsembleThompsonSamplingLocalBeta[Int, Double, Double](
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               (prior, rew) => {prior.update(rew); prior},
                                                                evaluationFn,
                                                                100, 100)
 
