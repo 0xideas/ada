@@ -3,13 +3,20 @@ package epsilon.distributions
 import breeze.stats.distributions.{Beta, Bernoulli}
 
 
-trait Distribution[Reward <: Double]{
+trait Distribution
+
+trait SimpleDistribution[Reward <: Double] extends Distribution{
     def draw: Double
     def update(reward: Reward): Unit
 }
 
+trait ContextualDistribution[Context, Reward <: Double] extends Distribution{
+    def draw(context: Context): Double
+    def update(context: Context, reward: Reward): Unit
+}
+
 class BetaDistribution[Reward <: Double](private var alpha: Double, private var beta: Double)
-    extends Distribution[Reward]{
+    extends SimpleDistribution[Reward]{
     private var betaDistribution = Beta(alpha, beta)
     override def toString: String = {
         f"alpha: $alpha beta: $beta"

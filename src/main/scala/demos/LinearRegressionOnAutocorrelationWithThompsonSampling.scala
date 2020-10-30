@@ -1,9 +1,11 @@
 package epsilon.demos
 
 import epsilon.models.{SimpleAutoRegressionModel, DummyModel}
-import epsilon.ensembles.EpsilonEnsembleThompsonSamplingLocal
+import epsilon.ensembles.EpsilonEnsembleThompsonSamplingLocalBeta
 import epsilon.distributions.BetaDistribution
 import epsilon.generators.AutoregressionGenerator
+import epsilon._
+import epsilon.distributions.{Distribution, BetaDistribution}
 
 import plotting.Chart
 
@@ -15,7 +17,7 @@ object DemoAutocorrelationWithThompsonSampling{
                      new SimpleAutoRegressionModel(30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(0.0, (20.0-math.pow(action-correctAction, 2))/20)
-    val ensemble = EpsilonEnsembleThompsonSamplingLocal[Int, Double, Double](
+    val ensemble = EpsilonEnsembleThompsonSamplingLocalBeta[Int, Double, Double](
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
                                                                (prior, rew) => {prior.update(rew); prior},
                                                                evaluationFn,
