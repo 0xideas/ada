@@ -6,7 +6,6 @@ import scala.collection.mutable.{Map => MutableMap}
 import epsilon.interfaces.{EpsilonEnsemblePassive, Model, LocalEnsemble}
 import epsilon._
 import epsilon.distributions.{Distribution, SimpleDistribution, BetaDistribution, ContextualDistribution}
-import distributions.RainierRegressionDistribution
 
 trait EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
     extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, Distr] {
