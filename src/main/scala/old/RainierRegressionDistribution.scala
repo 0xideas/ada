@@ -14,9 +14,10 @@ class RainierRegressionDistribution[Reward <: Double]
     private var model: Model = Model.empty
     private var sigma: Real = Exponential(1).latent
     private var mu: Real = Real.Pi
+    private var trace = ???
 
     def draw(context: Vector[Double]): Double = {
-        model.optimize(sigma)
+        trace.predict(gen0).take(1)
     }
 
     def retrain: Unit = {
@@ -33,6 +34,8 @@ class RainierRegressionDistribution[Reward <: Double]
             mu = alpha + vec.dot(betas)
             Normal(mu, sigma)
         })
+
+        trace = ???
     }
 
     def update(context: Vector[Double], reward: Reward): Unit = {
