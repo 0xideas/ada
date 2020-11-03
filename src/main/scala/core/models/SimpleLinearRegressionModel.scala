@@ -9,7 +9,8 @@ class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double 
 	def correlation(a: List[Double], b: List[Double]): Double = {
 		val aMean = listMean(a)
 		val bMean = listMean(b)
-		listMean(a.zip(b).map{case(aa, bb) => (aa-aMean)*(bb-bMean)})/(standardDeviation(a)*standardDeviation(b) + eta)
+		listMean(a.zip(b).map{
+			case(aa, bb) => (aa-aMean)*(bb-bMean)})/(standardDeviation(a)*standardDeviation(b)+eta)
     }
     
 	def standardDeviation(a: List[Double]): Double = {
@@ -31,7 +32,8 @@ class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double 
     
 	def getM: Double = m
 	
-	override def toString: String = if(b > 0) s"$m*x + $b" else {val nb = -b; s"$m*x - $nb"}
+	override def toString: String = 
+		if(b > 0) s"$m*x + $b" else {val nb = -b; s"$m*x - $nb"}
 	def toStringShort: String = {
 		val mm= m.toInt
 		if(b > 0) {val bb = b.toInt; s"$mm*x+$bb"} 
@@ -41,7 +43,9 @@ class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double 
 
 }
 
-class SimpleAutoRegressionModel(val steps: Int, private var m: Double = 0.0, private var b: Double = 0.0)
+class SimpleAutoRegressionModel(val steps: Int,
+								private var m: Double = 0.0,
+								private var b: Double = 0.0)
     extends SimpleLinearRegression(m, b)
     with NoContextModel[Double, Double] {
 

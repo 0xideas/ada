@@ -22,10 +22,11 @@ trait SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
         modelsSorted
     }
 
-    def _sortModel[Context](models: Map[ModelID, Model[ModelData, ModelAction]],
-                            modelRewards: ModelID => AggregateReward,
-                            context: Context,
-                            draw: (Context, AggregateReward) => Double): List[(ModelID, Double)] = {
+    def _sortModel[Context]
+    			  (models: Map[ModelID, Model[ModelData, ModelAction]],
+                   modelRewards: ModelID => AggregateReward,
+                   context: Context,
+                   draw: (Context, AggregateReward) => Double): List[(ModelID, Double)] = {
         val modelIds = models.keys
         val modelsSorted = modelIds.map(modelId => (modelId, draw(context, modelRewards(modelId))))
                                         .toList
@@ -42,13 +43,21 @@ trait ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]
     extends SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def _selectModel(models: Map[ModelID, Model[ModelData, ModelAction]],
-                            aggregateRewardsDouble: List[(ModelID, Double)],
-                            data: ModelData): (ModelAction, ModelID) = {
+                     aggregateRewardsDouble: List[(ModelID, Double)],
+                     data: ModelData): (ModelAction, ModelID) = {
         val totalReward: Double = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
-        val cumulativeProb: List[(Probability, Probability)] = aggregateRewardsDouble.scanLeft((0.0, 0.0))((acc, item) =>  (acc._2, acc._2 + item._2/totalReward)).tail
-        val modelsCumulativeProb: List[(ModelID, (Probability, Probability))] = aggregateRewardsDouble.map(_._1).zip(cumulativeProb)
+        val cumulativeProb: List[(Probability, Probability)] = 
+        	aggregateRewardsDouble
+        		.scanLeft((0.0, 0.0))((acc, item) => (acc._2, acc._2 + item._2/totalReward)).tail
+
+        val modelsCumulativeProb: List[(ModelID, (Probability, Probability))] = 
+        	aggregateRewardsDouble.map(_._1).zip(cumulativeProb)
+
         val selector = rnd.nextDouble()
-        val selectedModelId: ModelID = modelsCumulativeProb.filter{case(model, bounds) => (selector >= bounds._1) && (selector <= bounds._2)}(0)._1
+        val selectedModelId: ModelID = 
+        	modelsCumulativeProb.filter{case(model, bounds) => 
+        								(selector >= bounds._1) && (selector <= bounds._2)}(0)._1
+
         val selectedModel: Model[ModelData, ModelAction] = models(selectedModelId)
         (selectedModel.act(data), selectedModelId)
     }
@@ -75,7 +84,8 @@ trait Softmax[ModelID, ModelData, ModelAction, AggregateReward]
 }
 
 
-trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward] extends SelectModel[ModelID, ModelData, ModelAction, AggregateReward] {
+trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
+	extends SelectModel[ModelID, ModelData, ModelAction, AggregateReward] {
     def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
                 modelRewards: ModelID => AggregateReward,
                 draw: AggregateReward => Double,
@@ -91,7 +101,8 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward] extends S
         }
         else _selectModel(models, modelsSorted.tail, data)
     }
-    def _actImpl[Context](models: Map[ModelID, Model[ModelData, ModelAction]],
+    def _actImpl[Context]
+    			(models: Map[ModelID, Model[ModelData, ModelAction]],
                 modelRewards: ModelID => AggregateReward,
                 context: Context,
                 draw: (Context, AggregateReward) => Double,
@@ -126,17 +137,20 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
     with LocalEnsemble[ModelID, ModelData, ModelAction]
     with EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]{
 
-    def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(models, modelRewards, draw, epsilon, data)
+    def actWithID(data: ModelData): (ModelAction, ModelID) =
+    	_actImpl(models, modelRewards, draw, epsilon, data)
     //def act[Context](context: Context, data: ModelData): ModelAction = act(data)
 
-    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward =
+    	evaluationFn(action, optimalAction)
 
-    def updateAll(data: ModelData,
-              correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewards, this.update)
+    def updateAll(data: ModelData, correct: ModelAction): Unit = 
+    	_updateAllImpl(data, correct, models, modelRewards, this.update)
     
     def getModelRewards: MutableMap[ModelID, AggregateReward] = modelRewards
 
-    def update(modelId: ModelID, reward: Reward): Unit = updateFn(modelId, reward, modelRewards,  updateAggregateRewardFn)
+    def update(modelId: ModelID, reward: Reward): Unit = 
+    	updateFn(modelId, reward, modelRewards,  updateAggregateRewardFn)
 
 }
 
@@ -149,12 +163,16 @@ object EpsilonEnsembleGreedySoftmaxLocal{
         evaluationFn: (ModelAction, ModelAction) => Reward,
         updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward){
             val modelRewards = MutableMap(models.toSeq.map{case(k,v) => (k, initAggregateRewards)}:_*)
-            new EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards, draw, epsilon, evaluationFn, updateAggregateRewardFn)
+            new EpsilonEnsembleGreedySoftmaxLocal
+                [ModelID, ModelData, ModelAction, AggregateReward](
+                models, modelRewards, draw, epsilon, evaluationFn, updateAggregateRewardFn)
         }
 }
 
 
-class EpsilonEnsembleGreedySoftmaxLocalWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward <: ContextualDistribution[Context, Reward]]
+class EpsilonEnsembleGreedySoftmaxLocalWithContext
+	[ModelID, Context, ModelData, ModelAction,
+	 AggregateReward <: ContextualDistribution[Context, Reward]]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward],
     draw: (Context, AggregateReward) => Double,
@@ -167,15 +185,19 @@ class EpsilonEnsembleGreedySoftmaxLocalWithContext[ModelID, Context, ModelData, 
     with EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]{
 
     //def update[Context](modelId: ModelID, context: Context, reward: Reward): Unit = update(modelId, context, reward)
-    def actWithID(context: Context, data: ModelData): (ModelAction, ModelID) = _actImpl[Context](models, modelRewards, context, draw, epsilon, data)
+    def actWithID(context: Context, data: ModelData): (ModelAction, ModelID) =
+    	_actImpl[Context](models, modelRewards, context, draw, epsilon, data)
 
-    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = 
+    	evaluationFn(action, optimalAction)
 
-    def updateAll(context: Context, data: ModelData,
-                correct: ModelAction): Unit = _updateAllImpl[Context](context, data, correct, models, modelRewards, this.update)
+    def updateAll(context: Context, data: ModelData, correct: ModelAction): Unit = 
+    	_updateAllImpl[Context](context, data, correct, models, modelRewards, this.update)
     
     def getModelRewards: MutableMap[ModelID, AggregateReward] = modelRewards
 
-    def update(modelId: ModelID, context: Context, reward: Reward): Unit = updateFn[Context, AggregateReward](modelId, context, reward: Reward, modelRewards: ModelID => AggregateReward)
+    def update(modelId: ModelID, context: Context, reward: Reward): Unit = 
+    	updateFn[Context, AggregateReward](
+                modelId, context, reward, modelRewards: ModelID => AggregateReward)
 
 }

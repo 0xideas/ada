@@ -5,16 +5,20 @@ import scala.collection.mutable.{Map => MutableMap}
 
 import epsilon.interfaces.{EpsilonEnsemblePassive, Model, LocalEnsemble}
 import epsilon._
-import epsilon.distributions.{Distribution, SimpleDistribution, BetaDistribution, ContextualDistribution}
+import epsilon.distributions._
 import epsilon.interfaces._
 import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics
 
-trait EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
+trait EpsilonEnsembleThompsonSampling
+    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
     extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, Distr] {
 
     def draw: Distr => Double = (distr:Distr) => distr.draw
 
-    def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]], data: ModelData, modelRewards: ModelID => Distr): (ModelAction, ModelID) = {
+    def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
+                data: ModelData,
+                modelRewards: ModelID => Distr): (ModelAction, ModelID) = {
+
         val modelsSorted = models.map{case(modelId,_) => {
                                         val reward = draw(modelRewards(modelId))
                                         (modelId, reward)
@@ -29,7 +33,8 @@ trait EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: 
 }
 
 
-abstract class EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
+abstract class EpsilonEnsembleThompsonSamplingLocal
+    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
      evaluationFn: (ModelAction, ModelAction) => Reward,
      modelRewards: MutableMap[ModelID, Distr])
@@ -38,25 +43,36 @@ abstract class EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAct
      with LocalEnsemble[ModelID, ModelData, ModelAction]
      with EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, Distr]{
 
-    def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(models, data, modelRewards)
-    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
-    def updateAll(data: ModelData,
-              correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewards, this.update)
+    def actWithID(data: ModelData): (ModelAction, ModelID) =
+        _actImpl(models, data, modelRewards)
+
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = 
+        evaluationFn(action, optimalAction)
+
+    def updateAll(data: ModelData, correct: ModelAction): Unit = 
+        _updateAllImpl(data, correct, models, modelRewards, this.update)
 
     override def report: String = {
-        val modelAttributes = (modelRewards.toList ++ models.toList.map{case(k,v) => (k, v.report)} ).groupBy(_._1).map{case(k, v) => k -> v.map(_._2).toSeq}
+        val modelAttributes = (modelRewards.toList ++ 
+            models.toList
+                  .map{case(k,v) => (k, v.report)} )
+                  .groupBy(_._1)
+                  .map{case(k, v) => k -> v
+                  .map(_._2)
+                  .toSeq}
         modelAttributes.mkString("\n")
     }
 }
 
-class EpsilonEnsembleThompsonSamplingLocalNoncontextual[ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
+class EpsilonEnsembleThompsonSamplingLocalNoncontextual
+    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
     (val models: Map[ModelID, Model[ModelData, ModelAction]],
      val evaluationFn: (ModelAction, ModelAction) => Reward,
      val modelRewards: MutableMap[ModelID, Distr])
-     extends EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction, Distr](models, evaluationFn, modelRewards)
+     extends EpsilonEnsembleThompsonSamplingLocal
+     [ModelID, ModelData, ModelAction, Distr](models, evaluationFn, modelRewards)
      with EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, Distr]{
-        def update(modelId: ModelID, reward: Reward): Unit =  {modelRewards(modelId).update(reward)}
-
+        def update(modelId: ModelID, reward: Reward): Unit = {modelRewards(modelId).update(reward)}
 }
 
 /*
@@ -75,11 +91,17 @@ object EpsilonEnsembleThompsonSamplingLocalBeta {
         (models: Map[ModelID, Model[ModelData, ModelAction]],
          evaluationFn: (ModelAction, ModelAction) => Reward,
          alpha: Double,
-         beta: Double): EpsilonEnsembleThompsonSamplingLocalNoncontextual[ModelID, ModelData, ModelAction, BetaDistribution[Reward]] = {
-        val modelRewardsMap = MutableMap(models.keys.toList.map{key => (key,new BetaDistribution[Reward](alpha, beta))}:_*)
-        new EpsilonEnsembleThompsonSamplingLocalNoncontextual[ModelID, ModelData, ModelAction, BetaDistribution[Reward]](models,
-            evaluationFn,
-            modelRewardsMap)
+         beta: Double):
+        EpsilonEnsembleThompsonSamplingLocalNoncontextual
+        [ModelID, ModelData, ModelAction, BetaDistribution[Reward]] = {
+        val modelRewardsMap = MutableMap(
+            models.keys
+                  .toList
+                  .map{key => (key,new BetaDistribution[Reward](alpha, beta))}:_*
+            )
+        new EpsilonEnsembleThompsonSamplingLocalNoncontextual
+            [ModelID, ModelData, ModelAction, BetaDistribution[Reward]](
+            models, evaluationFn, modelRewardsMap)
     }
 }
 
