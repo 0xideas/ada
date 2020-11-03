@@ -6,6 +6,7 @@ import epsilon.interfaces.{EpsilonEnsemblePassive, Model, LocalEnsemble}
 import epsilon._
 import breeze.stats.mode
 import epsilon.distributions.ContextualDistribution
+import epsilon.interfaces._
 
 
 trait SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
@@ -122,9 +123,11 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
     extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, AggregateReward]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
-    with LocalEnsemble[ModelID, ModelData, ModelAction] {
+    with LocalEnsemble[ModelID, ModelData, ModelAction]
+    with NoContextEpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(models, modelRewards, draw, epsilon, data)
+    //def act[Context](context: Context, data: ModelData): ModelAction = act(data)
 
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
 
@@ -160,8 +163,10 @@ class EpsilonEnsembleGreedySoftmaxLocalWithContext[ModelID, Context, ModelData, 
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
     extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, AggregateReward]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
-    with LocalEnsemble[ModelID, ModelData, ModelAction] {
+    with LocalEnsemble[ModelID, ModelData, ModelAction]
+    with ContextualEpsilonEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward]{
 
+    //def update[Context](modelId: ModelID, context: Context, reward: Reward): Unit = update(modelId, context, reward)
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID) = _actImpl[Context](models, modelRewards, context, draw, epsilon, data)
 
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)

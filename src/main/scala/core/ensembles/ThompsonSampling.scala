@@ -6,6 +6,8 @@ import scala.collection.mutable.{Map => MutableMap}
 import epsilon.interfaces.{EpsilonEnsemblePassive, Model, LocalEnsemble}
 import epsilon._
 import epsilon.distributions.{Distribution, SimpleDistribution, BetaDistribution, ContextualDistribution}
+import epsilon.interfaces.NoContextEpsilonEnsemble
+import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics
 
 trait EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
     extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, Distr] {
@@ -33,7 +35,7 @@ abstract class EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAct
      modelRewards: MutableMap[ModelID, Distr])
      extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, Distr]
      with EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr]
-     with LocalEnsemble[ModelID, ModelData, ModelAction, Distr]{
+     with LocalEnsemble[ModelID, ModelData, ModelAction]{
 
     def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(models, data, modelRewards)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
@@ -50,7 +52,8 @@ class EpsilonEnsembleThompsonSamplingLocalNoncontextual[ModelID, ModelData, Mode
     (val models: Map[ModelID, Model[ModelData, ModelAction]],
      val evaluationFn: (ModelAction, ModelAction) => Reward,
      val modelRewards: MutableMap[ModelID, Distr])
-     extends EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction, Distr](models, evaluationFn, modelRewards){
+     extends EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction, Distr](models, evaluationFn, modelRewards)
+     with NoContextEpsilonEnsemble[ModelID, ModelData, ModelAction, Distr]{
         def update(modelId: ModelID, reward: Reward): Unit =  {modelRewards(modelId).update(reward)}
 
 }
@@ -64,6 +67,7 @@ abstract class EpsilonEnsembleThompsonSamplingLocalContextual[ModelID, ModelData
         def update(modelId: ModelID, context: Context, reward: Reward): Unit =  {modelRewards(modelId).update(context, reward)}
 
 }*/
+
 
 object EpsilonEnsembleThompsonSamplingLocalBeta {
     def apply[ModelID, ModelData, ModelAction]
