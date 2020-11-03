@@ -6,7 +6,7 @@ import scala.collection.mutable.{Map => MutableMap}
 import epsilon.interfaces.{EpsilonEnsemblePassive, Model, LocalEnsemble}
 import epsilon._
 import epsilon.distributions.{Distribution, SimpleDistribution, BetaDistribution, ContextualDistribution}
-import epsilon.interfaces.NoContextEpsilonEnsemble
+import epsilon.interfaces._
 import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics
 
 trait EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
@@ -35,12 +35,13 @@ abstract class EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAct
      modelRewards: MutableMap[ModelID, Distr])
      extends EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, Distr]
      with EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr]
-     with LocalEnsemble[ModelID, ModelData, ModelAction]{
+     with LocalEnsemble[ModelID, ModelData, ModelAction]
+     with EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, Distr]{
 
     def actWithID(data: ModelData): (ModelAction, ModelID) = _actImpl(models, data, modelRewards)
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluationFn(action, optimalAction)
     def updateAll(data: ModelData,
-              correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewards)
+              correct: ModelAction): Unit = _updateAllImpl(data, correct, models, modelRewards, this.update)
 
     override def report: String = {
         val modelAttributes = (modelRewards.toList ++ models.toList.map{case(k,v) => (k, v.report)} ).groupBy(_._1).map{case(k, v) => k -> v.map(_._2).toSeq}
@@ -53,7 +54,7 @@ class EpsilonEnsembleThompsonSamplingLocalNoncontextual[ModelID, ModelData, Mode
      val evaluationFn: (ModelAction, ModelAction) => Reward,
      val modelRewards: MutableMap[ModelID, Distr])
      extends EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction, Distr](models, evaluationFn, modelRewards)
-     with NoContextEpsilonEnsemble[ModelID, ModelData, ModelAction, Distr]{
+     with EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, Distr]{
         def update(modelId: ModelID, reward: Reward): Unit =  {modelRewards(modelId).update(reward)}
 
 }
