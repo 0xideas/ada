@@ -1,7 +1,7 @@
 package epsilon.models
-import epsilon.interfaces.Model
+import epsilon.interfaces.NoContextModel
 
-class DummyModel(value: Double) extends Model[Double, Double]{
+class DummyModel(value: Double) extends NoContextModel[Double, Double]{
 
     def act(data: Double): Double = value
 
@@ -10,7 +10,7 @@ class DummyModel(value: Double) extends Model[Double, Double]{
     override def toString: String = "$Model: " + value.toString() + "$"
 } 
 
-class GenericDummyModel[ModelData, ModelAction](value: ModelAction) extends Model[ModelData, ModelAction]{
+class GenericDummyModel[ModelData, ModelAction](value: ModelAction) extends NoContextModel[ModelData, ModelAction]{
 
     def act(data: ModelData): ModelAction = value
 

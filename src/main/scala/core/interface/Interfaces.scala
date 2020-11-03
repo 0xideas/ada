@@ -7,6 +7,8 @@ import epsilon.distributions.ContextualDistribution
 
 trait Model[ModelData, ModelAction]{
     def act(data: ModelData): ModelAction
+    def act[Context](context: Context, data: ModelData): ModelAction
+
     def report: String = this.toString
 }
 
@@ -15,7 +17,7 @@ trait ContextualModel[ModelData, ModelAction, Context] extends Model[ModelData, 
 }
 
 trait NoContextModel[ModelData, ModelAction] extends Model[ModelData, ModelAction]{
-    //override def act[Context](context: Context, data: ModelData): ModelAction = throw new Exception("Context should not be provided!!")
+    override def act[Context](context: Context, data: ModelData): ModelAction = throw new Exception("Context should not be provided!!")
 }  
 
 
@@ -30,8 +32,8 @@ trait EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, Aggre
     def update(modelId: ModelID, context: Context, reward: Reward): Unit
     def update(modelId: ModelID, context: Context, action: ModelAction, optimalAction: ModelAction): Unit = update(modelId, context, evaluate(action, optimalAction))
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID)
-    def act(context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
-    //def act[Context](context: Context, data: ModelData): ModelAction = act(context, data)
+    //def act(context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
+    def act[Context](context: Context, data: ModelData): ModelAction = act(context, data)
 
 }
 

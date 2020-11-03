@@ -1,6 +1,6 @@
 package epsilon.models
 
-import epsilon.interfaces.Model
+import epsilon.interfaces.NoContextModel
 
 class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double = 0.0){
 	private val eta = 0.0000000000001
@@ -43,7 +43,7 @@ class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double 
 
 class SimpleAutoRegressionModel(val steps: Int, private var m: Double = 0.0, private var b: Double = 0.0)
     extends SimpleLinearRegression(m, b)
-    with Model[Double, Double] {
+    with NoContextModel[Double, Double] {
 
 	def act(x: Double) = predict(steps)
 	
