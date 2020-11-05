@@ -10,15 +10,15 @@ import epsilon.core.components.distributions._
 
 
 
-abstract class EpsilonEnsembleThompsonSamplingLocal
+class EpsilonEnsembleThompsonSamplingLocalNoContext
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    (val models: Map[ModelID, Model[ModelData, ModelAction]],
      evaluationFn: (ModelAction, ModelAction) => Reward,
-     modelRewards: MutableMap[ModelID, Distr])
-     extends PassiveEnsemble[ModelID, ModelData, ModelAction, Distr]
-     with EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr]
+     val modelRewards: MutableMap[ModelID, Distr])
+     extends EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, Distr]
+     with PassiveEnsemble[ModelID, ModelData, ModelAction, Distr]
      with LocalEnsemble[ModelID, ModelData, ModelAction]
-     with EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, Distr]{
+     with EpsilonEnsembleThompsonSampling[ModelID, ModelData, ModelAction, Distr]{
 
     def actWithID(data: ModelData): (ModelAction, ModelID) =
         _actImpl(models, data, modelRewards)
@@ -28,6 +28,8 @@ abstract class EpsilonEnsembleThompsonSamplingLocal
 
     def updateAll(data: ModelData, correct: ModelAction): Unit = 
         _updateAllImpl(data, correct, models, modelRewards, this.update)
+
+    def update(modelId: ModelID, reward: Reward): Unit = {modelRewards(modelId).update(reward)}
 
     override def report: String = {
         val modelAttributes = (modelRewards.toList ++ 
@@ -41,19 +43,7 @@ abstract class EpsilonEnsembleThompsonSamplingLocal
     }
 }
 
-class EpsilonEnsembleThompsonSamplingLocalNoContext
-    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
-    (val models: Map[ModelID, Model[ModelData, ModelAction]],
-     val evaluationFn: (ModelAction, ModelAction) => Reward,
-     val modelRewards: MutableMap[ModelID, Distr])
-     extends EpsilonEnsembleThompsonSamplingLocal
-     [ModelID, ModelData, ModelAction, Distr](models, evaluationFn, modelRewards)
-     with EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, Distr]{
-        def update(modelId: ModelID, reward: Reward): Unit = {modelRewards(modelId).update(reward)}
-}
-
-
-object EpsilonEnsembleThompsonSamplingLocalBeta {
+object EpsilonEnsembleThompsonSamplingLocalNoContextBeta {
     def apply[ModelID, ModelData, ModelAction]
         (models: Map[ModelID, Model[ModelData, ModelAction]],
          evaluationFn: (ModelAction, ModelAction) => Reward,
@@ -73,27 +63,3 @@ object EpsilonEnsembleThompsonSamplingLocalBeta {
 }
 
 
-/*
-abstract class EpsilonEnsembleThompsonSamplingLocalContextual[ModelID, ModelData, ModelAction, Context, Distr <: ContextualDistribution[Context, Reward]]
-    (val models: Map[ModelID, Model[ModelData, ModelAction]],
-     val evaluationFn: (ModelAction, ModelAction) => Reward,
-     val modelRewards: MutableMap[ModelID, Distr])
-     extends EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction, Distr](models, evaluationFn, modelRewards){
-        def update(modelId: ModelID, context: Context, reward: Reward): Unit =  {modelRewards(modelId).update(context, reward)}
-
-}*/
-
-/*
-object ContextualThompsonSampling {
-    def apply[ModelID, ModelData, ModelAction, Context]
-        (models: Map[ModelID, Model[ModelData, ModelAction]],
-         evaluationFn: (ModelAction, ModelAction) => Reward): 
-         EpsilonEnsembleThompsonSamplingLocal[ModelID, ModelData, ModelAction, RainierRegressionDistribution[Reward]] = {
-        val modelRewardsMap = MutableMap(models.keys.toList.map{key => (key,new RainierRegressionDistribution[Reward])}:_*)
-
-
-        new EpsilonEnsembleThompsonSamplingLocalContextual[ModelID, ModelData, ModelAction, Context, RainierRegressionDistribution[Reward]](models,
-            evaluationFn,
-            modelRewardsMap)
-    }
-}*/

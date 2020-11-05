@@ -3,7 +3,7 @@ package epsilon.core.components.distributions
 import breeze.stats.distributions.{Beta, Bernoulli}
 
 
-trait Distribution
+sealed trait Distribution
 
 trait SimpleDistribution[Reward <: Double] extends Distribution{
     def draw: Double

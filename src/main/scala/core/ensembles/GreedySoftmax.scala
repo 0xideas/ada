@@ -17,10 +17,10 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
-    extends PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
+    extends EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
+    with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
-    with EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]{
+    with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def actWithID(data: ModelData): (ModelAction, ModelID) =
     	_actImpl(models, modelRewards, draw, epsilon, data)
@@ -64,10 +64,10 @@ class EpsilonEnsembleGreedySoftmaxLocalWithContext
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
-    extends PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
+    extends EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
+    with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
-    with EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]{
+    with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
 
     //def update[Context](modelId: ModelID, context: Context, reward: Reward): Unit = update(modelId, context, reward)
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID) =
