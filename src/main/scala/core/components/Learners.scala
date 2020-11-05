@@ -8,85 +8,83 @@ import epsilon.core.interface._
 import epsilon.core.components.distributions._
 
 
+trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
+	extends SelectModel[ModelID, ModelData, ModelAction, AggregateReward] {
+    def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
+                modelRewards: ModelID => AggregateReward,
+                draw: AggregateReward => Double,
+                epsilon: Double,
+                data: ModelData): (ModelAction, ModelID) = {
 
-trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
-    def _updateAllImpl(data: ModelData,
-                       optimalAction: ModelAction,
-                       models: Map[ModelID, Model[ModelData, ModelAction]],
-                       modelRewards: ModelID => AggregateReward,
-                       update: (ModelID, ModelAction, ModelAction) => Unit): Unit = {
-        models.map{case(id, model) => {
-                val modelAction = model.act(data)
-                update(id, modelAction, optimalAction) 
-            }
-        } 
+        val modelsSorted = _sortModel(models, modelRewards, draw)
+        
+        if(rnd.nextDouble() > epsilon) {
+            val selectedModelId = modelsSorted.head._1
+            val selectedModel = models(selectedModelId)
+            (selectedModel.act(data), selectedModelId)
+        }
+        else _selectModel(models, modelsSorted.tail, data)
     }
-    def _updateAllImpl[Context]
-                       (context: Context,
-                       data: ModelData,
-                       optimalAction: ModelAction,
-                       models: Map[ModelID, Model[ModelData, ModelAction]],
-                       modelRewards: ModelID => AggregateReward,
-                       update: (ModelID, Context, ModelAction, ModelAction) => Unit): Unit = {
-        models.map{case(id, model) => {
-                val modelAction = model.act(data)
-                update(id, context, modelAction, optimalAction) 
-            }
-        } 
+    def _actImpl[Context]
+    			(models: Map[ModelID, Model[ModelData, ModelAction]],
+                modelRewards: ModelID => AggregateReward,
+                context: Context,
+                draw: (Context, AggregateReward) => Double,
+                epsilon: Double,
+                data: ModelData): (ModelAction, ModelID) = {
+
+        val modelsSorted = _sortModel[Context](models, modelRewards, context, draw)
+        
+        if(rnd.nextDouble() > epsilon) {
+            val selectedModelId = modelsSorted.head._1
+            val selectedModel = models(selectedModelId)
+            (selectedModel.act(data), selectedModelId)
+        }
+        else _selectModel(models, modelsSorted.tail, data)
     }
 }
 
-
-trait SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
-    protected val rnd = new scala.util.Random(101)
-
-    def _sortModel(models: Map[ModelID, Model[ModelData, ModelAction]],
+trait Softmax[ModelID, ModelData, ModelAction, AggregateReward]
+    extends ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
+    def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
                  modelRewards: ModelID => AggregateReward,
-                 draw: AggregateReward => Double): List[(ModelID, Double)] = {
-        val modelIds = models.keys
-        val modelsSorted = modelIds.map(modelId => (modelId, draw(modelRewards(modelId))))
-                                        .toList
-                                        .sortWith(_._2 > _._2)
-        modelsSorted
+                 draw: AggregateReward => Double,
+                 data: ModelData): (ModelAction, ModelID) = {
+        val modelsSorted = _sortModel(models, modelRewards, draw)
+        _selectModel(models, modelsSorted, data)
     }
-
-    def _sortModel[Context]
-    			  (models: Map[ModelID, Model[ModelData, ModelAction]],
-                   modelRewards: ModelID => AggregateReward,
-                   context: Context,
-                   draw: (Context, AggregateReward) => Double): List[(ModelID, Double)] = {
-        val modelIds = models.keys
-        val modelsSorted = modelIds.map(modelId => (modelId, draw(context, modelRewards(modelId))))
-                                        .toList
-                                        .sortWith(_._2 > _._2)
-        modelsSorted
+    def _actImpl[Context](models: Map[ModelID, Model[ModelData, ModelAction]],
+                 modelRewards: ModelID => AggregateReward,
+                 context: Context,
+                 draw: (Context, AggregateReward) => Double,
+                 data: ModelData): (ModelAction, ModelID) = {
+        val modelsSorted = _sortModel[Context](models, modelRewards, context, draw)
+        _selectModel(models, modelsSorted, data)
     }
-
-    def _selectModel(models: Map[ModelID, Model[ModelData, ModelAction]],
-            aggregateRewardsDouble: List[(ModelID, Double)],
-            data: ModelData): (ModelAction, ModelID)
 }
 
-trait ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]
-    extends SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
+trait EpsilonEnsembleThompsonSampling
+    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
+    extends PassiveEnsemble[ModelID, ModelData, ModelAction, Distr] {
 
-    def _selectModel(models: Map[ModelID, Model[ModelData, ModelAction]],
-                     aggregateRewardsDouble: List[(ModelID, Double)],
-                     data: ModelData): (ModelAction, ModelID) = {
-        val totalReward: Double = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
-        val cumulativeProb: List[(Probability, Probability)] = 
-        	aggregateRewardsDouble
-        		.scanLeft((0.0, 0.0))((acc, item) => (acc._2, acc._2 + item._2/totalReward)).tail
+    def draw: Distr => Double = (distr:Distr) => distr.draw
 
-        val modelsCumulativeProb: List[(ModelID, (Probability, Probability))] = 
-        	aggregateRewardsDouble.map(_._1).zip(cumulativeProb)
+    def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
+                data: ModelData,
+                modelRewards: ModelID => Distr): (ModelAction, ModelID) = {
 
-        val selector = rnd.nextDouble()
-        val selectedModelId: ModelID = 
-        	modelsCumulativeProb.filter{case(model, bounds) => 
-        								(selector >= bounds._1) && (selector <= bounds._2)}(0)._1
+        val modelsSorted = models.map{case(modelId,_) => {
+                                        val reward = draw(modelRewards(modelId))
+                                        (modelId, reward)
+                                    }} 
+                                    .toList
+                                    .sortWith(_._2 > _._2)
 
-        val selectedModel: Model[ModelData, ModelAction] = models(selectedModelId)
+        val selectedModelId = modelsSorted.head._1
+        val selectedModel = models(selectedModelId)
         (selectedModel.act(data), selectedModelId)
-    }
+    }     
 }
+
+
+

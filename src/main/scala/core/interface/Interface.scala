@@ -6,13 +6,10 @@ import epsilon._
 import epsilon.core.components.distributions.ContextualDistribution
 
 
-
 trait EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     extends Model[ModelData, ModelAction]{
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
 }
-
-
 
 trait EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
     extends EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
@@ -34,24 +31,3 @@ trait EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
         update(modelId, evaluate(action, optimalAction))
 
 }
-
-
-trait LocalEnsemble[ModelID, ModelData, ModelAction] {
-    def updateFn[AggregateReward]
-                (modelId: ModelID,
-                reward: Reward,
-                modelRewardsMap: MutableMap[ModelID,AggregateReward],
-                updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward) = {
-        val oldReward = modelRewardsMap(modelId)
-        val newReward =  updateAggregateRewardFn(oldReward, reward)
-        modelRewardsMap(modelId) = newReward
-    }
-    def updateFn[Context, AggregateReward <: ContextualDistribution[Context, Reward]]
-                (modelId: ModelID,
-                context: Context,
-                reward: Reward,
-                modelRewards: ModelID => AggregateReward) = {
-        modelRewards(modelId).update(context, reward)
-    }
-}
-
