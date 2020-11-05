@@ -12,17 +12,19 @@ trait EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
 }
 
 trait EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
-    extends EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    with ModelWithContext[ModelData, ModelAction, Context]{
+    extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward]
+    with ModelWithContext[Context, ModelData, ModelAction]{
     def update(modelId: ModelID, context: Context, reward: Reward): Unit
     def update(modelId: ModelID, context: Context, action: ModelAction, optimalAction: ModelAction): Unit = 
         update(modelId, context, evaluate(action, optimalAction))
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID)
-    def act[Context](context: Context, data: ModelData): ModelAction = act(context, data)
+    def act(context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
+    //override def act[Context](context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
+
 }
 
 trait EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
-    extends EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
+    extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward]
     with ModelNoContext[ModelData, ModelAction]{
     def actWithID(data: ModelData): (ModelAction, ModelID)
     def act(data: ModelData): ModelAction = actWithID(data)._1
