@@ -9,7 +9,6 @@ import epsilon.core.components.learners._
 import epsilon.core.components.distributions.ContextualDistribution
 
 
-
 class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward],
@@ -38,6 +37,7 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
     	updateFn(modelId, reward, modelRewards,  updateAggregateRewardFn)
 
 }
+
 
 object EpsilonEnsembleGreedySoftmaxLocal{
     def apply[ModelID, ModelData, ModelAction, AggregateReward](
@@ -69,7 +69,6 @@ class EpsilonEnsembleGreedySoftmaxLocalWithContext
     with LocalEnsemble[ModelID, ModelData, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
 
-    //def update[Context](modelId: ModelID, context: Context, reward: Reward): Unit = update(modelId, context, reward)
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID) =
     	_actImpl[Context](models, modelRewards, context, draw, epsilon, data)
 
@@ -84,5 +83,4 @@ class EpsilonEnsembleGreedySoftmaxLocalWithContext
     def update(modelId: ModelID, context: Context, reward: Reward): Unit = 
     	updateFn[Context, AggregateReward](
                 modelId, context, reward, modelRewards: ModelID => AggregateReward)
-
 }

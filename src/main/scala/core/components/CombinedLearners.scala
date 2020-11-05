@@ -7,10 +7,6 @@ import epsilon._
 import epsilon.core.interface._
 import epsilon.core.components.distributions._
 
-
-
 trait GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward] 
     extends AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
     with ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]
-
-
