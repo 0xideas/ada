@@ -7,11 +7,11 @@ import Prop._
 
 import scala.collection.mutable.{Map => MutableMap}
 
-import epsilon.models.{SimpleAutoRegressionModel, DummyModel, GenericDummyModel}
-import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
+import epsilon.core.models.{SimpleAutoRegressionModel, DummyModel, GenericDummyModel}
+import epsilon.core.ensembles.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.generators.{AutoregressionGenerator, ConstantGenerator}
 import epsilon.generators.Generator
-import epsilon.interfaces.{EpsilonEnsemble, EpsilonEnsemblePassive, Model}
+import epsilon.core.interface.{EpsilonEnsemble}
 
 class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
