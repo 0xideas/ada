@@ -36,7 +36,6 @@ trait EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
 }
 
 
-
 trait LocalEnsemble[ModelID, ModelData, ModelAction] {
     def updateFn[AggregateReward]
                 (modelId: ModelID,
