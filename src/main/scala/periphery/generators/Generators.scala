@@ -1,6 +1,6 @@
 package epsilon.generators
 
-import epsilon.models.SimpleLinearRegression
+import epsilon.core.models.SimpleLinearRegression
 import java.sql.Time
 
 trait Generator[ModelAction]{

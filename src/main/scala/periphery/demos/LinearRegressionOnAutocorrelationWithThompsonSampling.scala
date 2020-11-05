@@ -1,11 +1,11 @@
 package epsilon.demos
 
-import epsilon.models.{SimpleAutoRegressionModel, DummyModel}
-import epsilon.ensembles.EpsilonEnsembleThompsonSamplingLocalBeta
-import epsilon.distributions.BetaDistribution
+import epsilon.core.models.{SimpleAutoRegressionModel, DummyModel}
+import epsilon.core.ensembles.EpsilonEnsembleThompsonSamplingLocalBeta
+import epsilon.core.components.distributions.BetaDistribution
 import epsilon.generators.AutoregressionGenerator
 import epsilon._
-import epsilon.distributions.{Distribution, BetaDistribution}
+import epsilon.core.components.distributions.{Distribution, BetaDistribution}
 
 import plotting.Chart
 

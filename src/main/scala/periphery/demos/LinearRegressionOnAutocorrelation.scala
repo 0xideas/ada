@@ -1,7 +1,7 @@
 package epsilon.demos
 
-import epsilon.models.SimpleAutoRegressionModel
-import epsilon.ensembles.EpsilonEnsembleGreedySoftmaxLocal
+import epsilon.core.models.SimpleAutoRegressionModel
+import epsilon.core.ensembles.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.generators.AutoregressionGenerator
 
 import scala.collection.mutable.{Map => MutableMap}

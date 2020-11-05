@@ -1,4 +1,4 @@
-package epsilon.distributions
+package epsilon.core.components.distributions
 
 import breeze.stats.distributions.{Beta, Bernoulli}
 

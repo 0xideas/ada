@@ -1,4 +1,4 @@
-"""package epsilon.models
+"""package epsilon.core.models
 
 import org.apache.spark.ml.{Estimator, Model}
 import org.apache.spark.ml.regression.{LinearRegression, LinearRegressionModel}

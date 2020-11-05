@@ -1,27 +1,9 @@
-package epsilon.interfaces
+package epsilon.core.interface
 
 import scala.collection.mutable.{Map => MutableMap}
 
 import epsilon._
-import epsilon.distributions.ContextualDistribution
-
-trait Model[ModelData, ModelAction]{
-    def act(data: ModelData): ModelAction
-    def act[Context](context: Context, data: ModelData): ModelAction
-
-    def report: String = this.toString
-}
-
-trait ContextualModel[ModelData, ModelAction, Context] extends Model[ModelData, ModelAction]{
-    override def act(data: ModelData): ModelAction = 
-        throw new Exception("No Context provided!!")
-}
-
-trait NoContextModel[ModelData, ModelAction] extends Model[ModelData, ModelAction]{
-    override def act[Context](context: Context, data: ModelData): ModelAction =
-        throw new Exception("Context should not be provided!!")
-}  
-
+import epsilon.core.components.distributions.ContextualDistribution
 
 
 
@@ -34,7 +16,7 @@ trait EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
 
 trait EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
     extends EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    with ContextualModel[ModelData, ModelAction, Context]{
+    with ModelWithContext[ModelData, ModelAction, Context]{
     def update(modelId: ModelID, context: Context, reward: Reward): Unit
     def update(modelId: ModelID, context: Context, action: ModelAction, optimalAction: ModelAction): Unit = 
         update(modelId, context, evaluate(action, optimalAction))
@@ -44,7 +26,7 @@ trait EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, Aggre
 
 trait EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
     extends EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    with NoContextModel[ModelData, ModelAction]{
+    with ModelNoContext[ModelData, ModelAction]{
     def actWithID(data: ModelData): (ModelAction, ModelID)
     def act(data: ModelData): ModelAction = actWithID(data)._1
     def update(modelId: ModelID, reward: Reward): Unit
@@ -54,33 +36,6 @@ trait EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
 }
 
 
-
-trait EpsilonEnsemblePassive[ModelID, ModelData, ModelAction, AggregateReward]{
-    def _updateAllImpl(data: ModelData,
-                       optimalAction: ModelAction,
-                       models: Map[ModelID, Model[ModelData, ModelAction]],
-                       modelRewards: ModelID => AggregateReward,
-                       update: (ModelID, ModelAction, ModelAction) => Unit): Unit = {
-        models.map{case(id, model) => {
-                val modelAction = model.act(data)
-                update(id, modelAction, optimalAction) 
-            }
-        } 
-    }
-    def _updateAllImpl[Context]
-                       (context: Context,
-                       data: ModelData,
-                       optimalAction: ModelAction,
-                       models: Map[ModelID, Model[ModelData, ModelAction]],
-                       modelRewards: ModelID => AggregateReward,
-                       update: (ModelID, Context, ModelAction, ModelAction) => Unit): Unit = {
-        models.map{case(id, model) => {
-                val modelAction = model.act(data)
-                update(id, context, modelAction, optimalAction) 
-            }
-        } 
-    }
-}
 
 trait LocalEnsemble[ModelID, ModelData, ModelAction] {
     def updateFn[AggregateReward]

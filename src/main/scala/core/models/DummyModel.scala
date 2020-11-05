@@ -1,7 +1,8 @@
-package epsilon.models
-import epsilon.interfaces.NoContextModel
+package epsilon.core.models
 
-class DummyModel(value: Double) extends NoContextModel[Double, Double]{
+import epsilon.core.interface.ModelNoContext
+
+class DummyModel(value: Double) extends ModelNoContext[Double, Double]{
 
     def act(data: Double): Double = value
 
@@ -11,7 +12,7 @@ class DummyModel(value: Double) extends NoContextModel[Double, Double]{
 } 
 
 class GenericDummyModel[ModelData, ModelAction](value: ModelAction)
-    extends NoContextModel[ModelData, ModelAction]{
+    extends ModelNoContext[ModelData, ModelAction]{
 
     def act(data: ModelData): ModelAction = value
 
