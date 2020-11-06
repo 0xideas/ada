@@ -10,8 +10,10 @@ libraryDependencies  ++= Seq(
   "org.scalacheck" %% "scalacheck" % "1.14.1",
   "org.scalanlp" %% "breeze" % "1.1",
   "org.scalanlp" %% "breeze-natives" % "1.1",
-  "org.scalanlp" %% "breeze-viz" % "1.1"
-  //"com.stripe" %% "rainier-core" % "0.3.3"
+  "org.scalanlp" %% "breeze-viz" % "1.1",
+  //"com.stripe" %% "rainier-core" % "0.3.3",
+  "com.github.haifengl" %% "smile-scala" % "2.5.3"
+
 )
 
 

@@ -1,7 +1,6 @@
 package epsilon.core.components.learners
 
 import scala.collection.mutable.{Map => MutableMap}
-import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics
 
 import epsilon._
 import epsilon.core.interface._
@@ -64,7 +63,7 @@ trait Softmax[ModelID, ModelData, ModelAction, AggregateReward]
 }
 
 trait EpsilonEnsembleThompsonSampling
-    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
+    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
     extends PassiveEnsemble[ModelID, ModelData, ModelAction, Distr] {
 
     def draw: Distr => Double = (distr:Distr) => distr.draw

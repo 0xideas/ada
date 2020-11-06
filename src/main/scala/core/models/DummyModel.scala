@@ -2,9 +2,9 @@ package epsilon.core.models
 
 import epsilon.core.interface.ModelNoContext
 
-class DummyModel(value: Double) extends ModelNoContext[Double, Double]{
+class DummyModel(value: Double) extends ModelNoContext[Unit, Double]{
 
-    def act(data: Double): Double = value
+    def act(data: Unit = ()): Double = value
 
     def update(value: Double): DummyModel = new DummyModel(value)
 

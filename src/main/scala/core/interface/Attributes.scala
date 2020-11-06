@@ -16,7 +16,7 @@ trait LocalEnsemble[ModelID, ModelData, ModelAction] {
         val newReward =  updateAggregateRewardFn(oldReward, reward)
         modelRewardsMap(modelId) = newReward
     }
-    def updateFn[Context, AggregateReward <: ContextualDistribution[Context, Reward]]
+    def updateFn[Context, AggregateReward <: ContextualDistribution[Context]]
                 (modelId: ModelID,
                 context: Context,
                 reward: Reward,

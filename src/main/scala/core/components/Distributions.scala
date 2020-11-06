@@ -1,22 +1,26 @@
 package epsilon.core.components.distributions
 
+import epsilon._
 import breeze.stats.distributions.{Beta, Bernoulli}
 
+import smile.regression.lm
+import smile.data.formula.Formula
+import smile.data.DataFrame
 
 sealed trait Distribution
 
-trait SimpleDistribution[Reward <: Double] extends Distribution{
+trait SimpleDistribution extends Distribution{
     def draw: Double
     def update(reward: Reward): Unit
 }
 
-trait ContextualDistribution[Context, Reward <: Double] extends Distribution{
+trait ContextualDistribution[Context] extends Distribution{
     def draw(context: Context): Double
     def update(context: Context, reward: Reward): Unit
 }
 
-class BetaDistribution[Reward <: Double](private var alpha: Double, private var beta: Double)
-    extends SimpleDistribution[Reward]{
+class BetaDistribution (private var alpha: Double, private var beta: Double)
+    extends SimpleDistribution{
     private var betaDistribution = Beta(alpha, beta)
     override def toString: String = {
         f"alpha: $alpha beta: $beta"
@@ -29,5 +33,23 @@ class BetaDistribution[Reward <: Double](private var alpha: Double, private var 
         alpha = alpha + rewardNormed
         beta = beta + (1.0-rewardNormed)
         betaDistribution = Beta(alpha, beta)
+    }
+}
+
+class PointRegressionContext[Context <: Array[Double]](
+    formula: Formula,
+    data: DataFrame,
+    method: String = "qr",
+    stderr: Boolean = true,
+    recursive: Boolean = true)
+    extends ContextualDistribution[Context]{
+    
+    val model = lm(formula, data, method, stderr, recursive)
+
+    def draw(context: Context): Double = {
+        model.predict(context)
+    }
+    def update(context:Context, reward: Reward): Unit = {
+        model.update(context, reward)
     }
 }

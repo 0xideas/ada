@@ -11,7 +11,7 @@ import epsilon.core.components.distributions._
 
 
 class EpsilonEnsembleThompsonSamplingLocalNoContext
-    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution[Reward]]
+    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
     (val models: Map[ModelID, Model[ModelData, ModelAction]],
      evaluationFn: (ModelAction, ModelAction) => Reward,
      val modelRewards: MutableMap[ModelID, Distr])
@@ -50,14 +50,14 @@ object EpsilonEnsembleThompsonSamplingLocalNoContextBeta {
          alpha: Double,
          beta: Double):
         EpsilonEnsembleThompsonSamplingLocalNoContext
-        [ModelID, ModelData, ModelAction, BetaDistribution[Reward]] = {
+        [ModelID, ModelData, ModelAction, BetaDistribution] = {
         val modelRewardsMap = MutableMap(
             models.keys
                   .toList
-                  .map{key => (key,new BetaDistribution[Reward](alpha, beta))}:_*
+                  .map{key => (key,new BetaDistribution(alpha, beta))}:_*
             )
         new EpsilonEnsembleThompsonSamplingLocalNoContext
-            [ModelID, ModelData, ModelAction, BetaDistribution[Reward]](
+            [ModelID, ModelData, ModelAction, BetaDistribution](
             models, evaluationFn, modelRewardsMap)
     }
 }

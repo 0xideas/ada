@@ -57,13 +57,13 @@ object EpsilonEnsembleGreedySoftmaxLocal{
 
 class EpsilonEnsembleGreedySoftmaxLocalWithContext
 	[ModelID, Context, ModelData, ModelAction,
-	 AggregateReward <: ContextualDistribution[Context, Reward]]
+	 AggregateReward <: ContextualDistribution[Context]]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward],
     draw: (Context, AggregateReward) => Double,
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
-    updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
+    updateAggregateRewardFn: (Context, AggregateReward, Reward) => AggregateReward)
     extends EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
@@ -84,3 +84,4 @@ class EpsilonEnsembleGreedySoftmaxLocalWithContext
     	updateFn[Context, AggregateReward](
                 modelId, context, reward, modelRewards: ModelID => AggregateReward)
 }
+

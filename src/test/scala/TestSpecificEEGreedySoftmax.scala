@@ -61,6 +61,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
         tests.map(println)
     }
     
+    
     def testTypedEEGreedySoftmax[ModelId, ModelData, ModelAction](name:String, nActions: Int, idGenerator: Gen[ModelId], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
         val generator = makeGenerator(arbitrary[String], arbitrary[Double], arbitrary[Double])
 

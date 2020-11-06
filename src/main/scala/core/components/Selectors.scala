@@ -1,7 +1,6 @@
 package epsilon.core.components.learners
 
 import scala.collection.mutable.{Map => MutableMap}
-import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics
 
 import epsilon._
 import epsilon.core.interface._
