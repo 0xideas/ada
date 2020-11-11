@@ -20,10 +20,10 @@ object DemoPointRegressionContext{
     val initIndependent = DataFrame.of(Array.fill(50, 2){r.nextDouble})
     val initTarget =  DataFrame.of((Array.fill(25)(0.0) ++ Array.fill(25)(1.0)).map(Array(_)), "target")
     val initData = initIndependent.merge(initTarget)
-    val regressionContext1 = new PointRegressionContext[Array[Double]]("target" ~, initData )
-    val regressionContext2 = new PointRegressionContext[Array[Double]]("target" ~, initData )
+    val regressionContext1 = new PointRegressionContext("target" ~, initData )
+    val regressionContext2 = new PointRegressionContext("target" ~, initData )
 
-    val ensemble = new EpsilonEnsembleGreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double, PointRegressionContext[Array[Double]]](
+    val ensemble = new EpsilonEnsembleGreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double, PointRegressionContext](
         Map(0 -> model0, 1 -> model1),
         MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
         (context, aggregateReward) => aggregateReward.draw(context),

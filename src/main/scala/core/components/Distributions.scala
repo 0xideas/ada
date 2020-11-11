@@ -6,6 +6,7 @@ import breeze.stats.distributions.{Beta, Bernoulli}
 import smile.regression.lm
 import smile.data.formula.Formula
 import smile.data.DataFrame
+import smile.regression.{OnlineRegression, LinearModel}
 
 sealed trait Distribution
 
@@ -36,6 +37,23 @@ class BetaDistribution (private var alpha: Double, private var beta: Double)
     }
 }
 
+
+
+class PointSmileModelContext[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
+    extends ContextualDistribution[Context]{
+        def draw(context: Context): Double = model.predict(context)
+        def update(context: Context, reward: Reward): Unit = model.update(context, reward)
+}
+
+class PointRegressionContext(
+    formula: Formula,
+    data: DataFrame,
+    method: String = "qr",
+    stderr: Boolean = true,
+    recursive: Boolean = true)
+    extends PointSmileModelContext[Array[Double], LinearModel](lm(formula, data, method, stderr, recursive))
+
+    /*
 class PointRegressionContext[Context <: Array[Double]](
     formula: Formula,
     data: DataFrame,
@@ -52,4 +70,4 @@ class PointRegressionContext[Context <: Array[Double]](
     def update(context:Context, reward: Reward): Unit = {
         model.update(context, reward)
     }
-}
+}*/
