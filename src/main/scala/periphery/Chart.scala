@@ -2,7 +2,7 @@ package plotting
 import scala.collection.mutable.ListBuffer
 
 class Chart(chars : ListBuffer[ListBuffer[String]],
-            top: Int, bottom: Int, left: Int, right: Int, width: Int = 150, height: Int = 40) {
+            top: Double, bottom: Double, left: Int, right: Int, width: Int = 150, height: Int = 40) {
 
     def render(): String = {
         val plotMax = chars.reverse.tail.map(row => {row.length - row.reverse.map(e => if(e != " ") 1 else 0).indexOf(1)}).max
@@ -29,7 +29,7 @@ class Chart(chars : ListBuffer[ListBuffer[String]],
     } 
 }
 object Chart{
-    def apply(top: Int, bottom: Int, left: Int, right: Int, width: Int = 150, height: Int = 40): Chart = {
+    def apply(top: Double, bottom: Double, left: Int, right: Int, width: Int = 150, height: Int = 40): Chart = {
         val chars= ListBuffer.fill(height-1)(ListBuffer("|") ++: ListBuffer.fill(width-1)(" ")) :+ (ListBuffer("|") ++: ListBuffer.fill(width-1)("_"))
         top.toString.toList.zipWithIndex.map{ case(c, i) => chars(0)(i) = c.toString}
         (bottom.toString + "/" + left.toString).toList.zipWithIndex.map{ case(c, i) => chars(height-1)(i) = c.toString}

@@ -46,23 +46,24 @@ object DemoBayesianRegressionContext{
         println("started run")
         var i = 0
         var (shares0, shares1) =  (ListBuffer.empty[Double], ListBuffer.empty[Double])
-        while(i < 100){
-            if(i % 1  == 0){
+        while(i < 2000){
+            if(i % 10  == 0){
                 var (share0, _, share1, _) = getAverages() 
                 shares0 += share0
                 shares1 += share1
             }
-
-            if(i > 25){
+            if(i < 50){
+                ()
+            } else if(i < 250 || i > 750){
                 ensemble.update(0, Array(1.0, 0.0, 1.0), 0.0)
-                ensemble.update(0, Array(1.0, 1.0, 0.0), 1.0)
+                ensemble.update(0, Array(1.0, 1.0, 0.0), 3.0)
                 ensemble.update(1, Array(1.0, 1.0, 0.0), 0.0)
-                ensemble.update(1, Array(1.0, 0.0, 1.0), 1.0)
+                ensemble.update(1, Array(1.0, 0.0, 1.0), 3.0)
             } else {
                 ensemble.update(1, Array(1.0, 0.0, 1.0), 0.0)
-                ensemble.update(1, Array(1.0, 1.0, 0.0), 1.0)
+                ensemble.update(1, Array(1.0, 1.0, 0.0), 5.0)
                 ensemble.update(0, Array(1.0, 1.0, 0.0), 0.0)
-                ensemble.update(0, Array(1.0, 0.0, 1.0), 1.0)
+                ensemble.update(0, Array(1.0, 0.0, 1.0), 5.0)
             }
             i += 1
         }
@@ -73,7 +74,8 @@ object DemoBayesianRegressionContext{
         println(f"action0: ${actions0}, modelId0: ${modelIds0}")
         println(f"action1: ${actions1}, modelId1: ${modelIds1}")
 
-        println(Chart(1, 0, 0, 100).plotLine(shares0.toList, "0", "-").plotLine(shares1.toList, "1", "+").render())
+
+        println(Chart(1.1, -0.1, 0, 2000).plotLine(shares0.toList, "0", "-").plotLine(shares1.toList, "1", "+").render())
 
 
     }
