@@ -3,23 +3,26 @@ package epsilon.core.components.linear
 import breeze.linalg._
 import breeze.numerics._
 import breeze.stats.distributions.{Gaussian, MultivariateGaussian}
+import smile.regression.{OnlineRegression, LinearModel}
 
-class BayesianLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double){
+abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double)
+    extends OnlineRegression[Array[Double]]{
     private var mean = DenseVector.zeros[Double](nfeatures)
     private var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
     private var cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
 
     implicit def toVector(array: Array[Double]): DenseVector[Double] = DenseVector(array:_*)
 
-    def learn(x: Array[Double], y: Double): Unit = {
+    def update(x: Array[Double], y: Double): Unit = {
         val xvec = toVector(x)
         val outer = (xvec * xvec.t)
-        covInv = covInv + outer.map(_ * beta)
-        cov = inv(covInv)
+        val covInvT = covInv + outer.map(_ * beta)
+        cov = inv(covInvT)
         mean = cov * ((covInv * mean) + (xvec.map(_ * beta * y)))
+        covInv = covInvT
     }
 
-    def predict(x: Array[Double]): Gaussian = {
+    def predictProb(x: Array[Double]): Gaussian = {
         val xvec = toVector(x)
         val y_pred_mean = xvec.t * mean
 
@@ -27,10 +30,19 @@ class BayesianLinearRegression(val nfeatures: Int, val alpha: Double, val beta: 
         val y_pred_var = (1/ beta) + (xvec.t * w_cov * xvec)
         new Gaussian(y_pred_mean, y_pred_var)
     }
-
-    def weights_dist:MultivariateGaussian = {
+    def weights: MultivariateGaussian = {
         MultivariateGaussian(mean, cov)
     }
+}
+
+class BayesianLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double)
+    extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
+    def predict(x: Array[Double]): Double = predictProb(x).mean
+}
+
+class BayesianLinearRegressionSample(val nfeatures: Int, val alpha: Double, val beta: Double)
+    extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
+    def predict(x: Array[Double]): Double = predictProb(x).sample
 }
 
 

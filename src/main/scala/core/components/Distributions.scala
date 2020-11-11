@@ -8,6 +8,9 @@ import smile.data.formula.Formula
 import smile.data.DataFrame
 import smile.regression.{OnlineRegression, LinearModel}
 
+import epsilon.core.components.linear.BayesianLinearRegressionSample
+
+
 sealed trait Distribution
 
 trait SimpleDistribution extends Distribution{
@@ -51,9 +54,19 @@ class PointRegressionContext(
     method: String = "qr",
     stderr: Boolean = true,
     recursive: Boolean = true)
-    extends PointSmileModelContext[Array[Double], LinearModel](lm(formula, data, method, stderr, recursive))
+    extends PointSmileModelContext[Array[Double], LinearModel](
+        lm(formula, data, method, stderr, recursive)
+    )
 
-    /*
+
+class BayesianRegressionSampleContext(
+    nfeatures: Int,
+    alpha: Double = 0.3,
+    beta: Double = 1.0)
+    extends PointSmileModelContext[Array[Double], BayesianLinearRegressionSample](
+        new BayesianLinearRegressionSample(nfeatures, alpha, beta)
+    )
+/*
 class PointRegressionContext[Context <: Array[Double]](
     formula: Formula,
     data: DataFrame,

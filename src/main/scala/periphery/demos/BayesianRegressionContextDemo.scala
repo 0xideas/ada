@@ -3,31 +3,26 @@ package epsilon.demos
 import scala.collection.mutable.{Map => MutableMap}
 import scala.collection.mutable.{ListBuffer}
 
-import epsilon.core.components.distributions.PointRegressionContext
+import epsilon.core.components.distributions.BayesianRegressionSampleContext
 import epsilon.core.ensembles._
 import epsilon.core.models.DummyModel
-import smile.data.DataFrame
-import smile.data.formula._
+
 
 import plotting.Chart
 
-object DemoPointRegressionContext{
+object DemoBayesianRegressionContext{
 
     val model0 = new DummyModel(0.0)
     val model1 = new DummyModel(1.0)
 
-    val rnd = scala.util.Random
-    val initIndependent = DataFrame.of(Array.fill(50, 2){rnd.nextDouble})
-    val initTarget =  DataFrame.of((Array.fill(25)(0.0) ++ Array.fill(25)(1.0)).map(Array(_)), "target")
-    val initData = initIndependent.merge(initTarget)
-    val regressionContext1 = new PointRegressionContext("target" ~, initData )
-    val regressionContext2 = new PointRegressionContext("target" ~, initData )
+    val regressionContext1 = new BayesianRegressionSampleContext(3, 0.3, 1.0 )
+    val regressionContext2 = new BayesianRegressionSampleContext(3, 0.3, 1.0 )
 
-    val ensemble = new EpsilonEnsembleGreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double, PointRegressionContext](
+    val ensemble = new EpsilonEnsembleGreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double,  BayesianRegressionSampleContext](
         Map(0 -> model0, 1 -> model1),
         MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
         (context, aggregateReward) => aggregateReward.draw(context),
-        0.2,
+        0.0,
         (action1, action2) => math.exp(action1 - action2),
         (context,aggregateReward, reward) => {aggregateReward.update(context, reward); aggregateReward}
     )
@@ -59,15 +54,15 @@ object DemoPointRegressionContext{
             }
 
             if(i > 25){
-                ensemble.update(0, Array(1.0, 0.0, 1.0), 0.49)
-                ensemble.update(0, Array(1.0, 1.0, 0.0), 0.51)
-                ensemble.update(1, Array(1.0, 1.0, 0.0), 0.49)
-                ensemble.update(1, Array(1.0, 0.0, 1.0), 0.51)
+                ensemble.update(0, Array(1.0, 0.0, 1.0), 0.0)
+                ensemble.update(0, Array(1.0, 1.0, 0.0), 1.0)
+                ensemble.update(1, Array(1.0, 1.0, 0.0), 0.0)
+                ensemble.update(1, Array(1.0, 0.0, 1.0), 1.0)
             } else {
-                ensemble.update(1, Array(1.0, 0.0, 1.0), 0.49)
-                ensemble.update(1, Array(1.0, 1.0, 0.0), 0.51)
-                ensemble.update(0, Array(1.0, 1.0, 0.0), 0.49)
-                ensemble.update(0, Array(1.0, 0.0, 1.0), 0.51)
+                ensemble.update(1, Array(1.0, 0.0, 1.0), 0.0)
+                ensemble.update(1, Array(1.0, 1.0, 0.0), 1.0)
+                ensemble.update(0, Array(1.0, 1.0, 0.0), 0.0)
+                ensemble.update(0, Array(1.0, 0.0, 1.0), 1.0)
             }
             i += 1
         }

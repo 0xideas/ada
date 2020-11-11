@@ -1,6 +1,6 @@
 package epsilon.demos
 
-import epsilon.demos.{DemoPointRegressionContext => Demo}
+import epsilon.demos.{DemoBayesianRegressionContext => Demo}
 object Main extends App{
     Demo.run()
 }
