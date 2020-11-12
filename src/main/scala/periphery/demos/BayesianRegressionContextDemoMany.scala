@@ -28,7 +28,6 @@ object DemoBayesianRegressionContextMany{
     )
 
 
-
     def getAverages(): List[Double] = {
         val context = Array.fill(nFeatures)(rnd.nextGaussian())
         context(1) += 4
