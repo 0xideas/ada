@@ -35,17 +35,17 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
     }
 }
 
-class BayesianLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double)
-    extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
-    def predict(x: Array[Double]): Double = predictProb(x).mean
-}
 
 class BayesianLinearRegressionSample(val nfeatures: Int, val alpha: Double, val beta: Double)
     extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
     def predict(x: Array[Double]): Double = predictProb(x).sample
 }
 
-
+//not used at the moment
+class BayesianLinearRegressionMean(val nfeatures: Int, val alpha: Double, val beta: Double)
+    extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
+    def predict(x: Array[Double]): Double = predictProb(x).mean
+}
 
 
 

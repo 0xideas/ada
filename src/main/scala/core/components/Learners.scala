@@ -43,6 +43,8 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
     }
 }
 
+
+//not used so far
 trait Softmax[ModelID, ModelData, ModelAction, AggregateReward]
     extends ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
     def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
@@ -61,29 +63,3 @@ trait Softmax[ModelID, ModelData, ModelAction, AggregateReward]
         _selectModel(models, modelsSorted, data)
     }
 }
-
-trait EpsilonEnsembleThompsonSampling
-    [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
-    extends PassiveEnsemble[ModelID, ModelData, ModelAction, Distr] {
-
-    def draw: Distr => Double = (distr:Distr) => distr.draw
-
-    def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
-                data: ModelData,
-                modelRewards: ModelID => Distr): (ModelAction, ModelID) = {
-
-        val modelsSorted = models.map{case(modelId,_) => {
-                                        val reward = draw(modelRewards(modelId))
-                                        (modelId, reward)
-                                    }} 
-                                    .toList
-                                    .sortWith(_._2 > _._2)
-
-        val selectedModelId = modelsSorted.head._1
-        val selectedModel = models(selectedModelId)
-        (selectedModel.act(data), selectedModelId)
-    }     
-}
-
-
-

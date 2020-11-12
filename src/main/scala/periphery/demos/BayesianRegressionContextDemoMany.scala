@@ -11,10 +11,10 @@ import epsilon.core.models.DummyModel
 import plotting.Chart
 
 object DemoBayesianRegressionContextMany{
-    val nIter = 5000
+    val nIter = 1000 * 5    
     val nFeatures = 3
     val nModels = 100
-    val nGoodModels = 3
+    val nGoodModels = 10
 
 
     val rnd = scala.util.Random
@@ -65,15 +65,27 @@ object DemoBayesianRegressionContextMany{
             ensemble.update(id, context,  context(k))
             //}
 
+            if(i % 10000 == 0) println(i) 
+
             i += 1
         }
         println("-----finished loop------")
 
         var selections= getAverages()
+        if( selections.length > 10){
+            selections = selections.zipWithIndex
+                                    .filter{
+                                        case(x, i)if( (i% nFeatures == 1) && i < nGoodModels*nFeatures) => true
+                                        case _ => false
+                                    }
+                                    .map(_._1)
+
+        }
         println("last values")
         selections.zipWithIndex.map{
             case(v, i) => println(f"action$i: $v")
         }
+
 
         val characters = "-+abcdefghijklmnopqr"
         var chart = Chart(1.1, -0.1, 0, nIter)
