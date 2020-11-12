@@ -11,7 +11,7 @@ import epsilon.core.models.DummyModel
 import plotting.Chart
 
 object DemoBayesianRegressionContextMany{
-    val nIter = 50
+    val nIter = 5000
     val nFeatures = 3
     val nModels = 100
     val nGoodModels = 3
@@ -58,13 +58,12 @@ object DemoBayesianRegressionContextMany{
                 shares.zipWithIndex.map{case(s,j) => s += selections(j)}
             }
 
-            (0 until nModels).map{j =>
-                val context = Array.fill(nFeatures)(rnd.nextGaussian())
-                //context(j % nFeatures) += 4
-                val k = if(j < nFeatures * nGoodModels) j % nFeatures else 0
-                ensemble.update(j, context,  context(k))
-                //offsets.map( o => ensemble.update(j, Array.fill(nFeatures)(rnd.nextGaussian()*0.01 + j + o), -3.0))
-            }
+            //(0 until nModels).map{id =>
+            val context = Array.fill(nFeatures)(rnd.nextGaussian())
+            val (action, id) = ensemble.actWithID(context, ())
+            val k = if(id < nFeatures * nGoodModels) id % nFeatures else 0
+            ensemble.update(id, context,  context(k))
+            //}
 
             i += 1
         }
