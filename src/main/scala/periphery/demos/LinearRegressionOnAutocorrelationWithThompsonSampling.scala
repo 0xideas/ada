@@ -62,7 +62,7 @@ object DemoAutocorrelationWithThompsonSampling{
         println("\n" + Chart(dataRun.max.toInt, dataRun.min.toInt, 0, dataRun.length).plotLine(dataRun, Some("M")).render())
         println("coefficients")
         println(pars.map(p => p.reverse.mkString("")).mkString("\n"))
-        println("rewards")
+        println("reward    //models with an id below (goodModels * nFeatures) and where the remainder of id divided//by the s")
         println(rewards.map(r => r.reverse.mkString("")).mkString("\n"))
         println("selected model")
         println(" " + selectedModels.reverse.mkString(" "))

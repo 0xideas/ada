@@ -5,7 +5,7 @@ import smile.regression.lm
 import smile.data.formula.Formula
 import smile.data.DataFrame
 
-import epsilon.core.components.linear.BayesianLinearRegressionSample
+import epsilon.core.components.contextmodels.BayesianLinearRegressionSample
 import epsilon._
 
 class SmileModelContextDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)

@@ -1,4 +1,4 @@
-package epsilon.core.components.linear
+package epsilon.core.components.contextmodels
 
 import breeze.linalg._
 import breeze.numerics._

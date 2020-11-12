@@ -7,7 +7,7 @@ import Prop._
 
 import scala.collection.mutable.{Map => MutableMap}
 
-import epsilon.core.models.{SimpleAutoRegressionModel, DummyModel, GenericDummyModel}
+import epsilon.core.models.{SimpleAutoRegressionModel, StaticModel, GenericStaticModel}
 import epsilon.core.ensembles.EpsilonEnsembleGreedySoftmaxLocal
 import epsilon.generators.{AutoregressionGenerator, ConstantGenerator}
 import epsilon.generators.Generator
@@ -35,9 +35,9 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
 
             val generator = new ConstantGenerator(const1)
 
-            val models = List(new GenericDummyModel[ModelData, ModelAction](const1),
-                          new GenericDummyModel[ModelData, ModelAction](const2),
-                          new GenericDummyModel[ModelData, ModelAction](const2))
+            val models = List(new GenericStaticModel[ModelData, ModelAction](const1),
+                          new GenericStaticModel[ModelData, ModelAction](const2),
+                          new GenericStaticModel[ModelData, ModelAction](const2))
 
 
             val ensemble = new EpsilonEnsembleGreedySoftmaxLocal[ModelId, ModelData, ModelAction, Double](
