@@ -21,13 +21,10 @@ object DemoBayesianRegressionContextMany{
 
     val models = (0 until nModels).map(x => new DummyModel(x.toDouble))
     val contexts = (0 until nModels).map(x => new BayesianRegressionSampleContext(nFeatures, 0.3, 1.0))
-    val ensemble = new EpsilonEnsembleGreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double,  BayesianRegressionSampleContext](
+    val ensemble = new EpsilonEnsembleThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianRegressionSampleContext](
         (0 until nModels).zip(models).toMap,
         MutableMap((0 until nModels).zip(contexts):_*),
-        (context, aggregateReward) => aggregateReward.draw(context),
-        0.0,
-        (action1, action2) => math.exp(action1 - action2),
-        (context,aggregateReward, reward) => {aggregateReward.update(context, reward); aggregateReward}
+        (action1, action2) => math.exp(action1 - action2)
     )
 
 

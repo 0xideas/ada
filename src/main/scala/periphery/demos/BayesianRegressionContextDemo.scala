@@ -18,13 +18,10 @@ object DemoBayesianRegressionContext{
     val regressionContext1 = new BayesianRegressionSampleContext(3, 0.3, 1.0 )
     val regressionContext2 = new BayesianRegressionSampleContext(3, 0.3, 1.0 )
 
-    val ensemble = new EpsilonEnsembleGreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double,  BayesianRegressionSampleContext](
+    val ensemble = new EpsilonEnsembleThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianRegressionSampleContext](
         Map(0 -> model0, 1 -> model1),
         MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
-        (context, aggregateReward) => aggregateReward.draw(context),
-        0.0,
-        (action1, action2) => math.exp(action1 - action2),
-        (context,aggregateReward, reward) => {aggregateReward.update(context, reward); aggregateReward}
+        (action1, action2) => math.exp(action1 - action2)
     )
 
     def getAverages():(Double, Double, Double, Double) = {

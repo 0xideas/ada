@@ -24,7 +24,6 @@ class EpsilonEnsembleThompsonSamplingLocalNoContext
     )
 
 
-
 object EpsilonEnsembleThompsonSamplingLocalNoContextBeta {
     def apply[ModelID, ModelData, ModelAction]
         (models: Map[ModelID, Model[ModelData, ModelAction]],
@@ -43,6 +42,25 @@ object EpsilonEnsembleThompsonSamplingLocalNoContextBeta {
             models, modelRewardsMap, evaluationFn)
     }
 }
+
+
+
+
+
+class EpsilonEnsembleThompsonSamplingLocalWithContext
+    [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]
+    (val models: Map[ModelID, Model[ModelData, ModelAction]],
+     val modelRewards: MutableMap[ModelID, ContextualDistr],     
+     evaluationFn: (ModelAction, ModelAction) => Reward)
+    extends EpsilonEnsembleGreedySoftmaxLocalWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
+        models,
+        modelRewards,
+        (context: Context, contextualDistr: ContextualDistr) => contextualDistr.draw(context),
+        0.0,
+        evaluationFn,
+        (context: Context, contextualDistr: ContextualDistr,reward: Reward) => {contextualDistr.update(context, reward); contextualDistr}
+    )
+
 
 
 

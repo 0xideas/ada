@@ -17,7 +17,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
 
         val modelsSorted = _sortModel(models, modelRewards, draw)
         
-        if(rnd.nextDouble() > epsilon) {
+        if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
             val selectedModel = models(selectedModelId)
             (selectedModel.act(data), selectedModelId)
@@ -34,7 +34,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
 
         val modelsSorted = _sortModel[Context](models, modelRewards, context, draw)
         
-        if(rnd.nextDouble() > epsilon) {
+        if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
             val selectedModel = models(selectedModelId)
             (selectedModel.act(data), selectedModelId)
