@@ -59,7 +59,7 @@ object DemoAutocorrelationWithThompsonSampling{
             i = i + 1.0
         }
         dataRun = dataRun.take(1000).reverse
-        println("\n" + Chart(dataRun.max.toInt, dataRun.min.toInt, 0, dataRun.length).plotLine(dataRun, "M").render())
+        println("\n" + Chart(dataRun.max.toInt, dataRun.min.toInt, 0, dataRun.length).plotLine(dataRun, Some("M")).render())
         println("coefficients")
         println(pars.map(p => p.reverse.mkString("")).mkString("\n"))
         println("rewards")

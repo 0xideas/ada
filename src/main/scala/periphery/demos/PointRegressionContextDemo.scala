@@ -78,7 +78,7 @@ object DemoPointRegressionContext{
         println(f"action0: ${actions0}, modelId0: ${modelIds0}")
         println(f"action1: ${actions1}, modelId1: ${modelIds1}")
 
-        println(Chart(1, 0, 0, 100).plotLine(shares0.toList, "0", "-").plotLine(shares1.toList, "1", "+").render())
+        println(Chart(1, 0, 0, 100).plotLine(shares0.toList, Some("0"), "-").plotLine(shares1.toList, Some("1"), "+").render())
 
 
     }

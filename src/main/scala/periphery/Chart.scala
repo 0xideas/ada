@@ -13,7 +13,8 @@ class Chart(chars : ListBuffer[ListBuffer[String]],
     } 
     def bucket(x: Double): Int = (((top - x)/(top -bottom))*(height-0.001)).toInt
 
-    def plotLine(data: List[Double], label:String, symbol:String = "-"): Chart = {
+    def plotLine(data: List[Double], label:Option[String], symbol:String = "-"): Chart = {
+        val printLabel = label == None
         val incr = math.max(1, math.ceil(data.length.toDouble/(width.toDouble)).toInt)
         data.zipWithIndex
             .filter{case(x, i) => i%incr == 0}
@@ -23,7 +24,7 @@ class Chart(chars : ListBuffer[ListBuffer[String]],
             .filter{case(x, i) => bucket(x) > 0 && bucket(x) < height}
             .map{ case(x, i) => {
                 if(chars(bucket(x))(i) == " ") chars(bucket(x))(i) = symbol
-                if(i == 10) chars(((bucket(x) + 1) % height))(i) = label
+                if(i == 10 && printLabel) chars(((bucket(x) + 1) % height))(i) = label.get
             } } 
         this
     } 
