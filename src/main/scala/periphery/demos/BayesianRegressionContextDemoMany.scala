@@ -5,7 +5,7 @@ import scala.collection.mutable.{ListBuffer}
 
 import epsilon.core.components.distributions.BayesianRegressionSampleContext
 import epsilon.core.ensembles._
-import epsilon.core.models.DummyModel
+import epsilon.core.models.StaticModel
 
 
 import plotting.Chart
@@ -19,7 +19,7 @@ object DemoBayesianRegressionContextMany{
 
     val rnd = scala.util.Random
 
-    val models = (0 until nModels).map(x => new DummyModel(x.toDouble))
+    val models = (0 until nModels).map(x => new StaticModel(x.toDouble))
     val contexts = (0 until nModels).map(x => new BayesianRegressionSampleContext(nFeatures, 0.3, 1.0))
     val ensemble = new EpsilonEnsembleThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianRegressionSampleContext](
         (0 until nModels).zip(models).toMap,

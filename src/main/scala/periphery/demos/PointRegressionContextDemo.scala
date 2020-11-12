@@ -5,7 +5,7 @@ import scala.collection.mutable.{ListBuffer}
 
 import epsilon.core.components.distributions.PointRegressionContext
 import epsilon.core.ensembles._
-import epsilon.core.models.DummyModel
+import epsilon.core.models.StaticModel
 import smile.data.DataFrame
 import smile.data.formula._
 
@@ -13,8 +13,8 @@ import plotting.Chart
 
 object DemoPointRegressionContext{
 
-    val model0 = new DummyModel(0.0)
-    val model1 = new DummyModel(1.0)
+    val model0 = new StaticModel(0.0)
+    val model1 = new StaticModel(1.0)
 
     val rnd = scala.util.Random
     val initIndependent = DataFrame.of(Array.fill(50, 2){rnd.nextDouble})

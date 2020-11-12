@@ -1,6 +1,6 @@
 package epsilon.demos
 
-import epsilon.core.models.{SimpleAutoRegressionModel, DummyModel}
+import epsilon.core.models.{SimpleAutoRegressionModel, StaticModel}
 import epsilon.core.ensembles.EpsilonEnsembleThompsonSamplingLocalNoContextBeta
 import epsilon.core.components.distributions.BetaDistribution
 import epsilon.generators.AutoregressionGenerator

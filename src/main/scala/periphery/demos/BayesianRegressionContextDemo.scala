@@ -5,15 +5,15 @@ import scala.collection.mutable.{ListBuffer}
 
 import epsilon.core.components.distributions.BayesianRegressionSampleContext
 import epsilon.core.ensembles._
-import epsilon.core.models.DummyModel
+import epsilon.core.models.StaticModel
 
 
 import plotting.Chart
 
 object DemoBayesianRegressionContext{
 
-    val model0 = new DummyModel(0.0)
-    val model1 = new DummyModel(1.0)
+    val model0 = new StaticModel(0.0)
+    val model1 = new StaticModel(1.0)
 
     val regressionContext1 = new BayesianRegressionSampleContext(3, 0.3, 1.0 )
     val regressionContext2 = new BayesianRegressionSampleContext(3, 0.3, 1.0 )

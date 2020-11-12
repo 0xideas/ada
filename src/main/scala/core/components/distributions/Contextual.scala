@@ -8,7 +8,7 @@ import smile.data.DataFrame
 import epsilon.core.components.linear.BayesianLinearRegressionSample
 import epsilon._
 
-class SmileModelContext[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
+class SmileModelContextDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
     extends ContextualDistribution[Context]{
         def draw(context: Context): Double = model.predict(context)
         def update(context: Context, reward: Reward): Unit = model.update(context, reward)
@@ -20,15 +20,14 @@ class PointRegressionContext(
     method: String = "qr",
     stderr: Boolean = true,
     recursive: Boolean = true)
-    extends SmileModelContext[Array[Double], LinearModel](
+    extends SmileModelContextDistribution[Array[Double], LinearModel](
         lm(formula, data, method, stderr, recursive)
     )
-
 
 class BayesianRegressionSampleContext(
     nfeatures: Int,
     alpha: Double = 0.3,
     beta: Double = 1.0)
-    extends SmileModelContext[Array[Double], BayesianLinearRegressionSample](
+    extends SmileModelContextDistribution[Array[Double], BayesianLinearRegressionSample](
         new BayesianLinearRegressionSample(nfeatures, alpha, beta)
     )
