@@ -9,12 +9,12 @@ import epsilon.core.components.learners._
 import epsilon.core.components.distributions._
 
 
-class EpsilonEnsembleThompsonSamplingLocalNoContext
+class ThompsonSamplingLocalNoContext
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
      modelRewards: MutableMap[ModelID, Distr],     
      evaluationFn: (ModelAction, ModelAction) => Reward)
-    extends EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Distr](
+    extends GreedySoftmaxLocal[ModelID, ModelData, ModelAction, Distr](
         models,
         modelRewards,
         (distr: Distr) => distr.draw,
@@ -24,32 +24,32 @@ class EpsilonEnsembleThompsonSamplingLocalNoContext
     )
 
 
-object EpsilonEnsembleThompsonSamplingLocalNoContextBeta {
+object ThompsonSamplingLocalNoContextBeta {
     def apply[ModelID, ModelData, ModelAction]
         (models: Map[ModelID, Model[ModelData, ModelAction]],
          evaluationFn: (ModelAction, ModelAction) => Reward,
          alpha: Double,
          beta: Double):
-        EpsilonEnsembleThompsonSamplingLocalNoContext
+        ThompsonSamplingLocalNoContext
         [ModelID, ModelData, ModelAction, BetaDistribution] = {
         val modelRewardsMap = MutableMap(
             models.keys
                   .toList
                   .map{key => (key,new BetaDistribution(alpha, beta))}:_*
             )
-        new EpsilonEnsembleThompsonSamplingLocalNoContext
+        new ThompsonSamplingLocalNoContext
             [ModelID, ModelData, ModelAction, BetaDistribution](
             models, modelRewardsMap, evaluationFn)
     }
 }
 
 
-class EpsilonEnsembleThompsonSamplingLocalWithContext
+class ThompsonSamplingLocalWithContext
     [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
      modelRewards: MutableMap[ModelID, ContextualDistr],     
      evaluationFn: (ModelAction, ModelAction) => Reward)
-    extends EpsilonEnsembleGreedySoftmaxLocalWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
+    extends GreedySoftmaxLocalWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
         models,
         modelRewards,
         (context: Context, contextualDistr: ContextualDistr) => contextualDistr.draw(context),

@@ -23,7 +23,7 @@ object DemoPointRegressionContext{
     val regressionContext1 = new PointRegressionContext("target" ~, initData )
     val regressionContext2 = new PointRegressionContext("target" ~, initData )
 
-    val ensemble = new EpsilonEnsembleGreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double, PointRegressionContext](
+    val ensemble = new GreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double, PointRegressionContext](
         Map(0 -> model0, 1 -> model1),
         MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
         (context, aggregateReward) => aggregateReward.draw(context),

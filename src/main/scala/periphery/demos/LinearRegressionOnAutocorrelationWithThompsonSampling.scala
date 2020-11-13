@@ -1,7 +1,7 @@
 package epsilon.demos
 
 import epsilon.core.models.{SimpleAutoRegressionModel, StaticModel}
-import epsilon.core.ensembles.EpsilonEnsembleThompsonSamplingLocalNoContextBeta
+import epsilon.core.ensembles.ThompsonSamplingLocalNoContextBeta
 import epsilon.core.components.distributions.BetaDistribution
 import epsilon.generators.AutoregressionGenerator
 import epsilon._
@@ -17,7 +17,7 @@ object DemoAutocorrelationWithThompsonSampling{
                      new SimpleAutoRegressionModel(30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(0.0, (20.0-math.pow(action-correctAction, 2))/20)
-    val ensemble = EpsilonEnsembleThompsonSamplingLocalNoContextBeta[Int, Double, Double](
+    val ensemble = ThompsonSamplingLocalNoContextBeta[Int, Double, Double](
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
                                                                evaluationFn,
                                                                100, 100)

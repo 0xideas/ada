@@ -1,7 +1,7 @@
 package epsilon.demos
 
 import epsilon.core.models.SimpleAutoRegressionModel
-import epsilon.core.ensembles.EpsilonEnsembleGreedySoftmaxLocal
+import epsilon.core.ensembles.GreedySoftmaxLocal
 import epsilon.generators.AutoregressionGenerator
 
 import scala.collection.mutable.{Map => MutableMap}
@@ -15,7 +15,7 @@ object DemoAutocorrelation{
                      new SimpleAutoRegressionModel(30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = new EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](
+    val ensemble = new GreedySoftmaxLocal[Int, Double, Double, Double](
         models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
         MutableMap(models.zipWithIndex.toSeq.map{case(k,v) => (v, 1.0)}:_*),
         (aggRew:Double) => aggRew,

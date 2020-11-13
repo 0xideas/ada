@@ -18,7 +18,7 @@ abstract class EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
 
 }
 
-abstract class EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
+abstract class EnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward])
     extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
@@ -31,7 +31,7 @@ abstract class EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, Aggrega
 
 }
 
-abstract class EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
+abstract class EnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward])
     extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)

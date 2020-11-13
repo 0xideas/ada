@@ -9,14 +9,14 @@ import epsilon.core.components.learners._
 import epsilon.core.components.distributions.ContextualDistribution
 
 
-class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward]
+class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward],
     draw: AggregateReward => Double,
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
-    extends EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
+    extends EnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
@@ -36,7 +36,7 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
 }
 
 
-object EpsilonEnsembleGreedySoftmaxLocal{
+object GreedySoftmaxLocal{
     def apply[ModelID, ModelData, ModelAction, AggregateReward](
         models: Map[ModelID, Model[ModelData, ModelAction]],
         initAggregateRewards: AggregateReward,
@@ -45,14 +45,14 @@ object EpsilonEnsembleGreedySoftmaxLocal{
         evaluationFn: (ModelAction, ModelAction) => Reward,
         updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward){
             val modelRewards = MutableMap(models.toSeq.map{case(k,v) => (k, initAggregateRewards)}:_*)
-            new EpsilonEnsembleGreedySoftmaxLocal
+            new GreedySoftmaxLocal
                 [ModelID, ModelData, ModelAction, AggregateReward](
                 models, modelRewards, draw, epsilon, evaluationFn, updateAggregateRewardFn)
         }
 }
 
 
-class EpsilonEnsembleGreedySoftmaxLocalWithContext
+class GreedySoftmaxLocalWithContext
 	[ModelID, Context, ModelData, ModelAction,
 	 AggregateReward <: ContextualDistribution[Context]]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
@@ -61,7 +61,7 @@ class EpsilonEnsembleGreedySoftmaxLocalWithContext
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (Context, AggregateReward, Reward) => AggregateReward)
-    extends EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
+    extends EnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{

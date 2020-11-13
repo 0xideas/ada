@@ -1,7 +1,7 @@
 package epsilon.demos
 
 import epsilon.core.models.SimpleAutoRegressionModel
-import epsilon.core.ensembles.EpsilonEnsembleGreedySoftmaxLocal
+import epsilon.core.ensembles.GreedySoftmaxLocal
 import epsilon.generators.SineGenerator
 import epsilon._
 
@@ -18,7 +18,7 @@ object DemoSine{
 
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = new EpsilonEnsembleGreedySoftmaxLocal[Int, Double, Double, Double](epsilon=0.2,
+    val ensemble = new GreedySoftmaxLocal[Int, Double, Double, Double](epsilon=0.2,
                                                                models=models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
                                                                updateAggregateRewardFn=(aggRew:Double, rew:Reward) => rew,
                                                                evaluationFn=evaluationFn,

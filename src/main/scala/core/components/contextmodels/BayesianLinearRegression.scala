@@ -41,7 +41,7 @@ class BayesianLinearRegressionSample(val nfeatures: Int, val alpha: Double, val 
     def predict(x: Array[Double]): Double = predictProb(x).sample
 }
 
-//not used at the moment
+//basically identical to point estimate linear regression - not used at the moment
 class BayesianLinearRegressionMean(val nfeatures: Int, val alpha: Double, val beta: Double)
     extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
     def predict(x: Array[Double]): Double = predictProb(x).mean
