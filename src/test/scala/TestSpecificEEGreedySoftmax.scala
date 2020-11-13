@@ -8,12 +8,12 @@ import Prop._
 import scala.collection.mutable.{Map => MutableMap}
 
 import epsilon.core.models.{SimpleAutoRegressionModel, StaticModel, GenericStaticModel}
-import epsilon.core.ensembles.EpsilonEnsembleGreedySoftmaxLocal
+import epsilon.core.ensembles.GreedySoftmaxLocal
 import epsilon.generators.{AutoregressionGenerator, ConstantGenerator}
 import epsilon.generators.Generator
 import epsilon.core.interface.{EpsilonEnsemble}
 
-class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
+class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
     def isclose(n1: Double, n2: Double): Boolean = {
         math.abs(n1 - n2) <= (math.max(math.abs(n1), math.abs(n2)) * 0.1) + 0.05
@@ -40,7 +40,7 @@ class TestEpsilonEnsembleGreedySoftmax extends Properties("TestSpecificEEGreedyS
                           new GenericStaticModel[ModelData, ModelAction](const2))
 
 
-            val ensemble = new EpsilonEnsembleGreedySoftmaxLocal[ModelId, ModelData, ModelAction, Double](
+            val ensemble = new GreedySoftmaxLocal[ModelId, ModelData, ModelAction, Double](
                                                                     Map(id1 -> models(0), id2 -> models(1), id3 -> models(2)).toMap,
                                                                     MutableMap(id1 -> 1.0, id2 -> 1.0, id3 -> 3.0),
                                                                     (aggRew:Double) => aggRew,
