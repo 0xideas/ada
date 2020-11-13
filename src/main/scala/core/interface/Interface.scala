@@ -6,13 +6,22 @@ import epsilon._
 import epsilon.core.components.distributions.ContextualDistribution
 
 
-trait EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
+abstract class EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
+    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    modelRewards: MutableMap[ModelID, AggregateReward])
     extends Model[ModelData, ModelAction]{
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
+
+    def models(): Map[ModelID, Model[ModelData, ModelAction]] = models
+    def modelRewards(): MutableMap[ModelID, AggregateReward] = modelRewards
+    def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
+
 }
 
-trait EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
-    extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward]
+abstract class EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
+    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    modelRewards: MutableMap[ModelID, AggregateReward])
+    extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
     with ModelNoContext[ModelData, ModelAction]{
     def actWithID(data: ModelData): (ModelAction, ModelID)
     def act(data: ModelData): ModelAction = actWithID(data)._1
@@ -22,8 +31,10 @@ trait EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
 
 }
 
-trait EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
-    extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward]
+abstract class EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
+    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    modelRewards: MutableMap[ModelID, AggregateReward])
+    extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
     with ModelWithContext[Context, ModelData, ModelAction]{
     def update(modelId: ModelID, context: Context, reward: Reward): Unit
     def update(modelId: ModelID, context: Context, action: ModelAction, optimalAction: ModelAction): Unit = 

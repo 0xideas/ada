@@ -7,20 +7,20 @@ import epsilon.core.interface._
 import epsilon.core.components.distributions._
 
 trait LocalEnsemble[ModelID, ModelData, ModelAction] {
-    def updateFn[AggregateReward]
-                (modelId: ModelID,
+    def _updateFn[AggregateReward]
+                (modelRewardsMap: MutableMap[ModelID,AggregateReward],
+                modelId: ModelID,
                 reward: Reward,
-                modelRewardsMap: MutableMap[ModelID,AggregateReward],
                 updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward) = {
         val oldReward = modelRewardsMap(modelId)
         val newReward =  updateAggregateRewardFn(oldReward, reward)
         modelRewardsMap(modelId) = newReward
     }
-    def updateFn[Context, AggregateReward <: ContextualDistribution[Context]]
-                (modelId: ModelID,
+    def _updateFn[Context, AggregateReward <: ContextualDistribution[Context]]
+                (modelRewards: ModelID => AggregateReward,
+                modelId: ModelID,
                 context: Context,
-                reward: Reward,
-                modelRewards: ModelID => AggregateReward) = {
+                reward: Reward) = {
         modelRewards(modelId).update(context, reward)
     }
 }

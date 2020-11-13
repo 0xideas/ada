@@ -45,7 +45,7 @@ object DemoAutocorrelation{
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
                 rewards = rewards.zipWithIndex.map{case(r, i) => {
-                    val rewardString = ensemble.getModelRewards(i).toInt.toString
+                    val rewardString = ensemble.modelRewards(i).toInt.toString
                     if (rewardString.length == 1) " " + rewardString :: r
                     else rewardString :: r
                     }

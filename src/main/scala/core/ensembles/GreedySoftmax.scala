@@ -16,25 +16,22 @@ class EpsilonEnsembleGreedySoftmaxLocal[ModelID, ModelData, ModelAction, Aggrega
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
-    extends EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
+    extends EpsilonEnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
 
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward =
+        evaluationFn(action, optimalAction)
+
     def actWithID(data: ModelData): (ModelAction, ModelID) =
     	_actImpl(models, modelRewards, draw, epsilon, data)
-    //def act[Context](context: Context, data: ModelData): ModelAction = act(data)
-
-    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward =
-    	evaluationFn(action, optimalAction)
 
     def updateAll(data: ModelData, correct: ModelAction): Unit = 
     	_updateAllImpl(data, correct, models, modelRewards, this.update)
-    
-    def getModelRewards: MutableMap[ModelID, AggregateReward] = modelRewards
 
     def update(modelId: ModelID, reward: Reward): Unit = 
-    	updateFn(modelId, reward, modelRewards,  updateAggregateRewardFn)
+    	_updateFn(modelRewards, modelId, reward, updateAggregateRewardFn)
 
 }
 
@@ -64,24 +61,22 @@ class EpsilonEnsembleGreedySoftmaxLocalWithContext
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (Context, AggregateReward, Reward) => AggregateReward)
-    extends EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
+    extends EpsilonEnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
 
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = 
+        evaluationFn(action, optimalAction)
+
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID) =
     	_actImpl[Context](models, modelRewards, context, draw, epsilon, data)
 
-    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = 
-    	evaluationFn(action, optimalAction)
-
     def updateAll(context: Context, data: ModelData, correct: ModelAction): Unit = 
     	_updateAllImpl[Context](context, data, correct, models, modelRewards, this.update)
-    
-    def getModelRewards: MutableMap[ModelID, AggregateReward] = modelRewards
 
     def update(modelId: ModelID, context: Context, reward: Reward): Unit = 
-    	updateFn[Context, AggregateReward](
-                modelId, context, reward, modelRewards: ModelID => AggregateReward)
+    	_updateFn[Context, AggregateReward](
+                 modelRewards: ModelID => AggregateReward, modelId, context, reward)
 }
 
