@@ -4,6 +4,7 @@ import breeze.linalg._
 import breeze.numerics._
 import breeze.stats.distributions.{Gaussian, MultivariateGaussian}
 import smile.regression.{OnlineRegression, LinearModel}
+import io.circe.Json
 
 abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double)
     extends OnlineRegression[Array[Double]]{
@@ -33,16 +34,21 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
     def weights: MultivariateGaussian = {
         MultivariateGaussian(mean, cov)
     }
+
+    def export: Json = Json.fromFields(Map(
+        "mean" -> Json.fromValues(mean.map(a => Json.fromDouble(a).get).toArray),
+        "covInv" -> Json.fromValues(mean.map(a => Json.fromDouble(a).get).toArray)
+    ))
 }
 
 
-class BayesianLinearRegressionSample(val nfeatures: Int, val alpha: Double, val beta: Double)
+class BayesianSampleLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double)
     extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
     def predict(x: Array[Double]): Double = predictProb(x).sample
 }
 
 //basically identical to point estimate linear regression - not used at the moment
-class BayesianLinearRegressionMean(val nfeatures: Int, val alpha: Double, val beta: Double)
+class BayesianMeanLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double)
     extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
     def predict(x: Array[Double]): Double = predictProb(x).mean
 }

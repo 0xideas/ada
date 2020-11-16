@@ -1,10 +1,12 @@
 package epsilon.core.interface
 
 import scala.collection.mutable.{Map => MutableMap}
+import io.circe.Json
 
 import epsilon._
 import epsilon.core.interface._
 import epsilon.core.components.distributions._
+import epsilon.core.components.exportable._
 
 trait LocalEnsemble[ModelID, ModelData, ModelAction] {
     def _updateFn[AggregateReward]
@@ -50,4 +52,16 @@ trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
             }
         } 
     }
+}
+
+trait ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]{
+    def export(models: Map[ModelID,  Model[ModelData, ModelAction]],
+               modelRewards: MutableMap[ModelID, AggregateReward]): Json = Json.fromFields(Map(
+        "models" -> Json.fromFields(models.map{
+            case(id, model) => (id.toString(), model.export)
+        }),
+        "modelRewards" -> Json.fromFields(modelRewards.map{
+            case(id, aggReward) => (id.toString(), aggReward.export)
+        })
+    ))
 }

@@ -3,7 +3,7 @@ package epsilon.demos
 import scala.collection.mutable.{Map => MutableMap}
 import scala.collection.mutable.{ListBuffer}
 
-import epsilon.core.components.distributions.BayesianRegressionSampleContext
+import epsilon.core.components.distributions.BayesianSampleRegressionContext
 import epsilon.core.ensembles._
 import epsilon.core.models.StaticModel
 
@@ -34,8 +34,8 @@ object DemoBayesianRegressionContextMany{
 
     //initialisation of the ensemble
     val models = (0 until nModels).map(x => new StaticModel(x.toDouble))
-    val contexts = (0 until nModels).map(x => new BayesianRegressionSampleContext(nFeatures, 0.3, 1.0))
-    val ensemble = new ThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianRegressionSampleContext](
+    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.3, 1.0))
+    val ensemble = new ThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
         (0 until nModels).zip(models).toMap,
         MutableMap((0 until nModels).zip(contexts):_*),
         (action1, action2) => math.exp(action1 - action2)

@@ -1,10 +1,13 @@
 package epsilon.core.interface
 
-trait Model[ModelData, ModelAction]{
+import io.circe.Json
+
+trait Model[ModelData, ModelAction] extends Exportable{
     def act(data: ModelData): ModelAction
     //def act[Context](context: Context, data: ModelData): ModelAction
 
     def report: String = this.toString
+
 }
 
 trait ModelNoContext[ModelData, ModelAction] extends Model[ModelData, ModelAction]{

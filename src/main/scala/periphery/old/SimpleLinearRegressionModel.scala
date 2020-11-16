@@ -1,7 +1,8 @@
 package epsilon.core.models
 
-import epsilon.core.interface.ModelNoContext
+import io.circe.Json
 
+import epsilon.core.interface.ModelNoContext
 class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double = 0.0){
 	private val eta = 0.0000000000001
     def listMean(l: List[Double]): Double = l.sum/l.length
@@ -50,5 +51,9 @@ class SimpleAutoRegressionModel(val steps: Int,
     with ModelNoContext[Double, Double] {
 
 	def act(x: Double) = predict(steps)
+
+	def export: Json = Json.fromFields(Map("steps" -> Json.fromInt(steps),
+											"m" -> Json.fromDouble(m).get,
+											"b" -> Json.fromDouble(b).get))
 	
 }

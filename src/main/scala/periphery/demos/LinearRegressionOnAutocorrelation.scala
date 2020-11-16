@@ -3,6 +3,7 @@ package epsilon.demos
 import epsilon.core.models.SimpleAutoRegressionModel
 import epsilon.core.ensembles.GreedySoftmaxLocal
 import epsilon.generators.AutoregressionGenerator
+import epsilon.core.interface.ExpDouble
 
 import scala.collection.mutable.{Map => MutableMap}
 
@@ -15,13 +16,13 @@ object DemoAutocorrelation{
                      new SimpleAutoRegressionModel(30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = new GreedySoftmaxLocal[Int, Double, Double, Double](
+    val ensemble = new GreedySoftmaxLocal[Int, Double, Double, ExpDouble](
         models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-        MutableMap(models.zipWithIndex.toSeq.map{case(k,v) => (v, 1.0)}:_*),
-        (aggRew:Double) => aggRew,
+        MutableMap(models.zipWithIndex.toSeq.map{case(k,v) => (v, new ExpDouble(1.0))}:_*),
+        (aggRew:ExpDouble) => aggRew.value,
         0.0,
         evaluationFn,
-        (aggRew:Double, rew:Double) => rew)
+        (aggRew:ExpDouble, rew:Double) => rew)
 
     val generator = new AutoregressionGenerator(10, 0.2)
 
@@ -45,7 +46,7 @@ object DemoAutocorrelation{
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
                 rewards = rewards.zipWithIndex.map{case(r, i) => {
-                    val rewardString = ensemble.modelRewards(i).toInt.toString
+                    val rewardString = ensemble.modelRewards(i).value.toInt.toString
                     if (rewardString.length == 1) " " + rewardString :: r
                     else rewardString :: r
                     }

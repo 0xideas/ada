@@ -2,14 +2,15 @@ package epsilon.core.ensembles
 
 import scala.collection.mutable.{Map => MutableMap}
 import breeze.stats.mode
+import io.circe.Json
 
 import epsilon._
 import epsilon.core.interface._
 import epsilon.core.components.learners._
-import epsilon.core.components.distributions.ContextualDistribution
+import epsilon.core.components.distributions._
 
 
-class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward]
+class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward],
     draw: AggregateReward => Double,
@@ -19,7 +20,8 @@ class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward]
     extends EnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
-    with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
+    with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
+    with ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward =
         evaluationFn(action, optimalAction)
@@ -31,13 +33,16 @@ class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward]
     	_updateAllImpl(data, correct, models, modelRewards, this.update)
 
     def update(modelId: ModelID, reward: Reward): Unit = 
-    	_updateFn(modelRewards, modelId, reward, updateAggregateRewardFn)
+        _updateFn(modelRewards, modelId, reward, updateAggregateRewardFn)
+
+    def export = export(models, modelRewards)
+    
 
 }
 
 
 object GreedySoftmaxLocal{
-    def apply[ModelID, ModelData, ModelAction, AggregateReward](
+    def apply[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
         models: Map[ModelID, Model[ModelData, ModelAction]],
         initAggregateRewards: AggregateReward,
         draw: AggregateReward => Double,
@@ -64,7 +69,8 @@ class GreedySoftmaxLocalWithContext
     extends EnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
-    with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
+    with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
+    with ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = 
         evaluationFn(action, optimalAction)
@@ -78,5 +84,7 @@ class GreedySoftmaxLocalWithContext
     def update(modelId: ModelID, context: Context, reward: Reward): Unit = 
     	_updateFn[Context, AggregateReward](
                  modelRewards: ModelID => AggregateReward, modelId, context, reward)
+
+    def export: Json = export(models, modelRewards)
 }
 

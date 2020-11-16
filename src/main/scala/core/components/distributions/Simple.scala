@@ -1,6 +1,7 @@
 package epsilon.core.components.distributions
 
 import breeze.stats.distributions.{Beta, Bernoulli}
+import io.circe.Json
 
 import epsilon._
 
@@ -20,4 +21,8 @@ class BetaDistribution (private var alpha: Double, private var beta: Double)
         beta = beta + (1.0-rewardNormed)
         betaDistribution = Beta(alpha, beta)
     }
+    def export: Json = Json.fromFields(Map(
+        "alpha" -> Json.fromDouble(alpha).get,
+        "beta" -> Json.fromDouble(beta).get
+    ))
 }

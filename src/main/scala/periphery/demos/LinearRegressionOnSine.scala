@@ -4,6 +4,7 @@ import epsilon.core.models.SimpleAutoRegressionModel
 import epsilon.core.ensembles.GreedySoftmaxLocal
 import epsilon.generators.SineGenerator
 import epsilon._
+import epsilon.core.interface.ExpDouble
 
 import scala.collection.mutable.{Map => MutableMap}
 
@@ -17,13 +18,15 @@ object DemoSine{
                     new SimpleAutoRegressionModel(1, 3.0))
 
 
+
+
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = new GreedySoftmaxLocal[Int, Double, Double, Double](epsilon=0.2,
+    val ensemble = new GreedySoftmaxLocal[Int, Double, Double, ExpDouble](epsilon=0.2,
                                                                models=models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               updateAggregateRewardFn=(aggRew:Double, rew:Reward) => rew,
+                                                               updateAggregateRewardFn=(aggRew: ExpDouble, rew: Reward) => rew,
                                                                evaluationFn=evaluationFn,
-                                                               draw=(aggRew:Double) => aggRew,
-                                                               modelRewards = MutableMap(models.zipWithIndex.toSeq.map{case(k,v) => (v, 1.0)}:_*),
+                                                               draw=(aggRew: ExpDouble) => aggRew.value,
+                                                               modelRewards = MutableMap(models.zipWithIndex.toSeq.map{case(k,v) => (v, new ExpDouble(1.0))}:_*),
 )
 
     val generator = new SineGenerator(2.8, 150)
