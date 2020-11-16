@@ -6,7 +6,6 @@ import io.circe.Json
 import epsilon._
 import epsilon.core.interface._
 import epsilon.core.components.distributions._
-import epsilon.core.components.exportable._
 
 trait LocalEnsemble[ModelID, ModelData, ModelAction] {
     def _updateFn[AggregateReward]

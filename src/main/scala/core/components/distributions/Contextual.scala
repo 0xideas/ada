@@ -32,4 +32,6 @@ class BayesianSampleRegressionContext(
     beta: Double = 1.0)
     extends SmileModelContextDistribution[Array[Double], BayesianSampleLinearRegression](
         new BayesianSampleLinearRegression(nfeatures, alpha, beta)
-    )
+    ){
+        override def export: Json = model.export
+    }
