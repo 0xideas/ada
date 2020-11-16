@@ -38,7 +38,7 @@ trait SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
 }
 
 
-trait ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]
+trait SelectWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]
     extends SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def _selectModel(models: Map[ModelID, Model[ModelData, ModelAction]],

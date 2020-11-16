@@ -46,7 +46,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
 
 //not used so far
 trait Softmax[ModelID, ModelData, ModelAction, AggregateReward]
-    extends ExploreWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
+    extends SelectWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]{
     def _actImpl(models: Map[ModelID, Model[ModelData, ModelAction]],
                  modelRewards: ModelID => AggregateReward,
                  draw: AggregateReward => Double,
