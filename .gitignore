@@ -8,4 +8,4 @@ target/*
 src/*
 ada-core/target/*
 ada-appl/target/*
-ada-core/src/main/scala/target/*
+notebooks/*
