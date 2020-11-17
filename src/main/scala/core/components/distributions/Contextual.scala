@@ -1,4 +1,4 @@
-package epsilon.core.components.distributions
+package ada.core.components.distributions
 
 import smile.regression.{OnlineRegression, LinearModel}
 import smile.regression.lm
@@ -6,8 +6,8 @@ import smile.data.formula.Formula
 import smile.data.DataFrame
 import io.circe.Json
 
-import epsilon.core.components.contextmodels.BayesianSampleLinearRegression
-import epsilon._
+import ada.core.components.contextmodels.BayesianSampleLinearRegression
+import ada._
 
 class SmileModelContextDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
     extends ContextualDistribution[Context]{

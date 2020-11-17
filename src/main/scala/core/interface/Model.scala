@@ -1,4 +1,4 @@
-package epsilon.core.interface
+package ada.core.interface
 
 import io.circe.Json
 

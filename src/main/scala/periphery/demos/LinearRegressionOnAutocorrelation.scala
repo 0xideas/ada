@@ -1,9 +1,9 @@
-package epsilon.demos
+package ada.demos
 
-import epsilon.core.models.SimpleAutoRegressionModel
-import epsilon.core.ensembles.GreedySoftmaxLocal
-import epsilon.generators.AutoregressionGenerator
-import epsilon.core.interface.ExpDouble
+import ada.core.models.SimpleAutoRegressionModel
+import ada.core.ensembles.GreedySoftmaxLocal
+import ada.generators.AutoregressionGenerator
+import ada.core.interface.ExpDouble
 
 import scala.collection.mutable.{Map => MutableMap}
 

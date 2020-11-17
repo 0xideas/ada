@@ -1,11 +1,11 @@
-package epsilon.demos
+package ada.demos
 
-import epsilon.core.models.{SimpleAutoRegressionModel, StaticModel}
-import epsilon.core.ensembles.ThompsonSamplingLocalNoContextBeta
-import epsilon.core.components.distributions.BetaDistribution
-import epsilon.generators.AutoregressionGenerator
-import epsilon._
-import epsilon.core.components.distributions.{Distribution, BetaDistribution}
+import ada.core.models.{SimpleAutoRegressionModel, StaticModel}
+import ada.core.ensembles.ThompsonSamplingLocalNoContextBeta
+import ada.core.components.distributions.BetaDistribution
+import ada.generators.AutoregressionGenerator
+import ada._
+import ada.core.components.distributions.{Distribution, BetaDistribution}
 
 import plotting.Chart
 

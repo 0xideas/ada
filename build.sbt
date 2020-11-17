@@ -1,6 +1,6 @@
 scalaVersion := "2.12.12"
 
-name := "EpsilonEnsemble"
+name := "AdaEnsemble"
 version := "0.1"
 organization := "com.github.leontl"
 

@@ -1,11 +1,11 @@
-package epsilon.core.interface
+package ada.core.interface
 
 import scala.collection.mutable.{Map => MutableMap}
 import io.circe.Json
 
-import epsilon._
-import epsilon.core.interface._
-import epsilon.core.components.distributions._
+import ada._
+import ada.core.interface._
+import ada.core.components.distributions._
 
 trait LocalEnsemble[ModelID, ModelData, ModelAction] {
     def _updateFn[AggregateReward]

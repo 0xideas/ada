@@ -1,4 +1,4 @@
-package epsilon.distributions
+package ada.distributions
 
 
 import com.stripe.rainier.core.{Distribution => RainierDistribution, _}

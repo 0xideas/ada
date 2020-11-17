@@ -1,6 +1,6 @@
-package epsilon.demos
+package ada.demos
 
-import epsilon.demos.{DemoBayesianRegressionContextMany => Demo}
+import ada.demos.{DemoBayesianRegressionContextMany => Demo}
 object Main extends App{
     Demo.run()
 }

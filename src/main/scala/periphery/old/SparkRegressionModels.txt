@@ -1,4 +1,4 @@
-"""package epsilon.core.models
+"""package ada.core.models
 
 import org.apache.spark.ml.{Estimator, Model}
 import org.apache.spark.ml.regression.{LinearRegression, LinearRegressionModel}
@@ -6,7 +6,7 @@ import org.apache.spark.ml.linalg.{Vector, Vectors}
 import org.apache.spark.rdd.RDD
 
 import org.apache.spark.sql.SparkSession
-import epsilon.interfaces.{Model => ModelEE}
+import ada.interfaces.{Model => ModelEE}
 import org.apache.spark.ml.param.ParamMap
 import org.apache.spark.sql.Dataset
 import org.apache.spark.ml.param.ParamPair

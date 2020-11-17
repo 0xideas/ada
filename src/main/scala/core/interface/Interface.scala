@@ -1,9 +1,9 @@
-package epsilon.core.interface
+package ada.core.interface
 
 import scala.collection.mutable.{Map => MutableMap}
 
-import epsilon._
-import epsilon.core.components.distributions.ContextualDistribution
+import ada._
+import ada.core.components.distributions.ContextualDistribution
 
 
 abstract class EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]

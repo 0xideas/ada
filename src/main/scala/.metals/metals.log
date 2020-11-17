@@ -1,0 +1,59 @@
+2020.11.17 11:24:03 INFO  Started: Metals version 0.9.5 in workspace '/home/leon/projects/ada-ensemble/src/main/scala' for client vscode.
+2020.11.17 11:24:04 INFO  time: initialize in 1.41s
+2020.11.17 11:24:05 WARN  Build server is not auto-connectable.
+2020.11.17 11:24:05 WARN  no build tool detected in workspace '/home/leon/projects/ada-ensemble/src/main/scala'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2020.11.17 11:24:05 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/contextmodels/BayesianLinearRegression.scala
+2020.11.17 11:24:07 INFO  no build target: using presentation compiler with only scala-library
+Nov 17, 2020 11:24:07 AM org.eclipse.lsp4j.jsonrpc.RemoteEndpoint handleCancellation
+WARNING: Unmatched cancel notification for request id 2
+2020.11.17 11:24:08 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/distributions/Contextual.scala
+2020.11.17 11:24:19 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/distributions/Distribution.scala
+2020.11.17 11:24:24 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/distributions/Simple.scala
+2020.11.17 11:24:28 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/learners/CombinedLearners.scala
+2020.11.17 11:24:32 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/learners/Learners.scala
+2020.11.17 11:24:44 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/models/DummyModel.scala
+2020.11.17 11:24:49 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/Selectors.scala
+2020.11.17 11:24:54 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/ensembles/GreedySoftmax.scala
+2020.11.17 11:24:57 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/ensembles/ThompsonSampling.scala
+2020.11.17 11:25:01 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Attributes.scala
+2020.11.17 11:25:04 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Exportable.scala
+2020.11.17 11:25:07 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Interface.scala
+2020.11.17 11:25:10 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Model.scala
+2020.11.17 11:25:14 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/package.scala
+2020.11.17 11:25:15 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/Main.scala
+2020.11.17 11:25:20 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/BayesianRegressionContextDemo.scala
+2020.11.17 11:25:24 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/BayesianRegressionContextDemoMany.scala
+2020.11.17 11:25:26 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/LinearRegressionOnAutocorrelation.scala
+2020.11.17 11:25:30 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/LinearRegressionOnAutocorrelationWithThompsonSampling.scala
+2020.11.17 11:25:33 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/LinearRegressionOnSine.scala
+2020.11.17 11:25:36 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/PointRegressionContextDemo.scala
+2020.11.17 11:25:42 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/generators/Generators.scala
+2020.11.17 11:25:53 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/old/SimpleLinearRegressionModel.scala
+2020.11.17 11:26:00 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/Chart.scala
+2020.11.17 11:26:12 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/Chart.scala
+2020.11.17 11:26:15 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/old/SimpleLinearRegressionModel.scala
+2020.11.17 11:26:18 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/generators/Generators.scala
+2020.11.17 11:26:20 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/PointRegressionContextDemo.scala
+2020.11.17 11:26:21 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/LinearRegressionOnSine.scala
+2020.11.17 11:26:23 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/LinearRegressionOnAutocorrelationWithThompsonSampling.scala
+2020.11.17 11:26:24 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/LinearRegressionOnAutocorrelation.scala
+2020.11.17 11:26:24 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/BayesianRegressionContextDemoMany.scala
+2020.11.17 11:26:26 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/periphery/demos/BayesianRegressionContextDemo.scala
+2020.11.17 11:26:27 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/Main.scala
+2020.11.17 11:26:27 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/package.scala
+2020.11.17 11:26:27 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/package.scala
+2020.11.17 11:26:30 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Model.scala
+2020.11.17 11:26:31 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Interface.scala
+2020.11.17 11:26:32 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Exportable.scala
+2020.11.17 11:26:33 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Attributes.scala
+2020.11.17 11:26:33 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/ensembles/ThompsonSampling.scala
+2020.11.17 11:26:35 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/ensembles/GreedySoftmax.scala
+2020.11.17 11:26:37 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/Selectors.scala
+2020.11.17 11:26:38 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/models/DummyModel.scala
+2020.11.17 11:26:39 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/learners/Learners.scala
+2020.11.17 11:26:40 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/learners/CombinedLearners.scala
+2020.11.17 11:26:42 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/distributions/Simple.scala
+2020.11.17 11:26:44 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/distributions/Distribution.scala
+2020.11.17 11:26:45 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/distributions/Contextual.scala
+2020.11.17 11:26:46 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/contextmodels/BayesianLinearRegression.scala
+2020.11.17 11:29:04 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/package.scala

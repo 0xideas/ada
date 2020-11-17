@@ -1,7 +1,7 @@
-package epsilon.core.models
+package ada.core.models
 import io.circe.Json
 
-import epsilon.core.interface.ModelNoContext
+import ada.core.interface.ModelNoContext
 
 
 

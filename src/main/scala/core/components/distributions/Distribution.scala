@@ -1,7 +1,7 @@
-package epsilon.core.components.distributions
+package ada.core.components.distributions
 
-import epsilon._
-import epsilon.core.interface.Exportable
+import ada._
+import ada.core.interface.Exportable
 
 sealed trait Distribution extends Exportable
 

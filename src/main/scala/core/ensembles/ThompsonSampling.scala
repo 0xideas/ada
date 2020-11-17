@@ -1,11 +1,11 @@
-package epsilon.core.ensembles
+package ada.core.ensembles
 
 import scala.collection.mutable.{Map => MutableMap}
 
-import epsilon._
-import epsilon.core.interface._
-import epsilon.core.components.learners._
-import epsilon.core.components.distributions._
+import ada._
+import ada.core.interface._
+import ada.core.components.learners._
+import ada.core.components.distributions._
 
 
 class ThompsonSamplingLocalNoContext

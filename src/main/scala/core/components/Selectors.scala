@@ -1,10 +1,10 @@
-package epsilon.core.components.learners
+package ada.core.components.learners
 
 import scala.collection.mutable.{Map => MutableMap}
 
-import epsilon._
-import epsilon.core.interface._
-import epsilon.core.components.distributions._
+import ada._
+import ada.core.interface._
+import ada.core.components.distributions._
 
 
 trait SelectModel[ModelID, ModelData, ModelAction, AggregateReward]{

@@ -1,11 +1,11 @@
-package epsilon.demos
+package ada.demos
 
 import scala.collection.mutable.{Map => MutableMap}
 import scala.collection.mutable.{ListBuffer}
 
-import epsilon.core.components.distributions.BayesianSampleRegressionContext
-import epsilon.core.ensembles._
-import epsilon.core.models.StaticModel
+import ada.core.components.distributions.BayesianSampleRegressionContext
+import ada.core.ensembles._
+import ada.core.models.StaticModel
 
 
 import plotting.Chart

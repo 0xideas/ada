@@ -1,9 +1,9 @@
-package epsilon.core.components.distributions
+package ada.core.components.distributions
 
 import breeze.stats.distributions.{Beta, Bernoulli}
 import io.circe.Json
 
-import epsilon._
+import ada._
 
 
 class BetaDistribution (private var alpha: Double, private var beta: Double)

@@ -1,14 +1,14 @@
-"""package epsilon.demos
+"""package ada.demos
 
 import org.apache.spark.ml.linalg.{Vector, Vectors}
 import org.apache.spark.ml.regression.{LinearRegression, LinearRegressionModel}
 import org.apache.spark.sql.{Dataset, Row}
 import org.apache.spark.ml.feature.VectorAssembler
 
-import epsilon.models.{LinearRegressionEE, LinearRegressionModelEE}
-import epsilon.ensembles.EpsilonEnsembleThompsonSamplingLocal
-import epsilon.distributions.BetaDistribution
-import epsilon.generators.AutoregressionGenerator
+import ada.models.{LinearRegressionEE, LinearRegressionModelEE}
+import ada.ensembles.EpsilonEnsembleThompsonSamplingLocal
+import ada.distributions.BetaDistribution
+import ada.generators.AutoregressionGenerator
 import plotting.Chart
 
 import org.apache.spark.sql.SparkSession

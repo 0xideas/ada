@@ -1,4 +1,4 @@
-package epsilon.core.components.contextmodels
+package ada.core.components.contextmodels
 
 import breeze.linalg._
 import breeze.numerics._
