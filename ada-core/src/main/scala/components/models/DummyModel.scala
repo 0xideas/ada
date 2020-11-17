@@ -1,12 +1,12 @@
 package ada.core.models
 import io.circe.Json
 
-import ada.core.interface.ModelNoContext
+import ada.core.interface.SimpleModel
 
 
 
 class GenericStaticModel[ModelData, ModelAction](value: ModelAction)(implicit g: ModelAction => Json)
-    extends ModelNoContext[ModelData, ModelAction]{
+    extends SimpleModel[ModelData, ModelAction]{
 
     def act(data: ModelData): ModelAction = value
 

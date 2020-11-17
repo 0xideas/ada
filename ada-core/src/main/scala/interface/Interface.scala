@@ -18,11 +18,11 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
 
 }
 
-abstract class EnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
+abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
-    with ModelNoContext[ModelData, ModelAction]{
+    with SimpleModel[ModelData, ModelAction]{
     def actWithID(data: ModelData): (ModelAction, ModelID)
     def act(data: ModelData): ModelAction = actWithID(data)._1
     def update(modelId: ModelID, reward: Reward): Unit
@@ -31,11 +31,11 @@ abstract class EnsembleNoContext[ModelID, ModelData, ModelAction, AggregateRewar
 
 }
 
-abstract class EnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
+abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
-    with ModelWithContext[Context, ModelData, ModelAction]{
+    with ContextualModel[Context, ModelData, ModelAction]{
     def update(modelId: ModelID, context: Context, reward: Reward): Unit
     def update(modelId: ModelID, context: Context, action: ModelAction, optimalAction: ModelAction): Unit = 
         update(modelId, context, evaluate(action, optimalAction))

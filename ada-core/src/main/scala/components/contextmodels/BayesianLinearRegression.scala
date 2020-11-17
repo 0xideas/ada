@@ -31,8 +31,24 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
         val y_pred_var = (1/ beta) + (xvec.t * w_cov * xvec)
         new Gaussian(y_pred_mean, y_pred_var)
     }
+
     def weights: MultivariateGaussian = {
         MultivariateGaussian(mean, cov)
+    }
+
+    def setMean(mean: DenseVector[Double]): Unit = {
+        require(mean.length == this.mean.length)
+        this.mean = mean
+    }
+
+    def setCovInv(covInv: DenseMatrix[Double]): Unit = {
+        require(covInv.size == this.covInv.size)
+        this.covInv = covInv
+    }
+
+    def set(mean: DenseVector[Double], covInv: DenseMatrix[Double]): Unit = {
+        setMean(mean)
+        setCovInv(covInv)
     }
 
     def export: Json = Json.fromFields(Map(

@@ -17,7 +17,7 @@ class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward <: Exp
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
-    extends EnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
+    extends SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
@@ -66,7 +66,7 @@ class GreedySoftmaxLocalWithContext
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (Context, AggregateReward, Reward) => AggregateReward)
-    extends EnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
+    extends ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelData, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
