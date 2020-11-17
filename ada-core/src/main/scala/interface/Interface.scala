@@ -6,7 +6,7 @@ import ada._
 import ada.core.components.distributions.ContextualDistribution
 
 
-abstract class EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
+abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward])
     extends Model[ModelData, ModelAction]{
@@ -21,7 +21,7 @@ abstract class EpsilonEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
 abstract class EnsembleNoContext[ModelID, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward])
-    extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
+    extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
     with ModelNoContext[ModelData, ModelAction]{
     def actWithID(data: ModelData): (ModelAction, ModelID)
     def act(data: ModelData): ModelAction = actWithID(data)._1
@@ -34,7 +34,7 @@ abstract class EnsembleNoContext[ModelID, ModelData, ModelAction, AggregateRewar
 abstract class EnsembleWithContext[ModelID, Context, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward])
-    extends EpsilonEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
+    extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
     with ModelWithContext[Context, ModelData, ModelAction]{
     def update(modelId: ModelID, context: Context, reward: Reward): Unit
     def update(modelId: ModelID, context: Context, action: ModelAction, optimalAction: ModelAction): Unit = 

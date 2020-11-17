@@ -1,4 +1,4 @@
-package epsilon
+package ada
 
 import org.scalacheck._
 import Arbitrary._
@@ -8,11 +8,11 @@ import io.circe.Json
 
 import scala.collection.mutable.{Map => MutableMap}
 
-import epsilon.core.models.{SimpleAutoRegressionModel, StaticModel, GenericStaticModel}
-import epsilon.core.ensembles.GreedySoftmaxLocal
-import epsilon.generators.{AutoregressionGenerator, ConstantGenerator}
-import epsilon.generators.Generator
-import epsilon.core.interface.{EpsilonEnsemble, ExpDouble}
+import ada.core.models.{SimpleAutoRegressionModel, StaticModel, GenericStaticModel}
+import ada.core.ensembles.GreedySoftmaxLocal
+import ada.generators.{AutoregressionGenerator, ConstantGenerator}
+import ada.generators.Generator
+import ada.core.interface.{AdaEnsemble, ExpDouble}
 
 class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 

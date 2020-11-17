@@ -12,9 +12,9 @@ import plotting.Chart
 
 object DemoBayesianRegressionContextMany{
     //parameters for the demo
-    val nIter = 1000 * 10
+    val nIter = 100 * 10
     val nFeatures = 5
-    val nModels = 100
+    val nModels = 10
     val nGoodModels = 2
 
     //highIndexMaps are the perturbations applied to the random context when taking a snapshot

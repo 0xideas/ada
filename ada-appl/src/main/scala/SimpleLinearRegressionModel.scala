@@ -1,8 +1,10 @@
+
 package ada.core.models
 
 import io.circe.Json
 
 import ada.core.interface.ModelNoContext
+
 class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double = 0.0){
 	private val eta = 0.0000000000001
     def listMean(l: List[Double]): Double = l.sum/l.length

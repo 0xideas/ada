@@ -57,3 +57,8 @@ WARNING: Unmatched cancel notification for request id 2
 2020.11.17 11:26:45 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/distributions/Contextual.scala
 2020.11.17 11:26:46 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/components/contextmodels/BayesianLinearRegression.scala
 2020.11.17 11:29:04 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/package.scala
+2020.11.17 11:36:05 WARN  no build tool detected in workspace '/home/leon/projects/ada-ensemble/src/main/scala'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
+2020.11.17 11:37:28 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/Interface.scala
+2020.11.17 11:37:44 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/package.scala
+2020.11.17 11:39:18 WARN  no build target for: /home/leon/projects/ada-ensemble/src/main/scala/core/interface/package.scala
+2020.11.17 11:39:33 INFO  shutting down Metals

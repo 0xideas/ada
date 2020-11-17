@@ -5,3 +5,7 @@ data/*
 notebooks/.ipynb_checkpoints/*
 project/*
 target/*
+src/*
+ada-core/target/*
+ada-appl/target/*
+ada-core/src/main/scala/target/*

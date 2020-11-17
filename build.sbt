@@ -1,16 +1,44 @@
-scalaVersion := "2.12.12"
 
-name := "AdaEnsemble"
-version := "0.1"
-organization := "com.github.leontl"
 
-resolvers += Resolver.bintrayRepo("rainier", "maven")
+lazy val root = project.
+  in(file(".")).
+  aggregate(core, appl).
+  dependsOn(core).
+  settings(commonSettings).
+  settings(libraryDependencies ++= dependencies)
+
+
+Compile / scalaSource := baseDirectory.value / "ada-appl"
+
+
+lazy val commonSettings = Seq(
+  scalaVersion := "2.12.12",
+  name := "AdaEnsemble",
+  version := "0.1",
+  organization := "com.github.leontl"
+)
+
+lazy val core = (project.
+  in(file("ada-core"))).
+  settings(name := "ada-core").
+  settings(commonSettings).
+  settings(libraryDependencies ++= dependencies)
+
+lazy val appl = (project.
+  in(file("ada-appl"))).
+  dependsOn(core).
+  settings(name := "ada-appl").
+  settings(commonSettings).
+  settings(libraryDependencies ++= dependencies)
+
+
+//resolvers += Resolver.bintrayRepo("rainier", "maven")
 
 val breezeVersion = "1.1"
 val circeVersion = "0.12.3"
 val log4jversion = "2.13.3"
 
-libraryDependencies  ++= Seq(
+lazy val dependencies = Seq(
   "org.scalacheck" %% "scalacheck" % "1.14.1",
   "com.github.haifengl" %% "smile-scala" % "2.5.3",
   "org.clapper" %% "grizzled-slf4j" % "1.3.4",
