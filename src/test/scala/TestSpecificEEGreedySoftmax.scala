@@ -4,6 +4,7 @@ import org.scalacheck._
 import Arbitrary._
 import Gen._
 import Prop._
+import io.circe.Json
 
 import scala.collection.mutable.{Map => MutableMap}
 
@@ -11,7 +12,7 @@ import epsilon.core.models.{SimpleAutoRegressionModel, StaticModel, GenericStati
 import epsilon.core.ensembles.GreedySoftmaxLocal
 import epsilon.generators.{AutoregressionGenerator, ConstantGenerator}
 import epsilon.generators.Generator
-import epsilon.core.interface.{EpsilonEnsemble}
+import epsilon.core.interface.{EpsilonEnsemble, ExpDouble}
 
 class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
@@ -35,18 +36,18 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
             val generator = new ConstantGenerator(const1)
 
-            val models = List(new GenericStaticModel[ModelData, ModelAction](const1),
-                          new GenericStaticModel[ModelData, ModelAction](const2),
-                          new GenericStaticModel[ModelData, ModelAction](const2))
+            val models = List(new GenericStaticModel[ModelData, ModelAction](const1)(x => Json.fromString(x.toString())),
+                          new GenericStaticModel[ModelData, ModelAction](const2)(x => Json.fromString(x.toString())),
+                          new GenericStaticModel[ModelData, ModelAction](const2)(x => Json.fromString(x.toString())))
 
 
-            val ensemble = new GreedySoftmaxLocal[ModelId, ModelData, ModelAction, Double](
+            val ensemble = new GreedySoftmaxLocal[ModelId, ModelData, ModelAction, ExpDouble](
                                                                     Map(id1 -> models(0), id2 -> models(1), id3 -> models(2)).toMap,
                                                                     MutableMap(id1 -> 1.0, id2 -> 1.0, id3 -> 3.0),
-                                                                    (aggRew:Double) => aggRew,
+                                                                    (aggRew:ExpDouble) => aggRew.value,
                                                                     eta,
                                                                     evaluationFn[ModelAction](_,_),
-                                                                    (aggRew:Double, rew:Reward) => rew)
+                                                                    (aggRew:ExpDouble, rew:Reward) => rew)
             
             (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble))
         }
