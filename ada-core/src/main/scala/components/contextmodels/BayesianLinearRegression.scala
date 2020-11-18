@@ -7,7 +7,7 @@ import smile.regression.{OnlineRegression, LinearModel}
 import io.circe.Json
 import scala.language.implicitConversions
 
-abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double)
+abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, private var beta: Double, betaDecay: Double = 1.0)
     extends OnlineRegression[Array[Double]]{
     private var mean = DenseVector.zeros[Double](nfeatures)
     private var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
@@ -22,6 +22,7 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
         cov = inv(covInvT)
         mean = cov * ((covInv * mean) + (xvec.map(_ * beta * y)))
         covInv = covInvT
+        beta = beta*betaDecay
     }
 
     def predictProb(x: Array[Double]): Gaussian = {
@@ -59,14 +60,14 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
 }
 
 
-class BayesianSampleLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double)
-    extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
+class BayesianSampleLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double, val betaDecay: Double = 1.0)
+    extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta, betaDecay){
     def predict(x: Array[Double]): Double = predictProb(x).sample
 }
 
 //basically identical to point estimate linear regression - not used at the moment
-class BayesianMeanLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double)
-    extends BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double){
+class BayesianMeanLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double, val betaDecay: Double = 1.0)
+    extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta, betaDecay){
     def predict(x: Array[Double]): Double = predictProb(x).mean
 }
 

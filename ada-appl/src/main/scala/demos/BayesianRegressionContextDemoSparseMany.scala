@@ -12,7 +12,7 @@ import plotting.Chart
 
 object DemoBayesianRegressionContextSparseMany{
     //parameters for the demo
-    val nIter = 1000 * 10
+    val nIter = 1000 * 20
     val nFeatures = 5
     val nModels = 3
     val nGoodModels = 2
@@ -39,7 +39,7 @@ object DemoBayesianRegressionContextSparseMany{
 
     //initialisation of the ensemble
     val models = (0 until nModels).map(x => new StaticModel(x.toDouble))
-    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.3, 1.0))
+    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
     val ensemble = new ThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
         (0 until nModels).zip(models).toMap,
         MutableMap((0 until nModels).zip(contexts):_*),
@@ -121,7 +121,7 @@ object DemoBayesianRegressionContextSparseMany{
             //number of features, for all other models it is 0
             //this means that for those first models, the reward is the value at the feature
             val setReward = if((id < nFeatures * nGoodModels) &&  //if the id belongs to a model that sees positive reward
-                               ((rnd.nextDouble()*(1+context(id % nFeatures))) > (1-conversionRate(id)))) 2.5 else 0   // and the customer converts
+                               ((rnd.nextDouble()*(1+context(id % nFeatures))) > (1-conversionRate(id)))) 5 else 0   // and the customer converts
 
             ensemble.update(id, context,  setReward)
 
