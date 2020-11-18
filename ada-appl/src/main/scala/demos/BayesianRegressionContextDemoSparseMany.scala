@@ -10,25 +10,30 @@ import ada.core.models.StaticModel
 
 import plotting.Chart
 
-object DemoBayesianRegressionContextMany{
+object DemoBayesianRegressionContextSparseMany{
     //parameters for the demo
-    val nIter = 100 * 10
+    val nIter = 1000 * 10
     val nFeatures = 5
-    val nModels = 10
+    val nModels = 3
     val nGoodModels = 2
+
+    val conversionRate = Map(
+        0 -> 0.013,
+        1 -> 0.017,
+        2 -> 0.022
+    )
 
     //highIndexMaps are the perturbations applied to the random context when taking a snapshot
     //this way the effect of new contexts on the ensemble can be studied
 
     //val highIndexMaps: List[Map[Int, Int]] = (0 until nFeatures).toList.map(v => Map(v -> 4))
     val highIndexMaps: List[Map[Int, Double]] = List(
-        Map(2 -> 5),
-        Map(0 -> 5, 3 -> 2.5),
-        Map(1 -> 9, 2 -> 2.5),
-        Map(2 -> 2, 3 -> 4, 4 -> 3)
+        Map(0 -> 1.2),
+        Map(1 -> 1.2),
+        Map(2 -> 1.2),
+        Map(0 -> 1.2, 1 -> 1.2, 2 -> 1.2),
+        Map()
     )
-
-
 
     val rnd = scala.util.Random
 
@@ -42,7 +47,7 @@ object DemoBayesianRegressionContextMany{
     )
 
 
-    def getAverages(highIndexMap: Map[Int, Double]): List[Double] = {
+    def getAverages(highIndexMap: Map[Int, Double], iter: Int = 100): List[Double] = {
         //given a particular state of the ensemble, act 100 times and measure the frequency of each action
         val context = Array.fill(nFeatures)(rnd.nextGaussian())
         //the context is random except for in the highIndex position, where it is quite high, which results
@@ -52,7 +57,7 @@ object DemoBayesianRegressionContextMany{
         }
         val selected = ListBuffer.fill(nModels)(ListBuffer.empty[Double])
         var j = 0
-        while( j < 100) {
+        while( j < iter) {
             val (action, id) = ensemble.actWithID(context, ())
             //one hot encode which action was taken, so to speak
             selected.zipWithIndex.map{case(a, i) => selected(i) += (if(i == id) 1.0 else 0.0)}
@@ -64,7 +69,7 @@ object DemoBayesianRegressionContextMany{
     def report(highIndexMap: Map[Int, Double], shares: ListBuffer[ListBuffer[Double]]): Unit = {
         val characters = "abcdefghijklmnopqrst"
 
-        val selections = getAverages(highIndexMap)
+        val selections = getAverages(highIndexMap, 10000)
         var selections2: List[(Double, Int)] = Nil
         //if there are more than 10 models, filter models to those that have good performance
         if( selections.length > 10){
@@ -102,7 +107,7 @@ object DemoBayesianRegressionContextMany{
             if(i % scala.math.max(1, (nIter / 100).toInt)  == 0){
                 highIndexMaps.zipWithIndex.map{
                     case(highIndexMap, f) =>  {
-                        var selections = getAverages(highIndexMap)
+                        var selections = getAverages(highIndexMap, 1000)
                         shares(f).zipWithIndex.map{case(s,j) => s += selections(j)}  
                     }
               }
@@ -115,7 +120,9 @@ object DemoBayesianRegressionContextMany{
             //at the position that is indexed by the remainder of the model id divided by the
             //number of features, for all other models it is 0
             //this means that for those first models, the reward is the value at the feature
-            val setReward = if(id < nFeatures * nGoodModels) context(id % nFeatures) else 0
+            val setReward = if((id < nFeatures * nGoodModels) &&  //if the id belongs to a model that sees positive reward
+                               ((rnd.nextDouble()*(1+context(id % nFeatures))) > (1-conversionRate(id)))) 2.5 else 0   // and the customer converts
+
             ensemble.update(id, context,  setReward)
 
             if(i % 10000 == 0) println(i) 

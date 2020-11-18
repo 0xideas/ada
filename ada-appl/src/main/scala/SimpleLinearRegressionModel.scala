@@ -3,7 +3,7 @@ package ada.core.models
 
 import io.circe.Json
 
-import ada.core.interface.ModelNoContext
+import ada.core.interface.SimpleModel
 
 class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double = 0.0){
 	private val eta = 0.0000000000001
@@ -50,7 +50,7 @@ class SimpleAutoRegressionModel(val steps: Int,
 								private var m: Double = 0.0,
 								private var b: Double = 0.0)
     extends SimpleLinearRegression(m, b)
-    with ModelNoContext[Double, Double] {
+    with SimpleModel[Double, Double] {
 
 	def act(x: Double) = predict(steps)
 

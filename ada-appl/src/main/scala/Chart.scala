@@ -13,8 +13,15 @@ class Chart(chars : ListBuffer[ListBuffer[String]],
     } 
     def bucket(x: Double): Int = (((top - x)/(top -bottom))*(height-0.001)).toInt
 
+    def placeValue(value: Double, xLoc: Int, symbol: String): Unit = {
+        val yLoc = bucket(value)
+        if(chars(yLoc)(xLoc) == " ") chars(yLoc)(xLoc) = symbol
+        else if(yLoc+1 < height && chars(yLoc + 1)(xLoc) == " ") chars(yLoc+1)(xLoc) = symbol
+        else if(chars(yLoc - 1)(xLoc) == " ") chars(yLoc-1)(xLoc) = symbol
+    }
+
     def plotLine(data: List[Double], label:Option[String], symbol:String = "-"): Chart = {
-        val printLabel = label == None
+        val printLabel = label != None
         val incr = math.max(1, math.ceil(data.length.toDouble/(width.toDouble)).toInt)
         data.zipWithIndex
             .filter{case(x, i) => i%incr == 0}
@@ -22,9 +29,9 @@ class Chart(chars : ListBuffer[ListBuffer[String]],
             .zipWithIndex
             .tail
             .filter{case(x, i) => bucket(x) > 0 && bucket(x) < height}
-            .map{ case(x, i) => {
-                if(chars(bucket(x))(i) == " ") chars(bucket(x))(i) = symbol
-                if(i == 10 && printLabel) chars(((bucket(x) + 1) % height))(i) = label.get
+            .map{ case(y, xLoc) => {
+                placeValue(y, xLoc, symbol)
+                if(xLoc == 10 && printLabel) chars(((bucket(y) + 1) % height))(xLoc) = label.get
             } } 
         this
     } 
