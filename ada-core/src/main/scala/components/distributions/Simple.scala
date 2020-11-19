@@ -15,10 +15,15 @@ class BetaDistribution (private var alpha: Double, private var beta: Double)
 
     def draw = betaDistribution.draw()
 
-    def update(reward:Reward):Unit = {
+    def updateConventional(reward:Reward):Unit = {
         val rewardNormed = math.max(math.min(reward, 1), 0)
         alpha = alpha + rewardNormed
         beta = beta + (1.0-rewardNormed)
+        betaDistribution = Beta(alpha, beta)
+    }
+    def update(reward:Reward):Unit = {
+        alpha = alpha + math.max(0, reward)
+        beta = beta - math.min(0, reward)
         betaDistribution = Beta(alpha, beta)
     }
     def export: Json = Json.fromFields(Map(
