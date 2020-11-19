@@ -6,6 +6,7 @@ import ada._
 import ada.core.interface._
 import ada.core.components.learners._
 import ada.core.components.distributions._
+import breeze.stats.distributions.Beta
 
 
 class ThompsonSamplingLocalNoContext
@@ -22,7 +23,15 @@ class ThompsonSamplingLocalNoContext
         (distr: Distr, reward: Reward) => {distr.update(reward); distr}
     )
 
+class ThompsonSamplingLocalNoContextBeta[ModelID, ModelData, ModelAction]
+    (models: Map[ModelID, Model[ModelData, ModelAction]],
+         evaluationFn: (ModelAction, ModelAction) => Reward,
+         alpha: Double,
+         beta: Double)
+    extends ThompsonSamplingLocalNoContext[ModelID, ModelData, ModelAction, BetaDistribution](
+        models, MutableMap(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*), evaluationFn)
 
+    /*
 object ThompsonSamplingLocalNoContextBeta {
     def apply[ModelID, ModelData, ModelAction]
         (models: Map[ModelID, Model[ModelData, ModelAction]],
@@ -41,7 +50,7 @@ object ThompsonSamplingLocalNoContextBeta {
             models, modelRewardsMap, evaluationFn)
     }
 }
-
+*/
 
 class ThompsonSamplingLocalWithContext
     [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]

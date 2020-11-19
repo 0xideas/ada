@@ -15,7 +15,7 @@ class BetaDistribution (private var alpha: Double, private var beta: Double)
 
     def draw = betaDistribution.draw()
 
-    def updateConventional(reward:Reward):Unit = {
+    def updateBounded(reward:Reward):Unit = {
         val rewardNormed = math.max(math.min(reward, 1), 0)
         alpha = alpha + rewardNormed
         beta = beta + (1.0-rewardNormed)
@@ -26,6 +26,12 @@ class BetaDistribution (private var alpha: Double, private var beta: Double)
         beta = beta - math.min(0, reward)
         betaDistribution = Beta(alpha, beta)
     }
+    def updateRecency(reward:Reward, recencyBias:Double):Unit = {
+        alpha = (alpha + math.max(0, reward)) * (1-recencyBias) + 1.0 * recencyBias
+        beta = (beta - math.min(0, reward)) * (1-recencyBias)  + 1.0 * recencyBias
+        betaDistribution = Beta(alpha, beta)
+    }
+
     def export: Json = Json.fromFields(Map(
         "alpha" -> Json.fromDouble(alpha).get,
         "beta" -> Json.fromDouble(beta).get

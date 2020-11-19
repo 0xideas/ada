@@ -17,7 +17,7 @@ object DemoAutocorrelationWithThompsonSampling{
                      new SimpleAutoRegressionModel(30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(0.0, (20.0-math.pow(action-correctAction, 2))/20)
-    val ensemble = ThompsonSamplingLocalNoContextBeta[Int, Double, Double](
+    val ensemble = new ThompsonSamplingLocalNoContextBeta[Int, Double, Double](
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
                                                                evaluationFn,
                                                                100, 100)
