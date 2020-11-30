@@ -19,7 +19,7 @@ class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward <: Exp
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
     extends SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    with LocalEnsemble[ModelID, ModelData, ModelAction]
+    with LocalEnsemble[ModelID, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
     with ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 
@@ -27,16 +27,22 @@ class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward <: Exp
         evaluationFn(action, optimalAction)
 
     def actWithID(data: ModelData): (ModelAction, ModelID) =
+        //must return list of modelIds
     	_actImpl(models, modelRewards, draw, epsilon, data)
 
     def updateAll(data: ModelData, correct: ModelAction): Unit = 
     	_updateAllImpl(data, correct, models, modelRewards, this.update)
 
     def update(modelId: ModelID, reward: Reward): Unit = 
+        //models(modelId).update(which model?? list of modelIds required)
         _updateFn(modelRewards, modelId, reward, updateAggregateRewardFn)
 
+
     def export = export(models, modelRewards)
-    
+
+    //def update[ModelID <: ModelID](modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
+    //    models(modelIds.head).update(modelIds.tail, data, reward)
+    //}
 
 }
 
@@ -68,7 +74,7 @@ class GreedySoftmaxLocalWithContext
     updateAggregateRewardFn: (Context, AggregateReward, Reward) => AggregateReward)
     extends ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    with LocalEnsemble[ModelID, ModelData, ModelAction]
+    with LocalEnsemble[ModelID, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
     with ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 

@@ -1,4 +1,7 @@
 package ada.core.models
+
+import ada._
+
 import io.circe.Json
 
 import ada.core.interface.SimpleModel
@@ -14,6 +17,8 @@ class GenericStaticModel[ModelData, ModelAction](value: ModelAction)(implicit g:
         new GenericStaticModel[ModelData, ModelAction](value)
 
     override def toString: String = "$Model: " + value.toString() + "$"
+
+    def update[ModelID](modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = ()
 
     def export: Json = Json.fromFields(Map("value" -> g(value)))
 } 
