@@ -4,24 +4,25 @@ import ada._
 
 import io.circe.Json
 
-import ada.core.interface.SimpleModel
+import ada.core.interface._
 
 
 
-class GenericStaticModel[ModelData, ModelAction](value: ModelAction)(implicit g: ModelAction => Json)
-    extends SimpleModel[ModelData, ModelAction]{
+class GenericStaticModel[ModelID, ModelData, ModelAction](value: ModelAction)(implicit g: ModelAction => Json)
+    extends StackableModel[ModelID, ModelData, ModelAction]{
 
     def act(data: ModelData): ModelAction = value
 
-    def update(value: ModelAction): GenericStaticModel[ModelData, ModelAction] = 
-        new GenericStaticModel[ModelData, ModelAction](value)
+    def update(value: ModelAction): GenericStaticModel[ModelID, ModelData, ModelAction] = 
+        new GenericStaticModel[ModelID, ModelData, ModelAction](value)
 
     override def toString: String = "$Model: " + value.toString() + "$"
 
-    def update[ModelID](modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = ()
+    def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = ()
+    def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = (value, selectedIds)
 
     def export: Json = Json.fromFields(Map("value" -> g(value)))
 } 
 
 
-class StaticModel(value: Double) extends GenericStaticModel[Unit, Double](value)((d:Double) => Json.fromDouble(d).get)
+class StaticModel[ModelID](value: Double) extends GenericStaticModel[ModelID, Unit, Double](value)((d:Double) => Json.fromDouble(d).get)

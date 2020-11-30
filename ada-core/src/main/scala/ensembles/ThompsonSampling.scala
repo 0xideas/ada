@@ -11,7 +11,7 @@ import breeze.stats.distributions.Beta
 
 class ThompsonSamplingLocalNoContext
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
      modelRewards: MutableMap[ModelID, Distr],     
      evaluationFn: (ModelAction, ModelAction) => Reward)
     extends GreedySoftmaxLocal[ModelID, ModelData, ModelAction, Distr](
@@ -24,7 +24,7 @@ class ThompsonSamplingLocalNoContext
     )
 
 class ThompsonSamplingLocalNoContextBeta[ModelID, ModelData, ModelAction]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
          evaluationFn: (ModelAction, ModelAction) => Reward,
          alpha: Double,
          beta: Double)

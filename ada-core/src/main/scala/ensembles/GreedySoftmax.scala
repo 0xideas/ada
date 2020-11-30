@@ -11,13 +11,13 @@ import ada.core.components.distributions._
 
 
 class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: MutableMap[ModelID, AggregateReward],
     draw: AggregateReward => Double,
     epsilon: Double,
     evaluationFn: (ModelAction, ModelAction) => Reward,
     updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward)
-    extends SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
+    extends StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     with LocalEnsemble[ModelID, ModelAction]
     with GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward]
@@ -26,12 +26,12 @@ class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward <: Exp
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward =
         evaluationFn(action, optimalAction)
 
-    def actWithID(data: ModelData): (ModelAction, ModelID) =
+    def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) =
         //must return list of modelIds
-    	_actImpl(models, modelRewards, draw, epsilon, data)
+    	_actImpl(models, modelRewards, draw, epsilon, data, selectedIds)
 
     def updateAll(data: ModelData, correct: ModelAction): Unit = 
-    	_updateAllImpl(data, correct, models, modelRewards, this.update)
+    	_updateAllImpl(data, correct, models, modelRewards, this.updateSingle)
 
     def update(modelId: ModelID, reward: Reward): Unit = 
         //models(modelId).update(which model?? list of modelIds required)
@@ -40,16 +40,17 @@ class GreedySoftmaxLocal[ModelID, ModelData, ModelAction, AggregateReward <: Exp
 
     def export = export(models, modelRewards)
 
-    //def update[ModelID <: ModelID](modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
-    //    models(modelIds.head).update(modelIds.tail, data, reward)
-    //}
+    override def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
+        update(modelIds.head, reward)
+        models(modelIds.head).update(modelIds.tail, data, reward)
+    }
 
 }
 
 
 object GreedySoftmaxLocal{
     def apply[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
-        models: Map[ModelID, Model[ModelData, ModelAction]],
+        models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
         initAggregateRewards: AggregateReward,
         draw: AggregateReward => Double,
         epsilon: Double,
@@ -85,7 +86,7 @@ class GreedySoftmaxLocalWithContext
     	_actImpl[Context](models, modelRewards, context, draw, epsilon, data)
 
     def updateAll(context: Context, data: ModelData, correct: ModelAction): Unit = 
-    	_updateAllImpl[Context](context, data, correct, models, modelRewards, this.update)
+    	_updateAllImpl[Context](context, data, correct, models, modelRewards, this.updateSingle)
 
     def update(modelId: ModelID, context: Context, reward: Reward): Unit = 
     	_updateFn[Context, AggregateReward](

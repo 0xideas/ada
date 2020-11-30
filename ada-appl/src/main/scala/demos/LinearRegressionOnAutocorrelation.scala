@@ -1,6 +1,6 @@
 package ada.demos
 
-import ada.core.models.SimpleAutoRegressionModel
+import ada.core.models.SimpleLinearRegressionModel
 import ada.core.ensembles.GreedySoftmaxLocal
 import ada.generators.AutoregressionGenerator
 import ada.core.interface.ExpDouble
@@ -11,9 +11,9 @@ import plotting.Chart
 
 
 object DemoAutocorrelation{
-    val models = List(new SimpleAutoRegressionModel(3),
-                    new SimpleAutoRegressionModel(10),
-                     new SimpleAutoRegressionModel(30))
+    val models = List(new SimpleLinearRegressionModel[Int](3),
+                    new SimpleLinearRegressionModel[Int](10),
+                     new SimpleLinearRegressionModel[Int](30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
     val ensemble = new GreedySoftmaxLocal[Int, Double, Double, ExpDouble](
@@ -41,7 +41,7 @@ object DemoAutocorrelation{
             models.zipWithIndex.map{ case(model, i) => model.fitReverse(dataRun.take(model.steps))}
             next = generator.next
 
-            val (action, selectedModel) = ensemble.actWithID(-999)
+            val (action, selectedModel) = ensemble.actWithID(-999, List())
 
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
@@ -51,7 +51,7 @@ object DemoAutocorrelation{
                     else rewardString :: r
                     }
                 }
-                selectedModels = selectedModel.toString :: selectedModels            
+                selectedModels = selectedModel.map(_.toString) ::: selectedModels            
             }
 
             //ensemble.update(selectedModel, action, next )

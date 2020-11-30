@@ -1,6 +1,6 @@
 package ada.demos
 
-import ada.core.models.{SimpleAutoRegressionModel, StaticModel}
+import ada.core.models.{SimpleLinearRegressionModel, StaticModel}
 import ada.core.ensembles.ThompsonSamplingLocalNoContextBeta
 import ada.core.components.distributions.BetaDistribution
 import ada.generators.AutoregressionGenerator
@@ -12,11 +12,12 @@ import plotting.Chart
 
 
 object DemoAutocorrelationWithThompsonSampling{
-    val models = List(new SimpleAutoRegressionModel(3),
-                    new SimpleAutoRegressionModel(10),
-                     new SimpleAutoRegressionModel(30))
+    val models = List(new SimpleLinearRegressionModel[Int](3),
+                    new SimpleLinearRegressionModel[Int](10),
+                     new SimpleLinearRegressionModel[Int](30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(0.0, (20.0-math.pow(action-correctAction, 2))/20)
+    //different ensembles share models
     val ensembles = (0 until 3).map{_ => new ThompsonSamplingLocalNoContextBeta[Int, Double, Double](
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
                                                                evaluationFn,
@@ -46,7 +47,7 @@ object DemoAutocorrelationWithThompsonSampling{
             models.zipWithIndex.map{ case(model, i) => model.fitReverse(dataRun.take(model.steps))}
             next = generator.next
 
-            val (action, selectedModel) = ensemble.actWithID(-999)
+            val (action, selectedModel) = ensemble.actWithID(-999, List())
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
                 rewards = rewards.zipWithIndex.map{case(r, i) => {
@@ -55,7 +56,7 @@ object DemoAutocorrelationWithThompsonSampling{
                     else rewardString :: r
                     }
                 }
-                selectedModels = selectedModel.toString :: selectedModels            
+                selectedModels = selectedModel.map(_.toString) ::: selectedModels            
             }
 
             //ensemble.update(selectedModel, action, next )

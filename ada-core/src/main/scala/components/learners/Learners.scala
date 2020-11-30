@@ -20,7 +20,6 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
         if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
             val selectedModel = models(selectedModelId)
-            println(selectedModelId)
             (selectedModel.act(data), selectedModelId)
         }
         else _selectModel(models, modelsSorted.tail, data)
@@ -38,10 +37,28 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
         if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
             val selectedModel = models(selectedModelId)
-            println(selectedModelId)
             (selectedModel.act(data), selectedModelId)
         }
         else _selectModel(models, modelsSorted.tail, data)
+    }
+    def _actImpl(models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
+                modelRewards: ModelID => AggregateReward,
+                draw: AggregateReward => Double,
+                epsilon: Double,
+                data: ModelData,
+                selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
+
+        val modelsSorted = _sortModel(models, modelRewards, draw)
+        
+        if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
+            val selectedModelId = modelsSorted.head._1
+            val selectedModel = models(selectedModelId)
+            selectedModel.actWithID(data, selectedIds ::: List(selectedModelId))
+        }
+        else {
+            val (action, modelId) = _selectModel(models, modelsSorted.tail, data)
+            (action, selectedIds ::: List(modelId))
+        }
     }
 }
 

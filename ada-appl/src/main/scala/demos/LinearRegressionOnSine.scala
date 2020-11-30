@@ -1,6 +1,6 @@
 package ada.demos
 
-import ada.core.models.SimpleAutoRegressionModel
+import ada.core.models.SimpleLinearRegressionModel
 import ada.core.ensembles.GreedySoftmaxLocal
 import ada.generators.SineGenerator
 import ada._
@@ -9,13 +9,13 @@ import ada.core.interface.ExpDouble
 import scala.collection.mutable.{Map => MutableMap}
 
 object DemoSine{
-    val models = List(new SimpleAutoRegressionModel(1, -3.0),
-                    new SimpleAutoRegressionModel(1, -2.0),
-                    new SimpleAutoRegressionModel(1, -1.0),
-                    new SimpleAutoRegressionModel(1, 0.0),
-                    new SimpleAutoRegressionModel(1, 1.0),
-                    new SimpleAutoRegressionModel(1, 2.0),
-                    new SimpleAutoRegressionModel(1, 3.0))
+    val models = List(new SimpleLinearRegressionModel[Int](1, -3.0),
+                    new SimpleLinearRegressionModel[Int](1, -2.0),
+                    new SimpleLinearRegressionModel[Int](1, -1.0),
+                    new SimpleLinearRegressionModel[Int](1, 0.0),
+                    new SimpleLinearRegressionModel[Int](1, 1.0),
+                    new SimpleLinearRegressionModel[Int](1, 2.0),
+                    new SimpleLinearRegressionModel[Int](1, 3.0))
 
 
 
@@ -38,7 +38,8 @@ object DemoSine{
         while(i < 1000){
             print("")
             next = generator.next
-            val (action, selectedModel) = ensemble.actWithID(-999)
+            val (action, selectedModel) = ensemble.actWithID(-999, List())
+
             ensemble.update(selectedModel, action, next )
             //ensemble.learn(-999, next, aw => true)
             i = i + 1.0

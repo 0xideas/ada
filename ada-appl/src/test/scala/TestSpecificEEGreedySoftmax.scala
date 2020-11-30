@@ -8,7 +8,7 @@ import io.circe.Json
 
 import scala.collection.mutable.{Map => MutableMap}
 
-import ada.core.models.{SimpleAutoRegressionModel, StaticModel, GenericStaticModel}
+import ada.core.models.{SimpleLinearRegressionModel, StaticModel, GenericStaticModel}
 import ada.core.ensembles.GreedySoftmaxLocal
 import ada.generators.{AutoregressionGenerator, ConstantGenerator}
 import ada.generators.Generator
@@ -34,11 +34,12 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
         } yield {
             val eta = etaSource.toDouble/1500.0
 
+
             val generator = new ConstantGenerator(const1)
 
-            val models = List(new GenericStaticModel[ModelData, ModelAction](const1)(x => Json.fromString(x.toString())),
-                          new GenericStaticModel[ModelData, ModelAction](const2)(x => Json.fromString(x.toString())),
-                          new GenericStaticModel[ModelData, ModelAction](const2)(x => Json.fromString(x.toString())))
+            val models = List(new GenericStaticModel[ModelId, ModelData, ModelAction](const1)(x => Json.fromString(x.toString())),
+                          new GenericStaticModel[ModelId, ModelData, ModelAction](const2)(x => Json.fromString(x.toString())),
+                          new GenericStaticModel[ModelId, ModelData, ModelAction](const2)(x => Json.fromString(x.toString())))
 
 
             val ensemble = new GreedySoftmaxLocal[ModelId, ModelData, ModelAction, ExpDouble](
@@ -72,8 +73,11 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
                 val rounds = for {
                     i <- (0 until nActions)
-                } yield( ensemble.actWithID(i))
-
+                } yield{
+                    val (action, selectedIds) = ensemble.actWithID(i, List())
+                    (action, selectedIds(0))
+                }
+                
                 val test1 = isclose(rounds.count(_._2 == id3).toDouble, nActions*(1-eta))
                 val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
                 val result = test1 && test2 
@@ -90,8 +94,10 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
                 val rounds = for {
                     i <- (0 until nActions)
-                } yield( ensemble.actWithID(i))
-
+                } yield{
+                    val (action, selectedIds) = ensemble.actWithID(i, List())
+                    (action, selectedIds(0))
+                }
                 val test1 = isclose(rounds.count(_._2 == id1).toDouble, nActions*(1-eta))
                 val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
                 val result = test1 && test2

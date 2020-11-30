@@ -3,7 +3,10 @@ package ada.core.models
 
 import io.circe.Json
 
-import ada.core.interface.SimpleModel
+import ada.core.interface._
+import ada._
+
+import scala.collection.mutable.ListBuffer
 
 class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double = 0.0){
 	private val eta = 0.0000000000001
@@ -46,16 +49,27 @@ class SimpleLinearRegression(private var m: Double = 0.0, private var b: Double 
 
 }
 
-class SimpleAutoRegressionModel(val steps: Int,
+class SimpleLinearRegressionModel[ModelID](val steps: Int,
 								private var m: Double = 0.0,
 								private var b: Double = 0.0)
     extends SimpleLinearRegression(m, b)
-    with SimpleModel[Double, Double] {
+    with StackableModel[ModelID, Double, Double] {
+
+	val data_ = new ListBuffer[Double]()
 
 	def act(x: Double) = predict(steps)
+    def actWithID(data: Double, selectedIds: List[ModelID]): (Double, List[ModelID]) = (predict(steps), selectedIds)
+
+    def update(modelIds: List[ModelID], data: Double, reward: Reward): Unit = {
+		data_.append(data)
+		if(data_.length > 2){
+			fitReverse(data_.toList)
+		}
+	}
 
 	def export: Json = Json.fromFields(Map("steps" -> Json.fromInt(steps),
 											"m" -> Json.fromDouble(m).get,
 											"b" -> Json.fromDouble(b).get))
+	
 	
 }

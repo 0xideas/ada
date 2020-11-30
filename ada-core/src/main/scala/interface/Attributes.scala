@@ -26,19 +26,6 @@ trait LocalEnsemble[ModelID, ModelAction] {
         modelRewards(modelId).update(context, reward)
     }
 
-    def _updateFn[ModelData, AggregateReward]
-                (modelRewardsMap: MutableMap[ModelID,AggregateReward],
-                modelIds: List[ModelID],
-                reward: Reward,
-                updateAggregateRewardFn: (AggregateReward, Reward) => AggregateReward,
-                model: Model[ModelData, ModelAction],
-                data: ModelData): Unit = {
-        val oldReward = modelRewardsMap(modelIds.head)
-        val newReward =  updateAggregateRewardFn(oldReward, reward)
-        modelRewardsMap(modelIds.head) = newReward
-        //model.update(modelIds.tail, data,  reward)
-
-    }
 }
 
 trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
