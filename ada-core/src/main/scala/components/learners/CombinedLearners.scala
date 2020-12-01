@@ -7,6 +7,6 @@ import ada._
 import ada.core.interface._
 import ada.core.components.distributions._
 
-trait GreedySoftmax[ModelID, ModelData, ModelAction, AggregateReward] 
-    extends AbstractGreedy[ModelID, ModelData, ModelAction, AggregateReward]
-    with SelectWithSoftmax[ModelID, ModelData, ModelAction, AggregateReward]
+trait GreedySoftmax[ModelID, ModelData, ModelAction] 
+    extends AbstractGreedy[ModelID, ModelData, ModelAction]
+    with SelectWithSoftmax[ModelID, ModelData, ModelAction]

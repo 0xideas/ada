@@ -9,59 +9,33 @@ import ada.core.components.distributions._
 import breeze.stats.distributions.Beta
 
 
-class ThompsonSamplingLocalNoContext
+class ThompsonSampling
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
-    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
-     modelRewards: MutableMap[ModelID, Distr],     
-     evaluationFn: (ModelAction, ModelAction) => Reward)
-    extends GreedySoftmaxLocal[ModelID, ModelData, ModelAction, Distr](
+    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+     modelKeys: () => List[ModelID],
+     modelRewards: MutableMap[ModelID, Distr])
+    extends GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, Distr](
         models,
+        modelKeys,
         modelRewards,
-        (distr: Distr) => distr.draw,
-        0.0,
-        evaluationFn,
-        (distr: Distr, reward: Reward) => {distr.update(reward); distr}
+        0.0
     )
 
-class ThompsonSamplingLocalNoContextBeta[ModelID, ModelData, ModelAction]
+class ThompsonSamplingLocalBeta[ModelID, ModelData, ModelAction]
     (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
-         evaluationFn: (ModelAction, ModelAction) => Reward,
          alpha: Double,
          beta: Double)
-    extends ThompsonSamplingLocalNoContext[ModelID, ModelData, ModelAction, BetaDistribution](
-        models, MutableMap(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*), evaluationFn)
+    extends ThompsonSampling[ModelID, ModelData, ModelAction, BetaDistribution](
+        key => models(key), () => models.keys.toList, MutableMap(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*))
 
-    /*
-object ThompsonSamplingLocalNoContextBeta {
-    def apply[ModelID, ModelData, ModelAction]
-        (models: Map[ModelID, Model[ModelData, ModelAction]],
-         evaluationFn: (ModelAction, ModelAction) => Reward,
-         alpha: Double,
-         beta: Double):
-        ThompsonSamplingLocalNoContext
-        [ModelID, ModelData, ModelAction, BetaDistribution] = {
-        val modelRewardsMap = MutableMap(
-            models.keys
-                  .toList
-                  .map{key => (key,new BetaDistribution(alpha, beta))}:_*
-            )
-        new ThompsonSamplingLocalNoContext
-            [ModelID, ModelData, ModelAction, BetaDistribution](
-            models, modelRewardsMap, evaluationFn)
-    }
-}
-*/
 
 class ThompsonSamplingLocalWithContext
     [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
-     modelRewards: MutableMap[ModelID, ContextualDistr],     
-     evaluationFn: (ModelAction, ModelAction) => Reward)
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
+     modelRewards: MutableMap[ModelID, ContextualDistr])
     extends GreedySoftmaxLocalWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
-        models,
+        key => models(key),
+        () => models.keys.toList,
         modelRewards,
-        (context: Context, contextualDistr: ContextualDistr) => contextualDistr.draw(context),
-        0.0,
-        evaluationFn,
-        (context: Context, contextualDistr: ContextualDistr,reward: Reward) => {contextualDistr.update(context, reward); contextualDistr}
+        0.0
     )
