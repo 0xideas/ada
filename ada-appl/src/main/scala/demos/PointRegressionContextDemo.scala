@@ -25,11 +25,9 @@ object DemoPointRegressionContext{
 
     val ensemble = new GreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double, PointRegressionContext](
         Map(0 -> model0, 1 -> model1),
+        () => List(0, 1),
         MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
-        (context, aggregateReward) => aggregateReward.draw(context),
         0.2,
-        (action1, action2) => math.exp(action1 - action2),
-        (context,aggregateReward, reward) => {aggregateReward.update(context, reward); aggregateReward}
     )
 
     def getAverages():(Double, Double, Double, Double) = {

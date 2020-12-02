@@ -21,7 +21,6 @@ object DemoBayesianRegressionContext{
     val ensemble = new ThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
         Map(0 -> model0, 1 -> model1),
         MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
-        (action1, action2) => math.exp(action1 - action2)
     )
 
     def getAverages():(Double, Double, Double, Double) = {

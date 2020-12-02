@@ -19,6 +19,7 @@ class GenericStaticModel[ModelID, ModelData, ModelAction](value: ModelAction)(im
     override def toString: String = "$Model: " + value.toString() + "$"
 
     def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = ()
+    
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = (value, selectedIds)
 
     def export: Json = Json.fromFields(Map("value" -> g(value)))

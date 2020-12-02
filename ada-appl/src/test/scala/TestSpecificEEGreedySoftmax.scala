@@ -13,6 +13,7 @@ import ada.core.ensembles.GreedySoftmaxLocal
 import ada.generators.{AutoregressionGenerator, ConstantGenerator}
 import ada.generators.Generator
 import ada.core.interface.{AdaEnsemble, ExpDouble}
+import _root_.breeze.stats.mode
 
 class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
@@ -20,7 +21,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
         math.abs(n1 - n2) <= (math.max(math.abs(n1), math.abs(n2)) * 0.1) + 0.05
     }
 
-    def evaluationFn[ActionType](action: ActionType, correctAction: ActionType): Double =  if(action == correctAction) 1.0 else 0.1
+    //def evaluationFn[ActionType](action: ActionType, correctAction: ActionType): Double =  if(action == correctAction) 1.0 else 0.1
 
     def makeGenerator[ModelId, ModelData, ModelAction](idGenerator: Gen[ModelId], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
         val generator = for{
@@ -42,15 +43,12 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
                           new GenericStaticModel[ModelId, ModelData, ModelAction](const2)(x => Json.fromString(x.toString())))
 
 
-            val ensemble = new GreedySoftmaxLocal[ModelId, ModelData, ModelAction, ExpDouble](
+            val ensemble = GreedySoftmaxLocal[ModelId, ModelData, ModelAction, ExpDouble](
                                                                     Map(id1 -> models(0), id2 -> models(1), id3 -> models(2)).toMap,
-                                                                    MutableMap(id1 -> 1.0, id2 -> 1.0, id3 -> 3.0),
-                                                                    (aggRew:ExpDouble) => aggRew.value,
-                                                                    eta,
-                                                                    evaluationFn[ModelAction](_,_),
-                                                                    (aggRew:ExpDouble, rew:Reward) => rew)
+                                                                    MutableMap(id1 -> new ExpDouble(1.0), id2 -> new ExpDouble(1.0), id3 -> new ExpDouble(3.0)),
+                                                                    eta)
             
-            (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble))
+            (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble), modelData)
         }
         generator
     }
@@ -64,12 +62,12 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
     }
     
     
-    def testTypedEEGreedySoftmax[ModelId, ModelData, ModelAction](name:String, nActions: Int, idGenerator: Gen[ModelId], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
+    def testTypedEEGreedySoftmax[ModelId, ModelData, ModelAction](name: String, nActions: Int, idGenerator: Gen[ModelId], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
         val generator = makeGenerator(arbitrary[String], arbitrary[Double], arbitrary[Double])
 
         property(name + " - proportions of model selections correspond to eta value - initial reward") = forAll(generator){
             tuple => {
-                val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
+                val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble), modelData) = tuple
 
                 val rounds = for {
                     i <- (0 until nActions)
@@ -88,9 +86,18 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
         }
         property(name + " - proportions of model selections correspond to eta value - after learning") = forAll(generator){
             tuple => {
-                val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble)) = tuple
+                val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble), modelData) = tuple
 
-                ensemble.updateAll(0, const1)
+                (0 until 100).map{ i =>
+                    val (action, selectedIds) = ensemble.actWithID(modelData, List())
+                    //ensemble.update(selectedIds(0), if(action == const1) 3.0 else 0.0)
+                    require(selectedIds.length == 1)
+                    val reward = if(action == const1) 3.0 else 1.0
+                    /*println(action)
+                    println(const1)
+                    println(reward)*/
+                    ensemble.update(selectedIds, modelData, reward)
+                }
 
                 val rounds = for {
                     i <- (0 until nActions)
@@ -98,7 +105,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
                     val (action, selectedIds) = ensemble.actWithID(i, List())
                     (action, selectedIds(0))
                 }
-                val test1 = isclose(rounds.count(_._2 == id1).toDouble, nActions*(1-eta))
+                val test1 = isclose(rounds.count(_._2 == id1).toDouble, (1-eta)*nActions)
                 val test2 = isclose(rounds.count(t => t._2 == id2).toDouble/rounds.length, rounds.count(t => t._2 == id3).toDouble/rounds.length)
                 val result = test1 && test2
 

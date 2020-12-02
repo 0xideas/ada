@@ -8,7 +8,7 @@ import org.apache.logging.log4j.core.appender.rewrite.MapRewritePolicy.Mode
 
 
 abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])
     extends Model[ModelData, ModelAction]{
@@ -20,7 +20,7 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
 }
 
 abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
@@ -33,7 +33,7 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
 }
 
 abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)

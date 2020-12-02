@@ -1,7 +1,7 @@
 package ada.demos
 
 import ada.core.models.{SimpleLinearRegressionModel, StaticModel}
-import ada.core.ensembles.ThompsonSamplingLocalNoContextBeta
+import ada.core.ensembles.ThompsonSamplingLocalBeta
 import ada.core.components.distributions.BetaDistribution
 import ada.generators.AutoregressionGenerator
 import ada._
@@ -16,17 +16,14 @@ object DemoAutocorrelationWithThompsonSampling{
                     new SimpleLinearRegressionModel[Int](10),
                      new SimpleLinearRegressionModel[Int](30))
 
-    val evaluationFn = (action: Double, correctAction: Double) => math.max(0.0, (20.0-math.pow(action-correctAction, 2))/20)
     //different ensembles share models
-    val ensembles = (0 until 3).map{_ => new ThompsonSamplingLocalNoContextBeta[Int, Double, Double](
+    val ensembles = (0 until 3).map{_ => new ThompsonSamplingLocalBeta[Int, Double, Double](
                                                                models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               evaluationFn,
                                                                100, 100)
     }
     
-    val ensemble = new ThompsonSamplingLocalNoContextBeta[Int, Double, Double](
+    val ensemble = new ThompsonSamplingLocalBeta[Int, Double, Double](
                                                                ensembles.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               evaluationFn,
                                                                100, 100)
 
 
@@ -61,8 +58,8 @@ object DemoAutocorrelationWithThompsonSampling{
 
             //ensemble.update(selectedModel, action, next )
             dataRun = next :: dataRun
-            //ensemble.update(selectedModel, action, next)
-            ensemble.updateAll(-999, next)
+            ensemble.update(selectedModel, action, next)
+            //ensemble.updateAll(-999, next)
 
             i = i + 1.0
         }

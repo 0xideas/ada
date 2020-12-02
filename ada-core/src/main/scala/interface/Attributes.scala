@@ -38,7 +38,7 @@ trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 }
 
 trait ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]{
-    def export(models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    def export(models: ModelID  => Model[ModelData, ModelAction],
                modelKeys: () => List[ModelID],
                modelRewards: MutableMap[ModelID, AggregateReward]): Json = Json.fromFields(Map(
         "models" -> Json.fromFields(modelKeys().map{

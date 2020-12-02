@@ -38,20 +38,30 @@ class GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
 object GreedySoftmaxLocal{
     def apply[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution](
         models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
-        initAggregateRewards: AggregateReward,
-        epsilon: Double){
-            val modelRewards = MutableMap(models.toSeq.map{case(k,v) => (k, initAggregateRewards)}:_*)
-            new GreedySoftmaxEnsemble
+        initAggregateRewards: () => AggregateReward,
+        epsilon: Double): GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward] = {
+            val modelRewards = MutableMap(models.toSeq.map{case(k,v) => (k, initAggregateRewards())}:_*)
+            val ensemble = new GreedySoftmaxEnsemble
                 [ModelID, ModelData, ModelAction, AggregateReward](
                 key => models(key), () => models.keys.toList, modelRewards, epsilon)
+            ensemble
         }
-}
+    def apply[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution](
+        models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
+        modelRewards: MutableMap[ModelID, AggregateReward],
+        epsilon: Double): GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward] = {
+            val ensemble = new GreedySoftmaxEnsemble
+                [ModelID, ModelData, ModelAction, AggregateReward](
+                key => models(key), () => models.keys.toList, modelRewards, epsilon)
+            ensemble
+        }
+    }
 
 
 class GreedySoftmaxLocalWithContext
 	[ModelID, Context, ModelData, ModelAction,
 	 AggregateReward <: ContextualDistribution[Context]]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward],
     epsilon: Double)

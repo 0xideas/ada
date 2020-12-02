@@ -21,13 +21,10 @@ object DemoSine{
 
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = new GreedySoftmaxLocal[Int, Double, Double, ExpDouble](epsilon=0.2,
+    val ensemble = GreedySoftmaxLocal[Int, Double, Double, ExpDouble](
                                                                models=models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-                                                               updateAggregateRewardFn=(aggRew: ExpDouble, rew: Reward) => rew,
-                                                               evaluationFn=evaluationFn,
-                                                               draw=(aggRew: ExpDouble) => aggRew.value,
-                                                               modelRewards = MutableMap(models.zipWithIndex.toSeq.map{case(k,v) => (v, new ExpDouble(1.0))}:_*),
-)
+                                                               () => new ExpDouble(1.0),
+                                                               0.2)
 
     val generator = new SineGenerator(2.8, 150)
 

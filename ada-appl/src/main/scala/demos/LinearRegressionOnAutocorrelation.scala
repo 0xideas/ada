@@ -16,13 +16,10 @@ object DemoAutocorrelation{
                      new SimpleLinearRegressionModel[Int](30))
 
     val evaluationFn = (action: Double, correctAction: Double) => math.max(1.0, 10-math.pow(action-correctAction, 2))
-    val ensemble = new GreedySoftmaxLocal[Int, Double, Double, ExpDouble](
+    val ensemble = GreedySoftmaxLocal[Int, Double, Double, ExpDouble](
         models.zipWithIndex.toMap.map{case(k,v) => (v, k)},
-        MutableMap(models.zipWithIndex.toSeq.map{case(k,v) => (v, new ExpDouble(1.0))}:_*),
-        (aggRew:ExpDouble) => aggRew.value,
-        0.0,
-        evaluationFn,
-        (aggRew:ExpDouble, rew:Double) => rew)
+        () => new ExpDouble(1.0),
+        0.0)
 
     val generator = new AutoregressionGenerator(10, 0.2)
 
@@ -38,6 +35,7 @@ object DemoAutocorrelation{
         while(i < 1000){
             print("")
 
+
             models.zipWithIndex.map{ case(model, i) => model.fitReverse(dataRun.take(model.steps))}
             next = generator.next
 
@@ -46,7 +44,7 @@ object DemoAutocorrelation{
             if (i % incr == 0) {
                 pars = pars.zipWithIndex.map{case(p, i) => models(i).toStringM :: p}
                 rewards = rewards.zipWithIndex.map{case(r, i) => {
-                    val rewardString = ensemble.modelRewards(i).value.toInt.toString
+                    val rewardString = ensemble.modelRewards(i).draw.toInt.toString
                     if (rewardString.length == 1) " " + rewardString :: r
                     else rewardString :: r
                     }
@@ -54,9 +52,9 @@ object DemoAutocorrelation{
                 selectedModels = selectedModel.map(_.toString) ::: selectedModels            
             }
 
-            //ensemble.update(selectedModel, action, next )
+            ensemble.update(selectedModel, action, next )
             dataRun = next :: dataRun
-            ensemble.updateAll(-999, next)
+            //ensemble.update(next)
 
             i = i + 1.0
         }

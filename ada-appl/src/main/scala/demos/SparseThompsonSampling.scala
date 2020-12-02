@@ -3,7 +3,7 @@ package ada.demos
 import scala.collection.mutable.{ListBuffer}
 
 import ada.core.models.{SimpleLinearRegressionModel, StaticModel}
-import ada.core.ensembles.{ThompsonSamplingLocalNoContextBeta, ThompsonSamplingLocalNoContext}
+import ada.core.ensembles.{ThompsonSamplingLocalBeta, ThompsonSampling}
 import ada.core.components.distributions.BetaDistribution
 import ada.generators.AutoregressionGenerator
 import ada._
@@ -16,7 +16,7 @@ import ada.core.components.distributions.BayesianSampleRegressionContext
 
 object SparseThompsonSampling{
 
-    def run(): (ThompsonSamplingLocalNoContextBeta[Int, Unit, Double], Int, Int, ListBuffer[ListBuffer[Double]]) = {
+    def run(): (ThompsonSamplingLocalBeta[Int, Unit, Double], Int, Int, ListBuffer[ListBuffer[Double]]) = {
         //parameters for the demo
 
         val nIter = 1000 * 500
@@ -43,9 +43,8 @@ object SparseThompsonSampling{
         val models = (0 until nModels).map(x => new StaticModel[Int](x.toDouble))
 
 
-        val ensemble = new ThompsonSamplingLocalNoContextBeta[Int, Unit, Double](
+        val ensemble = new ThompsonSamplingLocalBeta[Int, Unit, Double](
                                                                 (0 until nModels).zip(models).toMap,
-                                                                (action1, action2) => math.pow(action1 - action2, 2),
                                                                 100, 100)
         print("-")
         var i = 0
@@ -68,7 +67,7 @@ object SparseThompsonSampling{
         (ensemble, nModels, nIter, shares)
     }
 
-    def getAverages(ensemble: ThompsonSamplingLocalNoContextBeta[Int, Unit, Double], nModels: Int, iter: Int = 100): List[Double] = {
+    def getAverages(ensemble: ThompsonSamplingLocalBeta[Int, Unit, Double], nModels: Int, iter: Int = 100): List[Double] = {
         val selectedModels = (for{
             i <- (0 until iter)
         } yield(ensemble.actWithID((), List()))).map(_._1)
@@ -78,7 +77,7 @@ object SparseThompsonSampling{
     }
     
 
-    def report(ensemble: ThompsonSamplingLocalNoContextBeta[Int, Unit, Double], nModels: Int, nIter: Int, shares: ListBuffer[ListBuffer[Double]]): Unit = {
+    def report(ensemble: ThompsonSamplingLocalBeta[Int, Unit, Double], nModels: Int, nIter: Int, shares: ListBuffer[ListBuffer[Double]]): Unit = {
         val characters = "abcdefghijklmnopqrst"
 
         val selections = getAverages(ensemble, nModels, 1000)

@@ -31,7 +31,7 @@ class ThompsonSamplingLocalBeta[ModelID, ModelData, ModelAction]
 
 class ThompsonSamplingLocalWithContext
     [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]
-    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
+    (models: Map[ModelID, Model[ModelData, ModelAction]],
      modelRewards: MutableMap[ModelID, ContextualDistr])
     extends GreedySoftmaxLocalWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
         key => models(key),

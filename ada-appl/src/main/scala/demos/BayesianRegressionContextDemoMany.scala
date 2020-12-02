@@ -37,8 +37,7 @@ object DemoBayesianRegressionContextMany{
     val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.3, 1.0))
     val ensemble = new ThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
         (0 until nModels).zip(models).toMap,
-        MutableMap((0 until nModels).zip(contexts):_*),
-        (action1, action2) => math.exp(action1 - action2)
+        MutableMap((0 until nModels).zip(contexts):_*)
     )
 
 
