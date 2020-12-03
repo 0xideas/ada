@@ -3,76 +3,60 @@ package ada.demos
 import scala.collection.mutable.{Map => MutableMap}
 import scala.collection.mutable.{ListBuffer}
 
-
 import ada.core.components.distributions.BayesianSampleRegressionContext
 import ada.core.ensembles._
 import ada.core.models.StaticModel
 
+
 import plotting.Chart
 
-object DemoBayesianRegressionContext{
+object BayesianRegressionContextDemo{
+    //parameters for the demo
+    val nIter = 1000 * 10
+    val nFeatures = 5
+    val nModels = 3
+    val nGoodModels = 2
 
-    val model0 = new StaticModel(0.0)
-    val model1 = new StaticModel(1.0)
+    val conversionRate = Map((0 until nModels).map(k => (k, 0.1)):_*)
+    /*val conversionRate = Map(
+        0 -> 0.013,
+        1 -> 0.017,
+        2 -> 0.022
+    )*/
 
-    val regressionContext1 = new BayesianSampleRegressionContext(3, 0.3, 1.0 )
-    val regressionContext2 = new BayesianSampleRegressionContext(3, 0.3, 1.0 )
+    //highIndexMaps are the perturbations applied to the random context when taking a snapshot
+    //this way the effect of new contexts on the ensemble can be studied
 
-    val ensemble = new ThompsonSamplingLocalWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
-        Map(0 -> model0, 1 -> model1),
-        MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
+    //val highIndexMaps: List[Map[Int, Int]] = (0 until nFeatures).toList.map(v => Map(v -> 4))
+    val highIndexMaps: List[Map[Int, Double]] = List(
+        Map(0 -> 3.2),
+        Map(1 -> 3.2),
+        Map(2 -> 3.2),
+        //Map(0 -> 3.2, 1 -> 3.2, 2 -> 3.2),
+        Map()
     )
 
-    def getAverages():(Double, Double, Double, Double) = {
-        var (actions0, modelIds0, actions1, modelIds1)  = (ListBuffer.empty[Double], ListBuffer.empty[Double], ListBuffer.empty[Double], ListBuffer.empty[Double])
-        var j = 0
-        while( j < 1000) {
-            val (action0, modelId0) = ensemble.actWithID(Array(1.0, 1.0, 0.0), ())
-            val (action1, modelId1) = ensemble.actWithID(Array(1.0, 0.0, 1.0), ())
-            actions0 += action0
-            modelIds0 += modelId0
-            actions1 += action1
-            modelIds1 += modelId1
-            j += 1
-        }
-        (actions0.sum/1000, modelIds0.sum/1000, actions1.sum/1000, modelIds1.sum/1000)
-    }
+    val rnd = scala.util.Random
+
+    //initialisation of the ensemble
+    val models = (0 until nModels).map(x => new StaticModel(x.toDouble))
+    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
+    val ensemble = new ThompsonSamplingWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
+        (0 until nModels).zip(models).toMap,
+        MutableMap((0 until nModels).zip(contexts):_*)
+    )
+
 
     def run(): Unit = {
-        println("started run")
-        var i = 0
-        var (shares0, shares1) =  (ListBuffer.empty[Double], ListBuffer.empty[Double])
-        while(i < 2000){
-            if(i % 10  == 0){
-                var (share0, _, share1, _) = getAverages() 
-                shares0 += share0
-                shares1 += share1
+
+        val shares = Utilities.run[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
+
+        highIndexMaps.zipWithIndex.map{
+            case(highIndexMap, f) => {
+                val selections = Utilities.selectAndAverageContext[Double, BayesianSampleRegressionContext](ensemble, nModels, highIndexMap, nFeatures, rnd, 100)
+                Utilities.report(highIndexMap, selections,  nModels, nIter, nFeatures, nGoodModels, shares(f))
             }
-            if(i < 50){
-                ()
-            } else if(i < 250 || i > 750){
-                ensemble.update(0, Array(1.0, 0.0, 1.0), 0.0)
-                ensemble.update(0, Array(1.0, 1.0, 0.0), 3.0)
-                ensemble.update(1, Array(1.0, 1.0, 0.0), 0.0)
-                ensemble.update(1, Array(1.0, 0.0, 1.0), 3.0)
-            } else {
-                ensemble.update(1, Array(1.0, 0.0, 1.0), 0.0)
-                ensemble.update(1, Array(1.0, 1.0, 0.0), 5.0)
-                ensemble.update(0, Array(1.0, 1.0, 0.0), 0.0)
-                ensemble.update(0, Array(1.0, 0.0, 1.0), 5.0)
-            }
-            i += 1
         }
-        println("-----finished loop------")
-
-        var (actions0, modelIds0, actions1, modelIds1) = getAverages()
-        println("last values")
-        println(f"action0: ${actions0}, modelId0: ${modelIds0}")
-        println(f"action1: ${actions1}, modelId1: ${modelIds1}")
-
-
-        println(Chart(1.1, -0.1, 0, 2000).plotLine(shares0.toList, Some("0"), "-").plotLine(shares1.toList, Some("1"), "+").render())
-
 
     }
 }

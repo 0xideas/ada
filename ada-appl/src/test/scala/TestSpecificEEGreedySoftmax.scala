@@ -111,6 +111,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
                 if (result == false) report(eta, rounds.toList, List(test1, test2), ensemble.modelRewards.toList)
                 result
+                
             }
         }
     }

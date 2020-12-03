@@ -11,7 +11,7 @@ import smile.data.formula._
 
 import plotting.Chart
 
-object DemoPointRegressionContext{
+object PointRegressionContextDemo{
 
     val model0 = new StaticModel(0.0)
     val model1 = new StaticModel(1.0)
@@ -23,11 +23,11 @@ object DemoPointRegressionContext{
     val regressionContext1 = new PointRegressionContext("target" ~, initData )
     val regressionContext2 = new PointRegressionContext("target" ~, initData )
 
-    val ensemble = new GreedySoftmaxLocalWithContext[Int, Array[Double], Unit, Double, PointRegressionContext](
+    val ensemble = new GreedySoftmaxWithContext[Int, Array[Double], Unit, Double, PointRegressionContext](
         Map(0 -> model0, 1 -> model1),
         () => List(0, 1),
         MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
-        0.2,
+        0.1,
     )
 
     def getAverages():(Double, Double, Double, Double) = {

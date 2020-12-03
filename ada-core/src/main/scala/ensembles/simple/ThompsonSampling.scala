@@ -4,7 +4,7 @@ import scala.collection.mutable.{Map => MutableMap}
 
 import ada._
 import ada.core.interface._
-import ada.core.components.learners._
+import ada.core.components.selectors._
 import ada.core.components.distributions._
 import breeze.stats.distributions.Beta
 

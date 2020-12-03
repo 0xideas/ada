@@ -2,7 +2,7 @@ package ada.demos
 
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.models.{SimpleLinearRegressionModel, StaticModel}
+import ada.core.models.{StaticModel}
 import ada.core.ensembles.{ThompsonSamplingLocalBeta, ThompsonSampling}
 import ada.core.components.distributions.BetaDistribution
 import ada.generators.AutoregressionGenerator
@@ -15,13 +15,41 @@ import ada.core.components.distributions.BayesianSampleRegressionContext
 
 
 object SparseThompsonSampling{
+    def runSeveral(runs: Int = 25): Unit = {
+        val results = (for{  _ <- 0 until runs} yield {
+            val run = runOnce()
+            run match {
+                case(ensemble, nModels, nIter, shares) => {
+                    val nGoodModels = nModels
+                    val nFeatures = 1
+                    val selections = Utilities.selectAndAverageNoContext[Double, BetaDistribution](ensemble, nModels, 100)
+                    Utilities.report(Map(), selections, nModels, nIter, nFeatures, nGoodModels, shares)
+                } 
+            }
+            run
+        }).toList
 
-    def run(): (ThompsonSamplingLocalBeta[Int, Unit, Double], Int, Int, ListBuffer[ListBuffer[Double]]) = {
+        type Share = ListBuffer[ListBuffer[Double]]
+        val initB: Share = ListBuffer.fill(100)(ListBuffer.fill(100)(0.0))
+        val reduced: Share = 
+            results.map(_._4).foldLeft[Share](initB)( (agg: Share, shares: Share) => {
+                agg.zipWithIndex.map{case (a,i) => (0 until a.length).map(j => a(j) += shares(i)(j)/runs )}; agg
+            }) 
+        
+        //println("EXAMPLES")
+        //results.take(5).map{case(ensemble, nModels, nIter, shares) => Demo.report(ensemble, nModels, nIter, shares)}
+        println(f"EXPECTED VALUES OVER ${results.length} runs")
+
+        Utilities.report(Map(), List(), results(0)._2, results(0)._3, 1, 1, reduced)
+    }
+
+    def runOnce(): (ThompsonSamplingLocalBeta[Int, Unit, Double], Int, Int, ListBuffer[ListBuffer[Double]]) = {
         //parameters for the demo
 
         val nIter = 1000 * 500
-        val nFeatures = 5
+        val nFeatures = 1
         val nModels = 100
+        val nGoodModels = nModels
         val learningMultiplier = 15
 
         val conversionRate = Map(
@@ -56,7 +84,7 @@ object SparseThompsonSampling{
             val reward = if(rnd.nextDouble() < conversionRate(selectedModel(0))) 1*learningMultiplier else -1*learningMultiplier
             ensemble.update(selectedModel(0), reward)
             if(i % scala.math.max(1, (nIter / 100).toInt) == 0){
-                val averages = getAverages(ensemble, nModels, 100)
+                val averages = Utilities.selectAndAverageNoContext[Double, BetaDistribution](ensemble, nModels, 100)
                 shares.zipWithIndex.map{
                     case(s, i) => s += averages(i)
                 }
@@ -64,34 +92,13 @@ object SparseThompsonSampling{
             i += 1
 
         }
+        val selections = Utilities.selectAndAverageNoContext[Double, BetaDistribution](ensemble, nModels, 100)
+        Utilities.report(Map(), selections, nModels, nIter, nFeatures, nGoodModels, shares)
+
         (ensemble, nModels, nIter, shares)
     }
 
-    def getAverages(ensemble: ThompsonSamplingLocalBeta[Int, Unit, Double], nModels: Int, iter: Int = 100): List[Double] = {
-        val selectedModels = (for{
-            i <- (0 until iter)
-        } yield(ensemble.actWithID((), List()))).map(_._1)
-        (0 until nModels).map{m => 
-            selectedModels.toList.map(s => if(s == m) 1.0 else 0.0).sum / selectedModels.length
-        }.toList
-    }
-    
 
-    def report(ensemble: ThompsonSamplingLocalBeta[Int, Unit, Double], nModels: Int, nIter: Int, shares: ListBuffer[ListBuffer[Double]]): Unit = {
-        val characters = "abcdefghijklmnopqrst"
-
-        val selections = getAverages(ensemble, nModels, 1000)
-
-        selections.zipWithIndex.map{
-            case(v, i) => println(f"action ${characters(i % characters.length)}: $v")
-        }
-
-        var chart = Chart(1.1, -0.1, 0, nIter)
-        (0 until nModels).map{i =>
-            chart = chart.plotLine(shares(i).toList, Some(i.toString), characters(i%characters.length).toString())
-        }
-        println(chart.render())
-    }
 
     
 
