@@ -29,13 +29,3 @@ class ThompsonSamplingLocalBeta[ModelID, ModelData, ModelAction]
         key => models(key), () => models.keys.toList, MutableMap(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*))
 
 
-class ThompsonSamplingLocalWithContext
-    [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
-     modelRewards: MutableMap[ModelID, ContextualDistr])
-    extends GreedySoftmaxLocalWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
-        key => models(key),
-        () => models.keys.toList,
-        modelRewards,
-        0.0
-    )
