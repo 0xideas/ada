@@ -1,4 +1,4 @@
-package ada.core.components.learners
+package ada.core.components.selectors
 
 import scala.collection.mutable.{Map => MutableMap}
 
@@ -12,7 +12,7 @@ trait SelectModel[ModelID, ModelData, ModelAction]{
 
     def _sortModel[AggregateReward <: SimpleDistribution](models: ModelID => Model[ModelData, ModelAction],
                  modelKeys: () => List[ModelID],
-                 modelRewards: ModelID => AggregateReward): List[(ModelID, Double)] = {
+                 modelRewards: ModelID => AggregateReward): List[(ModelID, Reward)] = {
         val modelIds = modelKeys()
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw))
                                         .toList
@@ -24,7 +24,7 @@ trait SelectModel[ModelID, ModelData, ModelAction]{
     			  (models: ModelID => Model[ModelData, ModelAction],
                    modelKeys: () => List[ModelID],
                    modelRewards: ModelID => AggregateReward,
-                   context: Context): List[(ModelID, Double)] = {
+                   context: Context): List[(ModelID, Reward)] = {
         val modelIds = modelKeys()
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw(context)))
                                         .toList
@@ -34,7 +34,7 @@ trait SelectModel[ModelID, ModelData, ModelAction]{
 
     def _selectModel(models: ModelID => Model[ModelData, ModelAction],
                    modelKeys: () => List[ModelID],
-            aggregateRewardsDouble: List[(ModelID, Double)],
+            aggregateRewardsDouble: List[(ModelID, Reward)],
             data: ModelData): (ModelAction, ModelID)
 }
 
@@ -44,9 +44,9 @@ trait SelectWithSoftmax[ModelID, ModelData, ModelAction]
 
     def _selectModel(models: ModelID => Model[ModelData, ModelAction],
                      modelKeys: () => List[ModelID],
-                     aggregateRewardsDouble: List[(ModelID, Double)],
+                     aggregateRewardsDouble: List[(ModelID, Reward)],
                      data: ModelData): (ModelAction, ModelID) = {
-        val totalReward: Double = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
+        val totalReward: Reward = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
         val cumulativeProb: List[(Probability, Probability)] = 
         	aggregateRewardsDouble
         		.scanLeft((0.0, 0.0))((acc, item) => (acc._2, acc._2 + item._2/totalReward)).tail

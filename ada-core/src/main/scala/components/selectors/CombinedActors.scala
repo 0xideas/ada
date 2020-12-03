@@ -1,4 +1,4 @@
-package ada.core.components.learners
+package ada.core.components.selectors
 
 import scala.collection.mutable.{Map => MutableMap}
 import org.apache.commons.math3.stat.descriptive.AggregateSummaryStatistics
