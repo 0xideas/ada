@@ -7,19 +7,21 @@ import ada.core.components.distributions.ContextualDistribution
 import org.apache.logging.log4j.core.appender.rewrite.MapRewritePolicy.Mode
 
 
-abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
+abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])
-    extends Model[ModelData, ModelAction]{
+    extends Model[ModelData, ModelAction]
+    with ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def models(): Map[ModelID, Model[ModelData, ModelAction]] = models
     def modelRewards(): MutableMap[ModelID, AggregateReward] = modelRewards
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
+    def export = export(models, modelKeys, modelRewards)
 
 }
 
-abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
+abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])
@@ -32,7 +34,7 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
 
 }
 
-abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward]
+abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: Exportable]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])
@@ -47,7 +49,7 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 }
 
 
-abstract class _StackableEnsembleGeneral[ModelID, ModelData, ModelAction, AggregateReward](
+abstract class _StackableEnsembleGeneral[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])
@@ -58,7 +60,7 @@ abstract class _StackableEnsembleGeneral[ModelID, ModelData, ModelAction, Aggreg
         def act(data: ModelData): ModelAction = actWithID(data, List())._1
 }
 
-abstract class StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward](
+abstract class StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])
@@ -66,7 +68,7 @@ abstract class StackableEnsemble[ModelID, ModelData, ModelAction, AggregateRewar
         def update(modelId: ModelID, reward: Reward): Unit
 }
 
-abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward](
+abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward])

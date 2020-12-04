@@ -18,14 +18,3 @@ class ThompsonSamplingWithContext
         modelRewards,
         0.0
     )
-
-class ThompsonSamplingDynamic
-    [ModelID, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[ModelData]]
-    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
-     modelRewards: MutableMap[ModelID, ContextualDistr])
-    extends GreedySoftmaxDynamicEnsemble[ModelID, ModelData, ModelAction, ContextualDistr](
-        key => models(key),
-        () => models.keys.toList,
-        modelRewards,
-        0.0
-    )
