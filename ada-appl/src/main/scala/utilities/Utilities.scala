@@ -21,29 +21,37 @@ object Utilities{
         context
     }
 
-    def selectAndAverageContext[D, E](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], nModels: Int,
+    def selectAndAverageContext[D, E <: Exportable](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], nModels: Int,
                                         highIndexMap: Map[Int, Double], nFeatures: Int, rnd: scala.util.Random,
                                         iter: Int = 100): List[Double] = {
         val context = createContext(highIndexMap, nFeatures, rnd)
         val selectedModels = (for{
             i <- (0 until iter)
-        } yield(ensemble.actWithID(context, ()))).map(_._1)
+        } yield(ensemble.actWithID(context, ()))).map(_._2)
 
         (0 until nModels).map{m => 
             selectedModels.toList.map(s => if(s == m) 1.0 else 0.0).sum / selectedModels.length
         }.toList
     }
 
-    def selectAndAverageNoContext[C, D](ensemble: StackableEnsemble[Int, Unit, C, D], nModels: Int, iter: Int = 100): List[Double] = {
+    def selectAndAverageNoContext[C, D <: Exportable](ensemble: StackableEnsemble[Int, Unit, C, D], nModels: Int, iter: Int = 100): List[Double] = {
         val selectedModels = (for{
             i <- (0 until iter)
-        } yield(ensemble.actWithID((), List()))).map(_._1)
+        } yield(ensemble.actWithID((), List()))).map(_._2)
         (0 until nModels).map{m => 
             selectedModels.toList.map(s => if(s == m) 1.0 else 0.0).sum / selectedModels.length
         }.toList
     }
 
-
+    def selectAndAverageDynamic[C, D <: Exportable](ensemble: StackableEnsemble2[Int, Array[Double], C, D ], highIndexMap: Map[Int, Double], nFeatures: Int , nModels: Int, rnd: scala.util.Random, iter: Int = 100): List[Double] = {
+        val modelData = createContext(highIndexMap, nFeatures, rnd)
+        val selectedModels = (for{
+            i <- (0 until iter)
+        } yield(ensemble.actWithID(modelData, List()))).map(_._2)
+        (0 until nModels).map{m => 
+            selectedModels.toList.map(s => if(s(0) == m) {println(s); 1.0} else 0.0).sum / selectedModels.length
+        }.toList
+    }
 
 
     def report(highIndexMap: Map[Int, Double], selections: List[Double], nModels: Int, nIter: Int, nFeatures: Int, nGoodModels: Int, shares: ListBuffer[ListBuffer[Double]]): Unit = {
@@ -73,7 +81,7 @@ object Utilities{
         println(chart.render())
     }
 
-    def run[D, E](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], highIndexMaps: List[Map[Int, Double]], 
+    def run[D, E <: Exportable](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], highIndexMaps: List[Map[Int, Double]], 
                     nModels: Int, nIter: Int, nFeatures: Int, nGoodModels: Int,
                     rnd: scala.util.Random,
                     conversionRate: Map[Int, Double]): ListBuffer[ListBuffer[ListBuffer[Double]]] = {
@@ -116,6 +124,48 @@ object Utilities{
         shares
     }
 
+    def run2[C, D <: Exportable](ensemble: StackableEnsemble2[Int, Array[Double], C, D] , highIndexMaps: List[Map[Int, Double]], 
+                    nModels: Int, nIter: Int, nFeatures: Int, nGoodModels: Int,
+                    rnd: scala.util.Random,
+                    conversionRate: Map[Int, Double]): ListBuffer[ListBuffer[ListBuffer[Double]]] = {
+
+        println("started run")
+        val shares = ListBuffer.fill(highIndexMaps.length)(ListBuffer.fill(nModels)(ListBuffer.empty[Double]))
+
+        var i = 0
+        while(i < nIter){
+
+            //take 100 snapshots in total for charting
+            if(i % scala.math.max(1, (nIter / 100).toInt)  == 0){
+                highIndexMaps.zipWithIndex.map{
+                    case(highIndexMap, f) =>  {
+                        var selections = Utilities.selectAndAverageDynamic[C, D](ensemble, highIndexMap, nFeatures, nModels, rnd, 100)
+                        shares(f).zipWithIndex.map{case(s,j) => s += selections(j)}  
+                    }
+              }
+
+            }
+
+            val context = Array.fill(nFeatures)(rnd.nextGaussian())
+            val (action, id) = ensemble.actWithID(context, List())
+            //for the first nGoodModels*nFeatures Models, the reward is the value of the context
+            //at the position that is indexed by the remainder of the model id divided by the
+            //number of features, for all other models it is 0
+            //this means that for those first models, the reward is the value at the feature
+            //val setReward = if(id < nFeatures * nGoodModels) context(id % nFeatures) else 0
+
+            val setReward = if((id(0) < nFeatures * nGoodModels) &&  //if the id belongs to a model that sees positive reward
+                    ((rnd.nextDouble()*(1+context(id(0) % nFeatures))) > (1-conversionRate(id(0))))) 5 else 0   // and the customer converts
+
+            ensemble.update(id, context,  setReward)
+
+            if(i % 10000 == 0) println(i) 
+
+            i += 1
+        }
+        println("-----finished loop------")
+        shares
+    }
 
 }
 

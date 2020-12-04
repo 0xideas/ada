@@ -26,4 +26,4 @@ class GenericStaticModel[ModelID, ModelData, ModelAction](value: ModelAction)(im
 } 
 
 
-class StaticModel[ModelID](value: Double) extends GenericStaticModel[ModelID, Unit, Double](value)((d:Double) => Json.fromDouble(d).get)
+class StaticModel[ModelID, ModelData](value: Double) extends GenericStaticModel[ModelID, ModelData, Double](value)((d:Double) => Json.fromDouble(d).get)

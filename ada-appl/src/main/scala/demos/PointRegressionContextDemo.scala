@@ -13,8 +13,8 @@ import plotting.Chart
 
 object PointRegressionContextDemo{
 
-    val model0 = new StaticModel(0.0)
-    val model1 = new StaticModel(1.0)
+    val model0 = new StaticModel[Int, Unit](0.0)
+    val model1 = new StaticModel[Int, Unit](1.0)
 
     val rnd = scala.util.Random
     val initIndependent = DataFrame.of(Array.fill(50, 2){rnd.nextDouble})

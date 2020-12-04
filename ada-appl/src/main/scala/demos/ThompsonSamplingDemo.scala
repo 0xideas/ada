@@ -67,7 +67,7 @@ object ThompsonSamplingDemo{
         val rnd = scala.util.Random
 
         //initialisation of the ensemble
-        val models = (0 until nModels).map(x => new StaticModel[Int](x.toDouble))
+        val models = (0 until nModels).map(x => new StaticModel[Int, Unit](x.toDouble))
 
 
         val ensemble = new ThompsonSamplingLocalBeta[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)

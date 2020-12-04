@@ -9,8 +9,9 @@ import ada.core.models.StaticModel
 
 
 import plotting.Chart
+import ada.core.components.contextmodels.BayesianSampleLinearRegression
 
-object BayesianRegressionContextDemo{
+object StackedBayesianRegressionContextDemo{
     //parameters for the demo
     val nIter = 1000 * 10
     val nFeatures = 5
@@ -39,21 +40,29 @@ object BayesianRegressionContextDemo{
     val rnd = scala.util.Random
 
     //initialisation of the ensemble
-    val models = (0 until nModels).map(x => new StaticModel(x.toDouble))
+
+    val ensembles = (0 until 3).map{i =>
+        val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double]](x.toDouble))
+        val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
+
+        new ThompsonSamplingDynamicLocal[Int, Array[Double], Double, BayesianSampleRegressionContext](
+            (0 until nModels).zip(models).toMap, MutableMap((0 until nModels).zip(contexts):_*))
+    }
+
     val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
-    val ensemble = new ThompsonSamplingWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
-        (0 until nModels).zip(models).toMap,
+    val ensemble = new ThompsonSamplingDynamicLocal[Int, Array[Double], Double, BayesianSampleRegressionContext](
+        (0 until nModels).zip(ensembles).toMap,
         MutableMap((0 until nModels).zip(contexts):_*)
     )
 
 
     def run(): Unit = {
 
-        val shares = Utilities.run[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
+        val shares = Utilities.run2[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
 
         highIndexMaps.zipWithIndex.map{
             case(highIndexMap, f) => {
-                val selections = Utilities.selectAndAverageContext[Double, BayesianSampleRegressionContext](ensemble, nModels, highIndexMap, nFeatures, rnd, 100)
+                val selections = Utilities.selectAndAverageDynamic[Double, BayesianSampleRegressionContext](ensemble, highIndexMap, nFeatures, nModels, rnd, 100)
                 Utilities.report(highIndexMap, selections,  nModels, nIter, nFeatures, nGoodModels, shares(f))
             }
         }
