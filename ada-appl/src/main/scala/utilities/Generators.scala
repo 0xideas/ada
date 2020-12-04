@@ -1,6 +1,6 @@
 package ada.generators
 
-import ada.core.models.SimpleLinearRegression
+//import ada.core.models.SimpleLinearRegression
 import java.sql.Time
 
 trait Generator[ModelAction]{
@@ -10,7 +10,7 @@ trait Generator[ModelAction]{
 trait TimeseriesGenerator extends Generator[Double]{
 	def next: Double
 }
-
+/*
 class AutoregressionGenerator(steps: Int, var vol:Double) extends TimeseriesGenerator{
     private val rnd = new scala.util.Random
     private var values = rnd.nextDouble()+999.4999 :: Array.fill(steps+1)(1000.0).toList
@@ -24,7 +24,7 @@ class AutoregressionGenerator(steps: Int, var vol:Double) extends TimeseriesGene
         values = nextVal :: values
         nextVal
     }
-}
+}*/
 
 class SineGenerator(amplitude: Double = 1.0, resolution: Double = 100) extends TimeseriesGenerator {
 	private var state = 0.0

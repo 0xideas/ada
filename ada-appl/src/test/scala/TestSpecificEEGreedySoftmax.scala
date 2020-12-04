@@ -8,12 +8,13 @@ import io.circe.Json
 
 import scala.collection.mutable.{Map => MutableMap}
 
-import ada.core.models.{SimpleLinearRegressionModel, StaticModel, GenericStaticModel}
+import ada.core.models.{StaticModel, GenericStaticModel}
 import ada.core.ensembles.GreedySoftmaxLocal
-import ada.generators.{AutoregressionGenerator, ConstantGenerator}
+import ada.generators.{ConstantGenerator}
 import ada.generators.Generator
 import ada.core.interface.{AdaEnsemble, ExpDouble}
 import _root_.breeze.stats.mode
+
 
 class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
