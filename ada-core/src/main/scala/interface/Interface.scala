@@ -76,22 +76,3 @@ abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateRewa
         def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit
 }
 
-/*
-abstract class StackableSimpleEnsemble[ModelID, ModelAction, AggregateReward]
-    (models: Map[ModelID, Model[Unit, ModelAction]],
-    modelRewards: MutableMap[ModelID, AggregateReward])
-    extends SimpleEnsemble[ModelID, Unit, ModelAction, AggregateReward](models, modelRewards)
-
-abstract class StackableContextualEnsemble[ModelID, Context, ModelAction, AggregateReward]
-    (models: Map[ModelID, Model[Context, ModelAction]],
-    modelRewards: MutableMap[ModelID, AggregateReward])
-    extends ContextualEnsemble[ModelID, Context, Context, ModelAction, AggregateReward](models, modelRewards)
-
-
-trait SingleType[A]
-trait IdenticalTypeParameters1[A, B <: A]
-trait IdenticalTypeParameters2[A, B <: A]
-
-    trait Stackable[Context, ModelData]
-    extends IdenticalTypeParameters1[Context, ModelData]
-    with IdenticalTypeParameters2[ModelData, Context]*/

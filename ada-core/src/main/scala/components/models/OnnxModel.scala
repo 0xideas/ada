@@ -1,4 +1,4 @@
-package components.models
+package ada.core.models
 
 import ada._
 
