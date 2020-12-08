@@ -57,7 +57,9 @@ lazy val dependencies = Seq(
   
   "org.bytedeco" % "javacpp"   % "1.5.4" classifier "linux-x86_64",
   "org.bytedeco" % "openblas"  % "0.3.10-1.5.4" classifier "linux-x86_64",
-  "org.bytedeco" % "arpack-ng" % "3.7.0-1.5.4" classifier "linux-x86_64"
+  "org.bytedeco" % "arpack-ng" % "3.7.0-1.5.4" classifier "linux-x86_64",
+
+  "com.microsoft.onnxruntime" % "onnxruntime" % "1.5.2"
 )
 
 

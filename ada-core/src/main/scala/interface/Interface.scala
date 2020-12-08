@@ -19,6 +19,7 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: E
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
     def export = export(models, modelKeys, modelRewards)
 
+
 }
 
 abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
@@ -43,7 +44,6 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID)
     def act(context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
     def update(modelId: ModelID, context: Context, reward: Reward): Unit
-
 
     //override def act[Context](context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
 }
