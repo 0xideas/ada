@@ -37,16 +37,4 @@ trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
     def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
 }
 
-trait ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]{
-    def export(models: ModelID  => Model[ModelData, ModelAction],
-               modelKeys: () => List[ModelID],
-               modelRewards: MutableMap[ModelID, AggregateReward]): Json = Json.fromFields(Map(
-        "models" -> Json.fromFields(modelKeys().map{
-            id => (id.toString(), models(id).export)
-        }),
-        "modelRewards" -> Json.fromFields(modelRewards.map{
-            case(id, aggReward) => (id.toString(), aggReward.export)
-        })
-    ))
-}
 

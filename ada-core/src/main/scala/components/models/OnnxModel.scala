@@ -14,11 +14,10 @@ import scala.jdk.CollectionConverters._
 import ai.onnxruntime.OrtUtil
 
 
-class GenericOnnxModel[ModelID, ModelDataElement, ModelAction](path: String)
+class OnnxModel[ModelID, ModelDataElement, ModelAction](path: String)
     extends StackableModel[ModelID, Array[Array[ModelDataElement]], ModelAction]{
 
     val env = OrtEnvironment.getEnvironment();
-    //var session = env.createSession("/home/leon/data/onnx/dt_iris.onnx",new OrtSession.SessionOptions());
     val session = env.createSession(path ,new OrtSession.SessionOptions());
     val loadingTime = java.time.LocalDateTime.now().toString()
 
