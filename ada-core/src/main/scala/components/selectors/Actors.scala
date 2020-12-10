@@ -8,7 +8,7 @@ import ada.core.components.distributions._
 
 
 trait AbstractGreedy[ModelID, ModelData, ModelAction]
-	extends SelectModel[ModelID, ModelData, ModelAction] {
+	extends Selector[ModelID, ModelData, ModelAction] {
     def _actImplBase[AggregateReward <: Distribution]
                 (models: ModelID => Model[ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
@@ -96,7 +96,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
 
 //not used so far
 trait Softmax[ModelID, ModelData, ModelAction]
-    extends SelectWithSoftmax[ModelID, ModelData, ModelAction]{
+    extends SoftmaxSelector[ModelID, ModelData, ModelAction]{
     def _actImpl[AggregateReward <: SimpleDistribution](models: ModelID => Model[ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                  modelRewards: ModelID => AggregateReward,

@@ -3,7 +3,7 @@ package ada.demos
 import scala.collection.mutable.{ListBuffer}
 
 import ada.core.models.{StaticModel}
-import ada.core.ensembles.{ThompsonSamplingLocalBeta, ThompsonSampling}
+import ada.core.ensembles.{ThompsonSamplingLocalBeta, ThompsonSamplingEnsemble}
 import ada.core.components.distributions.BetaDistribution
 import ada._
 import ada.core.components.distributions.{Distribution, BetaDistribution}

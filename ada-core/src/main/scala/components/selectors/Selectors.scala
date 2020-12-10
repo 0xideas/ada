@@ -7,7 +7,7 @@ import ada.core.interface._
 import ada.core.components.distributions._
 
 
-trait SelectModel[ModelID, ModelData, ModelAction]{
+trait Selector[ModelID, ModelData, ModelAction]{
     protected val rnd = new scala.util.Random(101)
 
     def _sortModel[AggregateReward <: SimpleDistribution](models: ModelID => Model[ModelData, ModelAction],
@@ -39,8 +39,8 @@ trait SelectModel[ModelID, ModelData, ModelAction]{
 }
 
 
-trait SelectWithSoftmax[ModelID, ModelData, ModelAction]
-    extends SelectModel[ModelID, ModelData, ModelAction]{
+trait SoftmaxSelector[ModelID, ModelData, ModelAction]
+    extends Selector[ModelID, ModelData, ModelAction]{
 
     def _selectModel(models: ModelID => Model[ModelData, ModelAction],
                      modelKeys: () => List[ModelID],
