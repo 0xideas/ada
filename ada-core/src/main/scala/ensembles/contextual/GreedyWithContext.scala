@@ -1,6 +1,5 @@
 package ada.core.ensembles
 
-import scala.collection.mutable.{Map => MutableMap}
 import breeze.stats.mode
 import io.circe.Json
 
@@ -15,7 +14,7 @@ abstract class GreedyWithContextAbstract
 	 AggregateReward <: ContextualDistribution[Context]]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
+    modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with ContextualActor[ModelID, ModelData, ModelAction]{
@@ -33,7 +32,7 @@ class GreedyWithContext
 	 AggregateReward <: ContextualDistribution[Context]]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
+    modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends GreedyWithContextAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with Greedy[ModelID, ModelData, ModelAction]

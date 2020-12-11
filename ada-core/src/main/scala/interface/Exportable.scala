@@ -13,7 +13,7 @@ trait Exportable{
 trait ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]{
     def export(models: ModelID  => Model[ModelData, ModelAction],
                modelKeys: () => List[ModelID],
-               modelRewards: MutableMap[ModelID, AggregateReward]): Json = Json.fromFields(Map(
+               modelRewards: Map[ModelID, AggregateReward]): Json = Json.fromFields(Map(
         "models" -> Json.fromFields(modelKeys().map{
             id => (id.toString(), models(id).export)
         }),

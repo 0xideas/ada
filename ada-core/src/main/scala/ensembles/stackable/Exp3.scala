@@ -1,6 +1,5 @@
 package ada.core.ensembles
 
-import scala.collection.mutable.{Map => MutableMap}
 import breeze.stats.mode
 import io.circe.Json
 
@@ -13,8 +12,7 @@ import ada.core.components.distributions._
 class Exp3[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Reward]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
-    gamma: Double)
+    modelRewards: Map[ModelID, AggregateReward])
     extends StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with Softmax[ModelID, ModelData, ModelAction]{
 

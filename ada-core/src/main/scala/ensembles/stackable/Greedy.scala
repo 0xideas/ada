@@ -1,6 +1,5 @@
 package ada.core.ensembles
 
-import scala.collection.mutable.{Map => MutableMap}
 import breeze.stats.mode
 import io.circe.Json
 
@@ -13,7 +12,7 @@ import ada.core.components.distributions._
 abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
+    modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with StackableActor[ModelID, ModelData, ModelAction]{
@@ -32,7 +31,7 @@ abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, Aggregate
 class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
+    modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with Greedy[ModelID, ModelData, ModelAction]

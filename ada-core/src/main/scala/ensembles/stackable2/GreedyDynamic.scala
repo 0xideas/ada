@@ -1,6 +1,5 @@
 package ada.core.ensembles
 
-import scala.collection.mutable.{Map => MutableMap}
 import breeze.stats.mode
 import io.circe.Json
 
@@ -12,7 +11,7 @@ import ada.core.components.distributions._
 abstract class GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
     (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
+    modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with StackableActor2[ModelID, ModelData, ModelAction]{
@@ -29,7 +28,7 @@ abstract class GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, Ag
 class GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
     (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
+    modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with Greedy[ModelID, ModelData, ModelAction]

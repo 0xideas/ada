@@ -1,6 +1,5 @@
 package ada.core.ensembles
 
-import scala.collection.mutable.{Map => MutableMap}
 
 import ada._
 import ada.core.interface._
@@ -11,7 +10,7 @@ import breeze.stats.distributions.Beta
 class ThompsonSamplingWithContext
     [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
-     modelRewards: MutableMap[ModelID, ContextualDistr])
+     modelRewards: Map[ModelID, ContextualDistr])
     extends GreedyWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
         key => models(key),
         () => models.keys.toList,

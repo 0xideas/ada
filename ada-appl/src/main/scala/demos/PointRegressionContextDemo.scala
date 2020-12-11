@@ -1,6 +1,5 @@
 package ada.demos
 
-import scala.collection.mutable.{Map => MutableMap}
 import scala.collection.mutable.{ListBuffer}
 
 import ada.core.components.distributions.PointRegressionContext
@@ -26,7 +25,7 @@ object PointRegressionContextDemo{
     val ensemble = new GreedySoftmaxWithContext[Int, Array[Double], Unit, Double, PointRegressionContext](
         Map(0 -> model0, 1 -> model1),
         () => List(0, 1),
-        MutableMap(0 -> regressionContext1, 1 -> regressionContext2),
+        Map(0 -> regressionContext1, 1 -> regressionContext2),
         0.1,
     )
 

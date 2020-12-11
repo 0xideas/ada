@@ -6,7 +6,6 @@ import Gen._
 import Prop._
 import io.circe.Json
 
-import scala.collection.mutable.{Map => MutableMap}
 
 import ada.core.models.{StaticModel, GenericStaticModel}
 import ada.core.ensembles.GreedySoftmaxEnsemble
@@ -50,7 +49,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
             val ensemble = new GreedySoftmaxEnsemble[ModelId, ModelData, ModelAction, ExpDouble](
                                                                     (id) => modelMap(id),
                                                                     () => modelMap.keys.toList,
-                                                                    MutableMap(id1 -> new ExpDouble(1.0), id2 -> new ExpDouble(1.0), id3 -> new ExpDouble(3.0)),
+                                                                    Map(id1 -> new ExpDouble(1.0), id2 -> new ExpDouble(1.0), id3 -> new ExpDouble(3.0)),
                                                                     eta)
             
             (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble), modelData)

@@ -1,6 +1,5 @@
 package ada.demos
 
-import scala.collection.mutable.{Map => MutableMap}
 import scala.collection.mutable.{ListBuffer}
 
 import ada.core.components.distributions.BayesianSampleRegressionContext
@@ -43,7 +42,7 @@ object BayesianRegressionContextDemo{
     val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
     val ensemble = new ThompsonSamplingWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
         (0 until nModels).zip(models).toMap,
-        MutableMap((0 until nModels).zip(contexts):_*)
+        Map((0 until nModels).zip(contexts):_*)
     )
 
 

@@ -1,6 +1,5 @@
 package ada.core.interface
 
-import scala.collection.mutable.{Map => MutableMap}
 
 import ada._
 import ada.core.components.distributions.ContextualDistribution
@@ -10,12 +9,12 @@ import org.apache.logging.log4j.core.appender.rewrite.MapRewritePolicy.Mode
 abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward])
+    modelRewards: Map[ModelID, AggregateReward])
     extends Model[ModelData, ModelAction]
     with ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def models(): Map[ModelID, Model[ModelData, ModelAction]] = models
-    def modelRewards(): MutableMap[ModelID, AggregateReward] = modelRewards
+    def modelRewards(): Map[ModelID, AggregateReward] = modelRewards
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
     def export = export(models, modelKeys, modelRewards)
 
@@ -25,7 +24,7 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: E
 abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward])
+    modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with SimpleModel[ModelData, ModelAction]{
     def actWithID(data: ModelData): (ModelAction, ModelID)
@@ -38,7 +37,7 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
 abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: Exportable]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward])
+    modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with ContextualModel[Context, ModelData, ModelAction]{
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID)
@@ -52,7 +51,7 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 abstract class _StackableEnsembleGeneral[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward])
+    modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with StackableModel[ModelID, ModelData, ModelAction]{
         def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
@@ -63,7 +62,7 @@ abstract class _StackableEnsembleGeneral[ModelID, ModelData, ModelAction, Aggreg
 abstract class StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward])
+    modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with StackableModel[ModelID, ModelData, ModelAction]{
         def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
@@ -75,7 +74,7 @@ abstract class StackableEnsemble[ModelID, ModelData, ModelAction, AggregateRewar
 abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
     models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward])
+    modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with StackableModel2[ModelID, ModelData, ModelAction]{
         def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])

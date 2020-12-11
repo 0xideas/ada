@@ -1,6 +1,5 @@
 package ada.core.ensembles
 
-import scala.collection.mutable.{Map => MutableMap}
 import breeze.stats.mode
 import io.circe.Json
 
@@ -14,7 +13,7 @@ import ada.core.components.distributions._
 class ThompsonSamplingDynamicLocal
     [ModelID, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[ModelData]]
     (models: Map[ModelID, StackableModel2[ModelID, ModelData, ModelAction]],
-     modelRewards: MutableMap[ModelID, ContextualDistr])
+     modelRewards: Map[ModelID, ContextualDistr])
     extends GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, ContextualDistr](
         key => models(key),
         () => models.keys.toList,
