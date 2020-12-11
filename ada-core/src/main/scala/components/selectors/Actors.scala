@@ -146,7 +146,6 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
 }
 
 
-//not used so far
 trait Softmax[ModelID, ModelData, ModelAction]
     extends SoftmaxSelector[ModelID, ModelData, ModelAction]{
 

@@ -50,10 +50,16 @@ object ExpDouble{
 
 
 class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends SimpleDistribution{
-    def draw: Double = value
+    private var totalRewardV = k.toDouble
+
+    def draw: Double = ((1.0 - gamma) * value/totalRewardV + gamma/k )
+
+    def updateTotalReward(totalReward: Double): Unit = totalRewardV = totalReward
+
     def update(reward: Reward): Unit = {
         value = value * math.exp(gamma* reward/(k))
     }
+
     def export: Json = Json.fromFields(Map(
         "value" -> Json.fromDouble(value).get,
         "gamma" -> Json.fromDouble(gamma).get,
