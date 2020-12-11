@@ -15,7 +15,8 @@ import ai.onnxruntime.OrtUtil
 
 
 class OnnxModel[ModelID, ModelDataElement, ModelAction](path: String)
-    extends StackableModel[ModelID, Array[Array[ModelDataElement]], ModelAction]{
+    extends StackableModel[ModelID, Array[Array[ModelDataElement]], ModelAction]
+    with StackableModel2[ModelID, Array[Array[ModelDataElement]], ModelAction]{
 
     val env = OrtEnvironment.getEnvironment();
     val session = env.createSession(path ,new OrtSession.SessionOptions());
@@ -30,6 +31,7 @@ class OnnxModel[ModelID, ModelDataElement, ModelAction](path: String)
     }
 
     def update(modelIds: List[ModelID], data: Array[Array[ModelDataElement]], reward: Reward): Unit =  ()
+    def update(modelIds: List[ModelID], reward: Reward): Unit =  ()
 
     def actWithID(data: Array[Array[ModelDataElement]], selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = 
         (act(data), selectedIds)

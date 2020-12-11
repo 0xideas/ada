@@ -9,7 +9,8 @@ import ada.core.interface._
 
 
 class GenericStaticModel[ModelID, ModelData, ModelAction](value: ModelAction)(implicit g: ModelAction => Json)
-    extends StackableModel[ModelID, ModelData, ModelAction]{
+    extends StackableModel[ModelID, ModelData, ModelAction]
+    with StackableModel2[ModelID, ModelData, ModelAction]{
 
     def act(data: ModelData): ModelAction = value
 
@@ -19,7 +20,9 @@ class GenericStaticModel[ModelID, ModelData, ModelAction](value: ModelAction)(im
     override def toString: String = "$Model: " + value.toString() + "$"
 
     def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = ()
-    
+
+    def update(modelIds: List[ModelID], reward: ada.Reward): Unit = ()
+
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = (value, selectedIds)
 
     def export: Json = Json.fromFields(Map("value" -> g(value)))

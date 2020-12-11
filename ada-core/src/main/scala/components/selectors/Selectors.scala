@@ -36,6 +36,7 @@ trait Selector[ModelID, ModelData, ModelAction]{
                    modelKeys: () => List[ModelID],
             aggregateRewardsDouble: List[(ModelID, Reward)],
             data: ModelData): (ModelAction, ModelID)
+    
 }
 
 
