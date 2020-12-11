@@ -9,10 +9,11 @@ import io.circe.Json
 import scala.collection.mutable.{Map => MutableMap}
 
 import ada.core.models.{StaticModel, GenericStaticModel}
-import ada.core.ensembles.GreedySoftmaxLocal
+import ada.core.ensembles.GreedySoftmaxEnsemble
 import ada.generators.{ConstantGenerator}
 import ada.generators.Generator
-import ada.core.interface.{AdaEnsemble, ExpDouble}
+import ada.core.interface.{AdaEnsemble}
+import ada.core.components.distributions.ExpDouble
 import _root_.breeze.stats.mode
 
 
@@ -45,9 +46,10 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
                           new GenericStaticModel[ModelId, ModelData, ModelAction](const2)(x => Json.fromString(x.toString())),
                           new GenericStaticModel[ModelId, ModelData, ModelAction](const2)(x => Json.fromString(x.toString())))
 
-
-            val ensemble = GreedySoftmaxLocal[ModelId, ModelData, ModelAction, ExpDouble](
-                                                                    Map(id1 -> models(0), id2 -> models(1), id3 -> models(2)).toMap,
+            val modelMap = Map(id1 -> models(0), id2 -> models(1), id3 -> models(2))
+            val ensemble = new GreedySoftmaxEnsemble[ModelId, ModelData, ModelAction, ExpDouble](
+                                                                    (id) => modelMap(id),
+                                                                    () => modelMap.keys.toList,
                                                                     MutableMap(id1 -> new ExpDouble(1.0), id2 -> new ExpDouble(1.0), id3 -> new ExpDouble(3.0)),
                                                                     eta)
             
@@ -99,7 +101,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
                     /*println(action)
                     println(const1)
                     println(reward)*/
-                    ensemble.update(selectedIds, modelData, reward)
+                    ensemble.update(selectedIds, reward)
                 }
 
                 val rounds = for {

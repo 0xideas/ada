@@ -9,7 +9,6 @@ import ada.core.interface._
 import ada.core.components.selectors._
 import ada.core.components.distributions._
 
-
 class GreedySoftmaxDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
     (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],

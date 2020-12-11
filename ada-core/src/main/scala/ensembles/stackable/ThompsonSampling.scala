@@ -31,3 +31,7 @@ class ThompsonSamplingLocalBeta[ModelID, ModelData, ModelAction]
         MutableMap(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*))
 
 
+
+object Check{
+    //new ThompsonSamplingDynamicLocal[Int, Double, Double, ExpDouble]
+}
