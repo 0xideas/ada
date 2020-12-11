@@ -86,7 +86,7 @@ object ThompsonSamplingDemo{
         while(i <  nIter){
             val (action, selectedModel) = ensemble.actWithID((), List())
             val reward = if(rnd.nextDouble() < conversionRate(selectedModel(0))) 1*learningMultiplier else -1*learningMultiplier
-            ensemble.update(selectedModel(0), reward)
+            ensemble.update(selectedModel, reward)
             if(i % scala.math.max(1, (nIter / 100).toInt) == 0){
                 val averages = Utilities.selectAndAverageNoContext[Double, BetaDistribution](ensemble, nModels, 100)
                 shares.zipWithIndex.map{

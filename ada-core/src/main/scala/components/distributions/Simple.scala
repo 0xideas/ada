@@ -54,11 +54,9 @@ class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends Simpl
     def update(reward: Reward): Unit = {
         value = value * math.exp(gamma* reward/(k))
     }
-    def export: Json = {
-        (Json.fromDouble(value), Json.fromDouble(gamma), Json.fromDouble(k)) match {
-            case((Some(valueJson), Some(gammaJson), Some(kJson))) => 
-                Json.fromFields(Map("value"-> valueJson, "gamma" -> gammaJson, "k" -> kJson))
-            case _ => Json.fromString("could not be exported")
-        }
-    } 
+    def export: Json = Json.fromFields(Map(
+        "value" -> Json.fromDouble(value).get,
+        "gamma" -> Json.fromDouble(gamma).get,
+        "k" -> Json.fromInt(k)
+    ))
 }

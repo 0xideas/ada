@@ -26,6 +26,8 @@ class ThompsonSamplingLocalBeta[ModelID, ModelData, ModelAction]
          alpha: Double,
          beta: Double)
     extends ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction, BetaDistribution](
-        key => models(key), () => models.keys.toList, MutableMap(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*))
+        key => models(key),
+        () => models.keys.toList,
+        MutableMap(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*))
 
 

@@ -6,7 +6,7 @@ import scala.collection.mutable.{ListBuffer}
 import ada.core.components.distributions.BayesianSampleRegressionContext
 import ada.core.ensembles._
 import ada.core.models.StaticModel
-
+import ada.core.interface.StackableModel2
 
 import plotting.Chart
 import ada.core.components.contextmodels.BayesianSampleLinearRegression
@@ -42,7 +42,7 @@ object StackedBayesianRegressionContextDemo{
     //initialisation of the ensemble
 
     val ensembles = (0 until 3).map{i =>
-        val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double]](x.toDouble))
+        val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double]](x.toDouble)).toList
         val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
 
         new ThompsonSamplingDynamicLocal[Int, Array[Double], Double, BayesianSampleRegressionContext](

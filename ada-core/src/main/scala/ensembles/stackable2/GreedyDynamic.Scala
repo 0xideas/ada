@@ -35,16 +35,3 @@ class GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
     extends GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with Greedy[ModelID, ModelData, ModelAction]
 
-
-
-
-class ThompsonSamplingDynamicLocal
-    [ModelID, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[ModelData]]
-    (models: Map[ModelID, StackableModel2[ModelID, ModelData, ModelAction]],
-     modelRewards: MutableMap[ModelID, ContextualDistr])
-    extends GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, ContextualDistr](
-        key => models(key),
-        () => models.keys.toList,
-        modelRewards,
-        0.0
-    )
