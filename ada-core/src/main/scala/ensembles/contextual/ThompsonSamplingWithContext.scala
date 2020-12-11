@@ -12,7 +12,7 @@ class ThompsonSamplingWithContext
     [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
      modelRewards: MutableMap[ModelID, ContextualDistr])
-    extends GreedySoftmaxWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
+    extends GreedyWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
         key => models(key),
         () => models.keys.toList,
         modelRewards,

@@ -10,3 +10,7 @@ import ada.core.components.distributions._
 trait GreedySoftmax[ModelID, ModelData, ModelAction] 
     extends AbstractGreedy[ModelID, ModelData, ModelAction]
     with SoftmaxSelector[ModelID, ModelData, ModelAction]
+
+trait Greedy[ModelID, ModelData, ModelAction] 
+    extends AbstractGreedy[ModelID, ModelData, ModelAction]
+    with RandomSelector[ModelID, ModelData, ModelAction]

@@ -14,7 +14,7 @@ class ThompsonSamplingEnsemble
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
      modelRewards: MutableMap[ModelID, Distr])
-    extends GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, Distr](
+    extends GreedyEnsemble[ModelID, ModelData, ModelAction, Distr](
         models,
         modelKeys,
         modelRewards,
@@ -34,7 +34,7 @@ class ThompsonSamplingDynamicLocal
     [ModelID, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[ModelData]]
     (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
      modelRewards: MutableMap[ModelID, ContextualDistr])
-    extends GreedySoftmaxDynamicEnsemble[ModelID, ModelData, ModelAction, ContextualDistr](
+    extends GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, ContextualDistr](
         key => models(key),
         () => models.keys.toList,
         modelRewards,

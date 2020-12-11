@@ -63,3 +63,19 @@ trait SoftmaxSelector[ModelID, ModelData, ModelAction]
         (selectedModel.act(data), selectedModelId)
     }
 }
+
+trait RandomSelector[ModelID, ModelData, ModelAction]
+    extends Selector[ModelID, ModelData, ModelAction]{
+
+    def _selectModel(models: ModelID => Model[ModelData, ModelAction],
+                     modelKeys: () => List[ModelID],
+                     aggregateRewardsDouble: List[(ModelID, Reward)],
+                     data: ModelData): (ModelAction, ModelID) = {
+        val modelKeysV = modelKeys()
+        val selector = rnd.nextInt(modelKeysV.length)
+        val selectedModelId = modelKeysV(selector)
+        val selectedModel: Model[ModelData, ModelAction] = models(selectedModelId)
+        (selectedModel.act(data), selectedModelId)
+    }
+}
+
