@@ -19,19 +19,6 @@ class GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
     with GreedySoftmax[ModelID, ModelData, ModelAction]
 
 
-
-class GreedySoftmaxDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
-    (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
-    epsilon: Double)
-    extends GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
-    with GreedySoftmax[ModelID, ModelData, ModelAction]
-
-
-
-
-
 /*
 
 object GreedySoftmaxLocal{

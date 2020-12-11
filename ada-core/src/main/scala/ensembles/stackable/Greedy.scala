@@ -37,30 +37,3 @@ class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleD
     extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with Greedy[ModelID, ModelData, ModelAction]
 
-
-
-
-abstract class GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
-    (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
-    epsilon: Double)
-    extends StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with StackableActor2[ModelID, ModelData, ModelAction]{
-
-    def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) =
-    	_actImpl2[AggregateReward](models, modelKeys, modelRewards, epsilon, data, selectedIds)
-
-    def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
-        modelRewards(modelIds(0)).update(data, reward)
-        models(modelIds.head).update(modelIds.tail, data, reward)
-    }
-}
-
-class GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
-    (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
-    epsilon: Double)
-    extends GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
-    with Greedy[ModelID, ModelData, ModelAction]
