@@ -149,19 +149,27 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
 //not used so far
 trait Softmax[ModelID, ModelData, ModelAction]
     extends SoftmaxSelector[ModelID, ModelData, ModelAction]{
-    def _actImpl[AggregateReward <: SimpleDistribution](models: ModelID => Model[ModelData, ModelAction],
+
+    def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]](
+                models: ModelID => Model[ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
-                 modelRewards: ModelID => AggregateReward,
-                 data: ModelData): (ModelAction, ModelID) = {
-        val modelsSorted = _sortModel[AggregateReward](models, modelKeys, modelRewards)
-        _selectModel(models, modelKeys, modelsSorted, data)
-    }
-    def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]](models: ModelID => Model[ModelData, ModelAction],
-                 modelKeys: () => List[ModelID],
-                 modelRewards: ModelID => AggregateReward,
-                 context: Context,
-                 data: ModelData): (ModelAction, ModelID) = {
+                modelRewards: ModelID => AggregateReward,
+                epsilon: Double,
+                data: ModelData,
+                context: Context): (ModelAction, ModelID) = {
         val modelsSorted = _sortModel[Context, AggregateReward](models, modelKeys, modelRewards, context)
         _selectModel(models, modelKeys, modelsSorted, data)
+    }
+
+    def _actImpl[AggregateReward <: SimpleDistribution](
+                models: ModelID => Model[ModelData, ModelAction],
+                modelKeys: () => List[ModelID],
+                modelRewards: ModelID => AggregateReward,
+                epsilon: Double,
+                data: ModelData,
+                selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
+        val modelsSorted = _sortModel[AggregateReward](models, modelKeys, modelRewards)
+        val (action, modelId) = _selectModel(models, modelKeys, modelsSorted, data)
+        (action, selectedIds ::: List(modelId) )
     }
 }

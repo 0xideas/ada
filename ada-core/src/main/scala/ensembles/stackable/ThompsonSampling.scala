@@ -29,14 +29,3 @@ class ThompsonSamplingLocalBeta[ModelID, ModelData, ModelAction]
         key => models(key), () => models.keys.toList, MutableMap(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*))
 
 
-
-class ThompsonSamplingDynamicLocal
-    [ModelID, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[ModelData]]
-    (models: Map[ModelID, StackableModel2[ModelID, ModelData, ModelAction]],
-     modelRewards: MutableMap[ModelID, ContextualDistr])
-    extends GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, ContextualDistr](
-        key => models(key),
-        () => models.keys.toList,
-        modelRewards,
-        0.0
-    )

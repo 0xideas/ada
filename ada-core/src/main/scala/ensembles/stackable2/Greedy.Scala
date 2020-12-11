@@ -33,16 +33,9 @@ class GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
     modelRewards: MutableMap[ModelID, AggregateReward],
     epsilon: Double)
     extends GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
+    with Greedy[ModelID, ModelData, ModelAction]
 
 
-
-class GreedySoftmaxDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
-    (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
-    modelRewards: MutableMap[ModelID, AggregateReward],
-    epsilon: Double)
-    extends GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
-    with GreedySoftmax[ModelID, ModelData, ModelAction]
 
 
 class ThompsonSamplingDynamicLocal

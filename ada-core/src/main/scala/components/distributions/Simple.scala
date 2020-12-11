@@ -47,3 +47,18 @@ class ExpDouble(private var value: Double) extends SimpleDistribution {
 object ExpDouble{
     implicit def expDouble: Double => ExpDouble = (d:Double) => new ExpDouble(d) 
 }
+
+
+class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends SimpleDistribution{
+    def draw: Double = value
+    def update(reward: Reward): Unit = {
+        value = value * math.exp(gamma* reward/(k))
+    }
+    def export: Json = {
+        (Json.fromDouble(value), Json.fromDouble(gamma), Json.fromDouble(k)) match {
+            case((Some(valueJson), Some(gammaJson), Some(kJson))) => 
+                Json.fromFields(Map("value"-> valueJson, "gamma" -> gammaJson, "k" -> kJson))
+            case _ => Json.fromString("could not be exported")
+        }
+    } 
+}
