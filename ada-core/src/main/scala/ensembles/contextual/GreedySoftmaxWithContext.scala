@@ -17,13 +17,5 @@ class GreedySoftmaxWithContext
      modelKeys: () => List[ModelID],
     modelRewards: MutableMap[ModelID, AggregateReward],
     epsilon: Double)
-    extends ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with GreedySoftmax[ModelID, ModelData, ModelAction]{
-
-    def actWithID(context: Context, data: ModelData): (ModelAction, ModelID) = {
-        _actImpl[Context, AggregateReward](models, modelKeys, modelRewards, epsilon, data, context)
-    }
-
-    def update(modelId: ModelID, context: Context, reward: Reward): Unit = 
-        modelRewards(modelId).update(context, reward)
-}
+    extends GreedyWithContextAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
+    with GreedySoftmax[ModelID, ModelData, ModelAction]

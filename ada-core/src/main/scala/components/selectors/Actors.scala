@@ -6,9 +6,64 @@ import ada._
 import ada.core.interface._
 import ada.core.components.distributions._
 
+sealed trait Actor
+
+trait CombinedActor[ModelID, ModelData, ModelAction]
+    extends SimpleActor[ModelID, ModelData, ModelAction]
+    with ContextualActor[ModelID, ModelData, ModelAction]
+    with StackableActor[ModelID, ModelData, ModelAction]
+    with Stackable2Actor[ModelID, ModelData, ModelAction]
+
+trait SimpleActor[ModelID, ModelData, ModelAction]
+    extends Selector[ModelID, ModelData, ModelAction]
+    with Actor{
+
+    def _actImpl[AggregateReward <: SimpleDistribution]
+                (models: ModelID => Model[ModelData, ModelAction],
+                modelKeys: () => List[ModelID],
+                modelRewards: ModelID => AggregateReward,
+                epsilon: Double,
+                data: ModelData): (ModelAction, ModelID) 
+}
+
+trait ContextualActor[ModelID, ModelData, ModelAction]
+    extends Selector[ModelID, ModelData, ModelAction]
+    with Actor{
+    def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]]
+    			(models: ModelID => Model[ModelData, ModelAction],
+                modelKeys: () => List[ModelID],
+                modelRewards: ModelID => AggregateReward,
+                epsilon: Double,
+                data: ModelData,
+                context: Context): (ModelAction, ModelID) 
+}
+
+trait StackableActor[ModelID, ModelData, ModelAction]
+    extends Selector[ModelID, ModelData, ModelAction]
+    with Actor{
+    def _actImpl[AggregateReward <: SimpleDistribution]
+                (models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
+                modelKeys: () => List[ModelID],
+                modelRewards: ModelID => AggregateReward,
+                epsilon: Double,
+                data: ModelData,
+                selectedIds: List[ModelID]): (ModelAction, List[ModelID]) 
+}
+
+trait Stackable2Actor[ModelID, ModelData, ModelAction]
+	extends Selector[ModelID, ModelData, ModelAction]{
+    def _actImplD[AggregateReward <: ContextualDistribution[ModelData]]
+                (models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
+                modelKeys: () => List[ModelID],
+                modelRewards: ModelID => AggregateReward,
+                epsilon: Double,
+                data: ModelData,
+                selectedIds: List[ModelID]): (ModelAction, List[ModelID])
+}
 
 trait AbstractGreedy[ModelID, ModelData, ModelAction]
-	extends Selector[ModelID, ModelData, ModelAction] {
+    extends Selector[ModelID, ModelData, ModelAction]
+    with Actor{
     def _actImplBase[AggregateReward <: Distribution]
                 (models: ModelID => Model[ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
