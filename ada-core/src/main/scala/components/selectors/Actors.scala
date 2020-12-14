@@ -73,7 +73,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
                 epsilon: Double,
                 data: ModelData): (ModelAction, ModelID) = {
 
-        val modelsSorted = _sortModel[AggregateReward](models, modelKeys, modelRewards)
+        val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
 
         if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
@@ -90,7 +90,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
                 data: ModelData,
                 context: Context): (ModelAction, ModelID) = {
 
-        val modelsSorted = _sortModel[Context, AggregateReward](models, modelKeys, modelRewards, context)
+        val modelsSorted = _sortModel[Context, AggregateReward](modelKeys, modelRewards, context)
 
         if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
@@ -110,7 +110,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
                 data: ModelData,
                 selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
 
-        val modelsSorted = _sortModel[AggregateReward](models, modelKeys, modelRewards)
+        val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
 
         if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
@@ -131,7 +131,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
                 data: ModelData,
                 selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
                                     //ModelData is also used as Context!!!
-        val modelsSorted = _sortModel[ModelData, AggregateReward](models, modelKeys, modelRewards, data)
+        val modelsSorted = _sortModel[ModelData, AggregateReward](modelKeys, modelRewards, data)
 
         if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
@@ -156,7 +156,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
                 epsilon: Double,
                 data: ModelData,
                 context: Context): (ModelAction, ModelID) = {
-        val modelsSorted = _sortModel[Context, AggregateReward](models, modelKeys, modelRewards, context)
+        val modelsSorted = _sortModel[Context, AggregateReward](modelKeys, modelRewards, context)
         _selectModel(models, modelKeys, modelsSorted, data)
     }
 
@@ -167,7 +167,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
                 epsilon: Double,
                 data: ModelData,
                 selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
-        val modelsSorted = _sortModel[AggregateReward](models, modelKeys, modelRewards)
+        val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
         val (action, modelId) = _selectModel(models, modelKeys, modelsSorted, data)
         (action, selectedIds ::: List(modelId) )
     }
@@ -192,7 +192,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 context: Context,
                 gamma: Double,
                 k: Int): (ModelAction, ModelID) = {
-        val modelsSorted = _sortModel[Context, AggregateReward](models, modelKeys, modelRewards, context)
+        val modelsSorted = _sortModel[Context, AggregateReward](modelKeys, modelRewards, context)
         _selectModel(models, modelKeys, _adjustRewards(modelsSorted, gamma, k), data)
     }
 
@@ -205,7 +205,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 selectedIds: List[ModelID],
                 gamma: Double,
                 k: Int): (ModelAction, List[ModelID]) = {
-        val modelsSorted = _sortModel[AggregateReward](models, modelKeys, modelRewards)
+        val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
         val (action, modelId) = _selectModel(models, modelKeys, _adjustRewards(modelsSorted, gamma, k), data)
         (action, selectedIds ::: List(modelId) )
     }

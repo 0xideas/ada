@@ -30,6 +30,3 @@ class ThompsonSamplingLocalBeta[ModelID, ModelData, ModelAction]
 
 
 
-object Check{
-    //new ThompsonSamplingDynamicLocal[Int, Double, Double, ExpDouble]
-}

@@ -10,7 +10,7 @@ import ada.core.components.distributions._
 trait Selector[ModelID, ModelData, ModelAction]{
     protected val rnd = new scala.util.Random(101)
 
-    def _sortModel[AggregateReward <: SimpleDistribution](models: ModelID => Model[ModelData, ModelAction],
+    def _sortModel[AggregateReward <: SimpleDistribution](
                  modelKeys: () => List[ModelID],
                  modelRewards: ModelID => AggregateReward): List[(ModelID, Reward)] = {
         val modelIds = modelKeys()
@@ -21,8 +21,7 @@ trait Selector[ModelID, ModelData, ModelAction]{
     }
 
     def _sortModel[Context, AggregateReward <: ContextualDistribution[Context]]
-    			  (models: ModelID => Model[ModelData, ModelAction],
-                   modelKeys: () => List[ModelID],
+    			  (modelKeys: () => List[ModelID],
                    modelRewards: ModelID => AggregateReward,
                    context: Context): List[(ModelID, Reward)] = {
         val modelIds = modelKeys()
