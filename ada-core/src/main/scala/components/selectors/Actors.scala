@@ -172,3 +172,41 @@ trait Softmax[ModelID, ModelData, ModelAction]
         (action, selectedIds ::: List(modelId) )
     }
 }
+
+trait Exp3[ModelID, ModelData, ModelAction]
+    extends SoftmaxSelector[ModelID, ModelData, ModelAction]{
+
+    protected var totalReward: Reward = 0.0
+
+    def _adjustRewards(modelsSorted: List[(ModelID, Reward)], gamma: Double, k: Int): List[(ModelID, Reward)] = {
+        totalReward = modelsSorted.map(_._2).sum
+        modelsSorted.map{case(id, value) => (id, ((1.0 - gamma) * value/totalReward + gamma/k ))}
+    }
+
+    def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]](
+                models: ModelID => Model[ModelData, ModelAction],
+                modelKeys: () => List[ModelID],
+                modelRewards: ModelID => AggregateReward,
+                epsilon: Double,
+                data: ModelData,
+                context: Context,
+                gamma: Double,
+                k: Int): (ModelAction, ModelID) = {
+        val modelsSorted = _sortModel[Context, AggregateReward](models, modelKeys, modelRewards, context)
+        _selectModel(models, modelKeys, _adjustRewards(modelsSorted, gamma, k), data)
+    }
+
+    def _actImpl[AggregateReward <: SimpleDistribution](
+                models: ModelID => Model[ModelData, ModelAction],
+                modelKeys: () => List[ModelID],
+                modelRewards: ModelID => AggregateReward,
+                epsilon: Double,
+                data: ModelData,
+                selectedIds: List[ModelID],
+                gamma: Double,
+                k: Int): (ModelAction, List[ModelID]) = {
+        val modelsSorted = _sortModel[AggregateReward](models, modelKeys, modelRewards)
+        val (action, modelId) = _selectModel(models, modelKeys, _adjustRewards(modelsSorted, gamma, k), data)
+        (action, selectedIds ::: List(modelId) )
+    }
+}

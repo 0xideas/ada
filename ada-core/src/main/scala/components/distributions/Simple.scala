@@ -50,11 +50,7 @@ object ExpDouble{
 
 
 class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends SimpleDistribution{
-    private var totalRewardV = k.toDouble
-
-    def draw: Double = ((1.0 - gamma) * value/totalRewardV + gamma/k )
-
-    def updateTotalReward(totalReward: Double): Unit = totalRewardV = totalReward
+    def draw: Double = value
 
     def update(reward: Reward): Unit = {
         value = value * math.exp(gamma* reward/(k))

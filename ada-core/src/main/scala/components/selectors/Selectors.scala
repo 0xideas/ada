@@ -10,8 +10,6 @@ import ada.core.components.distributions._
 trait Selector[ModelID, ModelData, ModelAction]{
     protected val rnd = new scala.util.Random(101)
 
-    var modelsSortedCache: List[(ModelID, Double)] = List()
-
     def _sortModel[AggregateReward <: SimpleDistribution](models: ModelID => Model[ModelData, ModelAction],
                  modelKeys: () => List[ModelID],
                  modelRewards: ModelID => AggregateReward): List[(ModelID, Reward)] = {
@@ -19,7 +17,6 @@ trait Selector[ModelID, ModelData, ModelAction]{
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw))
                                         .toList
                                         .sortWith(_._2 > _._2)
-        modelsSortedCache = modelsSorted
         modelsSorted
     }
 
@@ -32,7 +29,6 @@ trait Selector[ModelID, ModelData, ModelAction]{
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw(context)))
                                         .toList
                                         .sortWith(_._2 > _._2)
-        modelsSortedCache = modelsSorted
         modelsSorted
     }
 
