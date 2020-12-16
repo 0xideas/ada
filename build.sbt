@@ -9,6 +9,7 @@ lazy val root = project.
 
 
 Compile / scalaSource := baseDirectory.value / "ada-appl"
+testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oS")
 
 
 lazy val commonSettings = Seq(
@@ -63,5 +64,3 @@ lazy val dependencies = Seq(
 )
 
 
-testOptions in Test += Tests.Argument(TestFrameworks.JUnit, "-a", "-v", "-s")
-testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oF")

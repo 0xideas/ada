@@ -11,7 +11,7 @@ import ada.core.components.distributions._
 trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
     def _updateAllImpl(data: ModelData,
                        optimalAction: ModelAction,
-                       models: Map[ModelID, Model[ModelData, ModelAction]],
+                       models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
                        modelRewards: ModelID => AggregateReward,
                        update: (ModelID, ModelAction, ModelAction) => Unit): Unit = {
         models.map{case(id, model) => {
@@ -23,12 +23,12 @@ trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
     def _updateAllImpl[Context]
                        (data: ModelData,
                        optimalAction: ModelAction,
-                       models: Map[ModelID, Model[ModelData, ModelAction]],
+                       models: Map[ModelID, ContextualModel[Context, ModelData, ModelAction]],
                        modelRewards: ModelID => AggregateReward,
                        update: (ModelID, Context, ModelAction, ModelAction) => Unit,
                        context: Context): Unit = {
         models.map{case(id, model) => {
-                val modelAction = model.act(data)
+                val modelAction = model.act(context, data)
                 update(id, context, modelAction, optimalAction) 
             }
         } 

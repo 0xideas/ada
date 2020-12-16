@@ -10,7 +10,8 @@ import ada.core.interface._
 
 class GenericStaticModel[ModelID, ModelData, ModelAction](value: ModelAction)(implicit g: ModelAction => Json)
     extends StackableModel[ModelID, ModelData, ModelAction]
-    with StackableModel2[ModelID, ModelData, ModelAction]{
+    with StackableModel2[ModelID, ModelData, ModelAction]
+    with SimpleModel[ModelData, ModelAction]{
 
     def act(data: ModelData): ModelAction = value
 

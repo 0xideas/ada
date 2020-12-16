@@ -9,7 +9,7 @@ import breeze.stats.distributions.Beta
 
 class ThompsonSamplingWithContext
     [ModelID, Context, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[Context]]
-    (models: Map[ModelID, Model[ModelData, ModelAction]],
+    (models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
      modelRewards: Map[ModelID, ContextualDistr])
     extends GreedyWithContext[ModelID, Context, ModelData, ModelAction, ContextualDistr](
         key => models(key),

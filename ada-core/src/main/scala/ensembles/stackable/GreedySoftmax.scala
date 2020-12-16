@@ -17,28 +17,3 @@ class GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
     extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with GreedySoftmax[ModelID, ModelData, ModelAction]
 
-
-/*
-
-object GreedySoftmaxLocal{
-    def apply[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution](
-        models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
-        initAggregateRewards: () => AggregateReward,
-        epsilon: Double): GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward] = {
-            val modelRewards = Map(models.toSeq.map{case(k,v) => (k, initAggregateRewards())}:_*)
-            val ensemble = new GreedySoftmaxEnsemble
-                [ModelID, ModelData, ModelAction, AggregateReward](
-                key => models(key), () => models.keys.toList, modelRewards, epsilon)
-            ensemble
-        }
-    def apply[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution](
-        models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
-        modelRewards: Map[ModelID, AggregateReward],
-        epsilon: Double): GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward] = {
-            val ensemble = new GreedySoftmaxEnsemble
-                [ModelID, ModelData, ModelAction, AggregateReward](
-                key => models(key), () => models.keys.toList, modelRewards, epsilon)
-            ensemble
-        }
-}
-*/

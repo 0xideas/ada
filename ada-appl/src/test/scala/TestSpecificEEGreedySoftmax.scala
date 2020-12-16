@@ -57,6 +57,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
         generator
     }
 
+
     private def report(eta: Double, rounds: List[(Any, Any)], tests:List[Boolean], rewardsMap: List[(Any, Any)]): Unit = {
         println("-----")
         println(rewardsMap.toMap)
@@ -72,15 +73,15 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
         property(name + " - proportions of model selections correspond to eta value - initial reward") = forAll(generator){
             tuple => {
                 val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble), modelData) = tuple
-
                 val rounds = for {
                     i <- (0 until nActions)
                 } yield{
                     val (action, selectedIds) = ensemble.actWithID(i, List())
                     (action, selectedIds(0))
                 }
-                
+
                 val test1 = isclose(rounds.count(_._2 == id3).toDouble, nActions*(1-eta))
+
                 val test2 = isclose(rounds.count(t => t._2 == id1).toDouble/rounds.length, rounds.count(t => t._2 == id2).toDouble/rounds.length)
                 val result = test1 && test2 
 

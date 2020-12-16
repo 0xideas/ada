@@ -19,7 +19,7 @@ trait SimpleActor[ModelID, ModelData, ModelAction]
     with Actor{
 
     def _actImpl[AggregateReward <: SimpleDistribution]
-                (models: ModelID => Model[ModelData, ModelAction],
+                (models: ModelID => SimpleModel[ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -30,7 +30,7 @@ trait ContextualActor[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
     with Actor{
     def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]]
-    			(models: ModelID => Model[ModelData, ModelAction],
+    			(models: ModelID => SimpleModel[ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -67,7 +67,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
     with CombinedActor[ModelID, ModelData, ModelAction]{
 
     def _actImpl[AggregateReward <: SimpleDistribution]
-                (models: ModelID => Model[ModelData, ModelAction],
+                (models: ModelID => SimpleModel[ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -80,10 +80,14 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             val selectedModel = models(selectedModelId)
             (selectedModel.act(data), selectedModelId)
         }
-        else _selectModel(models, modelKeys, modelsSorted.tail, data)    }
+        else {
+            val modelId = _selectModel(modelKeys, modelsSorted.tail) 
+            (models(modelId).act(data), modelId)
+        }
+    }
 
     def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]]
-    			(models: ModelID => Model[ModelData, ModelAction],
+    			(models: ModelID => SimpleModel[ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -97,9 +101,11 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             val selectedModel = models(selectedModelId)
             (selectedModel.act(data), selectedModelId)
         }
-        else _selectModel(models, modelKeys, modelsSorted.tail, data)    }
-
-
+        else {
+            val modelId = _selectModel(modelKeys, modelsSorted.tail) 
+            (models(modelId).act(data), modelId)
+        }
+    }
 
 
     def _actImpl[AggregateReward <: SimpleDistribution]
@@ -118,8 +124,8 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             selectedModel.actWithID(data, selectedIds ::: List(selectedModelId))
         }
         else {
-            val (action, modelId) = _selectModel(models, modelKeys, modelsSorted.tail, data)
-            (action, selectedIds ::: List(modelId))
+            val selectedModelId = _selectModel(modelKeys, modelsSorted.tail)
+            models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
         }
     }
 
@@ -139,8 +145,8 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             selectedModel.actWithID(data, selectedIds ::: List(selectedModelId))
         }
         else {
-            val (action, modelId) = _selectModel(models, modelKeys, modelsSorted.tail, data)
-            (action, selectedIds ::: List(modelId))
+            val selectedModelId = _selectModel(modelKeys, modelsSorted.tail)
+            models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
         }
     }
 }
@@ -150,26 +156,27 @@ trait Softmax[ModelID, ModelData, ModelAction]
     extends SoftmaxSelector[ModelID, ModelData, ModelAction]{
 
     def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]](
-                models: ModelID => Model[ModelData, ModelAction],
+                models: ModelID => ContextualModel[Context, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData,
                 context: Context): (ModelAction, ModelID) = {
         val modelsSorted = _sortModel[Context, AggregateReward](modelKeys, modelRewards, context)
-        _selectModel(models, modelKeys, modelsSorted, data)
+        val modelId = _selectModel(modelKeys, modelsSorted)
+        (models(modelId).act(context, data), modelId)
     }
 
     def _actImpl[AggregateReward <: SimpleDistribution](
-                models: ModelID => Model[ModelData, ModelAction],
+                models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData,
                 selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
-        val (action, modelId) = _selectModel(models, modelKeys, modelsSorted, data)
-        (action, selectedIds ::: List(modelId) )
+        val selectedModelId = _selectModel(modelKeys, modelsSorted)
+        models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
     }
 }
 
@@ -184,7 +191,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
     }
 
     def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]](
-                models: ModelID => Model[ModelData, ModelAction],
+                models: ModelID => ContextualModel[Context, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -193,11 +200,12 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 gamma: Double,
                 k: Int): (ModelAction, ModelID) = {
         val modelsSorted = _sortModel[Context, AggregateReward](modelKeys, modelRewards, context)
-        _selectModel(models, modelKeys, _adjustRewards(modelsSorted, gamma, k), data)
+        val modelId = _selectModel(modelKeys, _adjustRewards(modelsSorted, gamma, k))
+        (models(modelId).act(context, data), modelId)
     }
 
     def _actImpl[AggregateReward <: SimpleDistribution](
-                models: ModelID => Model[ModelData, ModelAction],
+                models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -206,7 +214,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 gamma: Double,
                 k: Int): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
-        val (action, modelId) = _selectModel(models, modelKeys, _adjustRewards(modelsSorted, gamma, k), data)
-        (action, selectedIds ::: List(modelId) )
+        val selectedModelId = _selectModel(modelKeys, modelsSorted)
+        models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
     }
 }

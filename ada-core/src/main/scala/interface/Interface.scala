@@ -22,7 +22,7 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: E
 }
 
 abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
-    (models: ModelID  => Model[ModelData, ModelAction],
+    (models: ModelID  => SimpleModel[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
@@ -35,7 +35,7 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
 }
 
 abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: Exportable]
-    (models: ModelID  => Model[ModelData, ModelAction],
+    (models: ModelID  => SimpleModel[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)

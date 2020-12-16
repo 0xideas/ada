@@ -31,10 +31,8 @@ trait Selector[ModelID, ModelData, ModelAction]{
         modelsSorted
     }
 
-    def _selectModel(models: ModelID => Model[ModelData, ModelAction],
-                   modelKeys: () => List[ModelID],
-            aggregateRewardsDouble: List[(ModelID, Reward)],
-            data: ModelData): (ModelAction, ModelID)
+    def _selectModel(modelKeys: () => List[ModelID],
+            aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID
     
 }
 
@@ -42,10 +40,8 @@ trait Selector[ModelID, ModelData, ModelAction]{
 trait SoftmaxSelector[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]{
 
-    def _selectModel(models: ModelID => Model[ModelData, ModelAction],
-                     modelKeys: () => List[ModelID],
-                     aggregateRewardsDouble: List[(ModelID, Reward)],
-                     data: ModelData): (ModelAction, ModelID) = {
+    def _selectModel(modelKeys: () => List[ModelID],
+                     aggregateRewardsDouble: List[(ModelID, Reward)]):  ModelID = {
         val totalReward: Reward = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
         val cumulativeProb: List[(Probability, Probability)] = 
         	aggregateRewardsDouble
@@ -59,23 +55,20 @@ trait SoftmaxSelector[ModelID, ModelData, ModelAction]
         	modelsCumulativeProb.filter{case(model, bounds) => 
         								(selector >= bounds._1) && (selector <= bounds._2)}(0)._1
 
-        val selectedModel: Model[ModelData, ModelAction] = models(selectedModelId)
-        (selectedModel.act(data), selectedModelId)
+
+        selectedModelId
     }
 }
 
 trait RandomSelector[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]{
 
-    def _selectModel(models: ModelID => Model[ModelData, ModelAction],
-                     modelKeys: () => List[ModelID],
-                     aggregateRewardsDouble: List[(ModelID, Reward)],
-                     data: ModelData): (ModelAction, ModelID) = {
+    def _selectModel(modelKeys: () => List[ModelID],
+                     aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID = {
         val modelKeysV = modelKeys()
         val selector = rnd.nextInt(modelKeysV.length)
         val selectedModelId = modelKeysV(selector)
-        val selectedModel: Model[ModelData, ModelAction] = models(selectedModelId)
-        (selectedModel.act(data), selectedModelId)
+        selectedModelId
     }
 }
 
