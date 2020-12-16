@@ -64,7 +64,7 @@ trait StackableActor2[ModelID, ModelData, ModelAction]
 
 trait AbstractGreedy[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
-    with Actor{
+    with CombinedActor[ModelID, ModelData, ModelAction]{
 
     def _actImpl[AggregateReward <: SimpleDistribution]
                 (models: ModelID => Model[ModelData, ModelAction],

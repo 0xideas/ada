@@ -21,8 +21,7 @@ trait DifficultModel[ModelData, ModelAction] extends Model[ModelData, ModelActio
 
 
 trait ContextualModel[Context, ModelData, ModelAction] 
-    extends Model[ModelData, ModelAction]
-    with DifficultModel[ModelData, ModelAction]{
+    extends DifficultModel[ModelData, ModelAction]{
 
     def act(context: Context, data: ModelData): ModelAction
 }

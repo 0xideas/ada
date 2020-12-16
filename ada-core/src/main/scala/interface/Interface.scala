@@ -44,20 +44,8 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
     def act(context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
     def update(modelId: ModelID, context: Context, reward: Reward): Unit
 
-    //override def act[Context](context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
 }
 
-/*
-abstract class _StackableEnsembleGeneral[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
-    models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
-    modelKeys: () => List[ModelID],
-    modelRewards: Map[ModelID, AggregateReward])
-    extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with StackableModel[ModelID, ModelData, ModelAction]{
-        def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
-        def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
-        def act(data: ModelData): ModelAction = actWithID(data, List())._1
-}*/
 
 abstract class StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
