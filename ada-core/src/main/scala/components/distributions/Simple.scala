@@ -15,18 +15,18 @@ class BetaDistribution (private var alpha: Double, private var beta: Double)
 
     def draw = betaDistribution.draw()
 
-    def updateBounded(reward:Reward):Unit = {
+    def updateBounded(reward: Reward):Unit = {
         val rewardNormed = math.max(math.min(reward, 1), 0)
         alpha = alpha + rewardNormed
         beta = beta + (1.0-rewardNormed)
         betaDistribution = Beta(alpha, beta)
     }
-    def update(reward:Reward):Unit = {
-        alpha = alpha + math.max(0, reward)
-        beta = beta - math.min(0, reward)
+    def update(reward: Reward):Unit = {
+        alpha = alpha  + math.max(0, reward)
+        beta = beta + math.max(0, 1 -reward)
         betaDistribution = Beta(alpha, beta)
     }
-    def updateRecency(reward:Reward, recencyBias:Double):Unit = {
+    def updateRecency(reward: Reward, recencyBias: Double):Unit = {
         alpha = (alpha + math.max(0, reward)) * (1-recencyBias) + 1.0 * recencyBias
         beta = (beta - math.min(0, reward)) * (1-recencyBias)  + 1.0 * recencyBias
         betaDistribution = Beta(alpha, beta)
