@@ -48,6 +48,12 @@ object ExpDouble{
     implicit def expDouble: Double => ExpDouble = (d:Double) => new ExpDouble(d) 
 }
 
+class MeanDouble(private var value: Double) extends SimpleDistribution {
+    private var i = 1
+    def export: Json = Json.fromDouble(value).get
+    def draw: Double = value
+    def update(reward: Reward): Unit = {value = value*(1.0-1.0/i) + reward * (1.0/i); ()}
+}
 
 class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends SimpleDistribution{
     def draw: Double = value

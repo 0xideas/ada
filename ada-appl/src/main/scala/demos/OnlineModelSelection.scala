@@ -18,7 +18,8 @@ object OnlineModelSelection{
     val ensemble = new ThompsonSamplingLocalBeta[Int, Array[Array[Array[Array[Float]]]], Int]((0 until 5).zip(models).toMap, 1, 1)
 
     def run(): Unit = {
-        trainEnsemble()
+        //trainEnsemble()
+        measureRecall()
     }
 
     def trainEnsemble(nIter: Int = 10000): Unit = {
