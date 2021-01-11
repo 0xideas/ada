@@ -6,8 +6,13 @@ import ada.core.ensembles.PassiveThompsonSamplingEnsemble
 import ada.core.ensembles.ThompsonSamplingLocalBeta
 import ada.core.models._
 import ada.core.components.distributions.{Distribution, BetaDistribution}
+import scala.xml.persistent.Index
 
-object OnlineModelSelection{
+import java.nio.file.{Paths, Files}
+import java.nio.charset.StandardCharsets
+import java.nio.file.StandardOpenOption
+
+class OnlineModelSelection{
     val data_path = "/home/leon/data/onnx/ada-example/data_narrow.txt"
     val labels_path = "/home/leon/data/onnx/ada-example/labels_narrow.txt"
     val fine_labels_path = "/home/leon/data/onnx/ada-example/fine_labels_narrow.txt"
@@ -15,28 +20,48 @@ object OnlineModelSelection{
     val models = (101 until 106).map{i => 
         new OnnxClassifier[Int, Array[Array[Float]], Int](f"/home/leon/data/onnx/ada-example/conv-seed${i}.onnx", "input", i => i)
     }
-    val ensemble = new ThompsonSamplingLocalBeta[Int, Array[Array[Array[Array[Float]]]], Int]((0 until 5).zip(models).toMap, 1, 1)
 
     def run(): Unit = {
-        //trainEnsemble()
+        //measure(List(1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000))
         measureRecall()
     }
 
-    def trainEnsemble(nIter: Int = 10000): Unit = {
+    def measure(iterList: List[Int]){
+        if(Files.exists(Paths.get(f"/home/leon/projects/ada-scratchpad/ts-${iterList(0)}.txt")) == false){
+            iterList.map{ iter => Files.write(Paths.get(f"/home/leon/projects/ada-scratchpad/ts-${iter}.txt"), "".getBytes(StandardCharsets.UTF_8))}
+        }
+
+        val selections = trainEnsemble(iterList)
+        iterList.zipWithIndex.map{
+            case(iter, i) => Files.write(Paths.get(f"/home/leon/projects/ada-scratchpad/ts-${iter}.txt"), ("\n" + selections(i).mkString(",")).getBytes(StandardCharsets.UTF_8),  StandardOpenOption.APPEND)
+        }
+
+    }
+
+    def trainEnsemble(nIterL: List[Int] = List(1000)): List[List[Double]] = {
+        val ensemble = new ThompsonSamplingLocalBeta[Int, Array[Array[Array[Array[Float]]]], Int]((0 until 5).zip(models).toMap, 1, 1)
+
         val (labels, data) = loadData()
         val rnd = util.Random
         val n = data.length
 
-        (0 until nIter).map{i =>
-            val pick = math.abs(rnd.nextInt % n)
-            val (action, modelIds) = ensemble.actWithID(data(pick), List())
-            val reward =  if(action == labels(pick)) 1.0 else 0.0
-            ensemble.update(modelIds, reward)
-            //if(reward < 1.0) println(f" - ${modelIds(0)}: ${reward}")
+        val selectionsList = nIterL.map{nIter => 
+            (0 until nIter).map{i =>
+                val pick = math.abs(rnd.nextInt % n)
+                val (action, modelIds) = ensemble.actWithID(data(pick), List())
+                val reward =  if(action == labels(pick)) 1.0 else 0.0
+                ensemble.update(modelIds, reward)
+
+            }
+
+            val selections = Utilities.selectAndAverageNoContext[Array[Array[Array[Array[Float]]]], Int, BetaDistribution](ensemble, data(0), 5, 1000)
+            println(selections)
+            selections
         }
-        println(ensemble.export)
-        val selections = Utilities.selectAndAverageNoContext[Array[Array[Array[Array[Float]]]], Int, BetaDistribution](ensemble, data(0), 5, 1000)
-        println(selections)
+        
+        selectionsList.toList.map(_.toList)
+        //println(ensemble.export)
+
     }
 
     def loadData(): (ListBuffer[Int], ListBuffer[Array[Array[Array[Array[Float]]]]]) = {
@@ -105,7 +130,7 @@ object OnlineModelSelection{
             }
             i += 1
         }
-        println("\u001b[2J")
+        //println("\u001b[2J")
         (predictionss, labels, fine_labels)
     } 
 

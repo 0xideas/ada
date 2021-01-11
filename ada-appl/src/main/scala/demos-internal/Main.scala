@@ -4,5 +4,12 @@ import scala.collection.mutable.{ListBuffer}
 //import ada.demos.{StackedBayesianRegressionContextDemo => Demo}
 import ada.demos.{OnlineModelSelection => Demo}
 object Main extends App{
-    Demo.run()
+    var i = 0
+    var demo = new Demo()
+    while(i < 2){
+        demo.run()
+        demo = new Demo()
+        i += 1
+    }
+
 }

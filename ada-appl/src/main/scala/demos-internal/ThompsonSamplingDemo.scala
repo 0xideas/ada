@@ -45,16 +45,16 @@ object ThompsonSamplingDemo{
     def runOnce(): (ThompsonSamplingLocalBeta[Int, Unit, Double], Int, Int, ListBuffer[ListBuffer[Double]]) = {
         //parameters for the demo
 
-        val nIter = 1000 * 500
+        val nIter = 1000 * 100
         val nFeatures = 1
-        val nModels = 100
+        val nModels = 5
         val nGoodModels = nModels
         val learningMultiplier = 15
 
         val conversionRate = Map(
             0 -> 0.013,
-            1 -> 0.0173,
-            2 -> 0.0178,
+            1 -> 0.0143,
+            2 -> 0.0198,
             3 -> 0.014,
             4 -> 0.0145,
             5 -> 0.011,
@@ -62,7 +62,7 @@ object ThompsonSamplingDemo{
             7 -> 0.0113,
             8 -> 0.0104,
             9 -> 0.0096
-        ) ++ (10 until nModels).map(m => (m, 0.012)).toMap
+        ) //++ (10 until nModels).map(m => (m, 0.012)).toMap
 
         val rnd = scala.util.Random
 
@@ -88,7 +88,7 @@ object ThompsonSamplingDemo{
             val reward = if(rnd.nextDouble() < conversionRate(selectedModel(0))) 1*learningMultiplier else -1*learningMultiplier
             ensemble.update(selectedModel, reward)
             if(i % scala.math.max(1, (nIter / 100).toInt) == 0){
-                val averages = Utilities.selectAndAverageNoContext[Unit, Double, BetaDistribution](ensemble, (), nModels, 100)
+                val averages = Utilities.selectAndAverageNoContext[Unit, Double, BetaDistribution](ensemble, (), nModels, 1000)
                 shares.zipWithIndex.map{
                     case(s, i) => s += averages(i)
                 }

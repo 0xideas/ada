@@ -34,10 +34,15 @@ object Utilities{
         }.toList
     }
 
-    def selectAndAverageNoContext[B, C, D <: Exportable](ensemble: StackableEnsemble[Int, B, C, D], b: B, nModels: Int, iter: Int = 100): List[Double] = {
+    def selectAndAverageNoContext[B, C, D <: Exportable](ensemble: StackableEnsemble[Int, B, C, D], data: B, nModels: Int, iter: Int = 100): List[Double] = {
         val selectedModels = (for{
             i <- (0 until iter)
-        } yield(ensemble.actWithID(b, List()))).map(_._2)
+        } yield(ensemble.actWithID(data, List()))).map(_._2)
+        averageSelectedModels(selectedModels, nModels)
+    }
+    
+
+    def averageSelectedModels(selectedModels: IndexedSeq[List[Int]], nModels: Int): List[Double] = {
         (0 until nModels).map{m => 
             selectedModels.toList.map(s => if(s(0) == m) 1.0 else 0.0).sum / selectedModels.length
         }.toList
@@ -48,9 +53,8 @@ object Utilities{
         val selectedModels = (for{
             i <- (0 until iter)
         } yield(ensemble.actWithID(modelData, List()))).map(_._2)
-        (0 until nModels).map{m => 
-            selectedModels.toList.map(s => if(s(0) == m) {println(s); 1.0} else 0.0).sum / selectedModels.length
-        }.toList
+        averageSelectedModels(selectedModels, nModels)
+
     }
 
 

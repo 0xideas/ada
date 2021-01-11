@@ -6,6 +6,7 @@ import io.circe.Json
 import ada._
 import ada.core.interface._
 import ada.core.components.distributions._
+import ada.core.components.selectors.Selector
 
 //not used at the moment
 trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
