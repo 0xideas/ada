@@ -16,7 +16,8 @@ import ai.onnxruntime.OrtUtil
 
 class OnnxRegression[ModelID, ModelDataElement, ModelAction](path: String, input_name: String)
     extends StackableModel[ModelID, Array[Array[ModelDataElement]], ModelAction]
-    with StackableModel2[ModelID, Array[Array[ModelDataElement]], ModelAction]{
+    with StackableModel2[ModelID, Array[Array[ModelDataElement]], ModelAction]
+    with SimpleModel[Array[Array[ModelDataElement]], ModelAction]{
 
     val env = OrtEnvironment.getEnvironment();
     val session = env.createSession(path ,new OrtSession.SessionOptions());
@@ -44,7 +45,8 @@ class OnnxClassifier[ModelID, ModelDataElement, ModelAction]
     input_name: String,
     modelActionFn: Int => ModelAction)
     extends StackableModel[ModelID, Array[Array[ModelDataElement]], ModelAction]
-    with StackableModel2[ModelID, Array[Array[ModelDataElement]], ModelAction]{
+    with StackableModel2[ModelID, Array[Array[ModelDataElement]], ModelAction]
+    with SimpleModel[Array[Array[ModelDataElement]], ModelAction]{
 
     val env = OrtEnvironment.getEnvironment();
     val session = env.createSession(path ,new OrtSession.SessionOptions());

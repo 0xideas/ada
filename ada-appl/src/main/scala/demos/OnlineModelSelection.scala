@@ -3,7 +3,7 @@ package ada.demos
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 import ada.core.ensembles.PassiveThompsonSamplingEnsemble
-import ada.core.ensembles.ThompsonSamplingLocalBeta
+import ada.core.ensembles.ThompsonSamplingEnsemble
 import ada.core.models._
 import ada.core.components.distributions.{Distribution, BetaDistribution}
 import scala.xml.persistent.Index
@@ -39,7 +39,7 @@ class OnlineModelSelection{
     }
 
     def trainEnsemble(nIterL: List[Int] = List(1000)): List[List[Double]] = {
-        val ensemble = new ThompsonSamplingLocalBeta[Int, Array[Array[Array[Array[Float]]]], Int]((0 until 5).zip(models).toMap, 1, 1)
+        val ensemble = new ThompsonSamplingEnsemble[Int, Array[Array[Array[Array[Float]]]], Int]((0 until 5).zip(models).toMap, 1, 1)
 
         val (labels, data) = loadData()
         val rnd = util.Random

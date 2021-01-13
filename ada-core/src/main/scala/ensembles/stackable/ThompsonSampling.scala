@@ -7,7 +7,7 @@ import ada.core.components.distributions._
 import breeze.stats.distributions.Beta
 
 
-class ThompsonSamplingEnsemble
+class ThompsonSamplingGeneric
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
@@ -19,11 +19,11 @@ class ThompsonSamplingEnsemble
         0.0
     )
 
-class ThompsonSamplingLocalBeta[ModelID, ModelData, ModelAction]
+class ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]
     (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
          alpha: Double,
          beta: Double)
-    extends ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction, BetaDistribution](
+    extends ThompsonSamplingGeneric[ModelID, ModelData, ModelAction, BetaDistribution](
         key => models(key),
         () => models.keys.toList,
         Map(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*))

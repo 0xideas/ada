@@ -3,7 +3,7 @@ package ada.demos
 import scala.collection.mutable.{ListBuffer}
 
 import ada.core.models.{StaticModel}
-import ada.core.ensembles.{ThompsonSamplingLocalBeta, ThompsonSamplingEnsemble}
+import ada.core.ensembles.{ThompsonSamplingEnsemble, ThompsonSamplingGeneric}
 import ada.core.components.distributions.BetaDistribution
 import ada._
 import ada.core.components.distributions.{Distribution, BetaDistribution}
@@ -42,7 +42,7 @@ object ThompsonSamplingDemo{
         Utilities.report(Map(), List(), results(0)._2, results(0)._3, 1, 1, reduced)
     }
 
-    def runOnce(): (ThompsonSamplingLocalBeta[Int, Unit, Double], Int, Int, ListBuffer[ListBuffer[Double]]) = {
+    def runOnce(): (ThompsonSamplingEnsemble[Int, Unit, Double], Int, Int, ListBuffer[ListBuffer[Double]]) = {
         //parameters for the demo
 
         val nIter = 1000 * 100
@@ -70,7 +70,7 @@ object ThompsonSamplingDemo{
         val models = (0 until nModels).map(x => new StaticModel[Int, Unit](x.toDouble))
 
 
-        val ensemble = new ThompsonSamplingLocalBeta[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)
+        val ensemble = new ThompsonSamplingEnsemble[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)
         //stacked ensemble
         //val ensembles = (0 until 3).map{_ => new ThompsonSamplingLocalBeta[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)}
         //val ensemble = new ThompsonSamplingLocalBeta[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)
