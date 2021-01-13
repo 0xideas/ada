@@ -39,7 +39,7 @@ object BayesianRegressionContextDemo{
 
     //initialisation of the ensemble
     val models = (0 until nModels).map(x => new StaticModel[Int, Unit](x.toDouble * 100000))
-    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
+    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
     val ensemble = new ThompsonSamplingWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
         (0 until nModels).zip(models).toMap,
         Map((0 until nModels).zip(contexts):_*)

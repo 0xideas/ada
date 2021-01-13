@@ -42,14 +42,14 @@ object StackedBayesianRegressionContextDemo{
 
     val ensembles = (0 until 3).map{i =>
         val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double]](x.toDouble)).toList
-        val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
+        val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
 
         
         new ThompsonSamplingDynamicLocal[Int, Array[Double], Double, BayesianSampleRegressionContext](
             (0 until nModels).zip(models).toMap, Map((0 until nModels).zip(contexts):_*))
     }
 
-    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0, 1.0))
+    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
     val ensemble = new ThompsonSamplingDynamicLocal[Int, Array[Double], Double, BayesianSampleRegressionContext](
         (0 until nModels).zip(ensembles).toMap,
         Map((0 until nModels).zip(contexts):_*)
