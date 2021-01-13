@@ -12,6 +12,7 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, p
     private var mean = DenseVector.zeros[Double](nfeatures)
     private var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
     private var cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
+    private var w_cov = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
 
     implicit def toVector(array: Array[Double]): DenseVector[Double] = DenseVector(array:_*)
 
@@ -22,13 +23,16 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, p
         cov = inv(covInvT)
         mean = cov * ((covInv * mean) + (xvec.map(_ * beta * y)))
         covInv = covInvT
+
+        w_cov = cov
+        //w_cov = inv(covInv)
     }
 
     def predictProb(x: Array[Double]): Gaussian = {
         val xvec = toVector(x)
         val y_pred_mean = xvec.t * mean
 
-        val w_cov = inv(covInv)
+        //w_cov = inv(covInv)
         val y_pred_var = (1/ beta) + (xvec.t * w_cov * xvec)
         new Gaussian(y_pred_mean, y_pred_var)
     }
