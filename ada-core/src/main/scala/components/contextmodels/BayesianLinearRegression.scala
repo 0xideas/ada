@@ -7,7 +7,7 @@ import smile.regression.{OnlineRegression, LinearModel}
 import io.circe.Json
 import scala.language.implicitConversions
 
-abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, private var beta: Double, betaDecay: Double = 1.0)
+abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, private var beta: Double)
     extends OnlineRegression[Array[Double]]{
     private var mean = DenseVector.zeros[Double](nfeatures)
     private var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
@@ -22,7 +22,6 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, p
         cov = inv(covInvT)
         mean = cov * ((covInv * mean) + (xvec.map(_ * beta * y)))
         covInv = covInvT
-        beta = beta*betaDecay
     }
 
     def predictProb(x: Array[Double]): Gaussian = {
@@ -54,20 +53,25 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, p
     }
 
     def export: Json = Json.fromFields(Map(
+        "beta" -> Json.fromDouble(beta).get,
         "mean" -> Json.fromValues(mean.map(a => Json.fromDouble(a).get).toArray),
         "covInv" -> Json.fromValues(mean.map(a => Json.fromDouble(a).get).toArray)
     ))
+
+    def changeBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
+        beta = math.min((beta+increment)*factor, max)
+    }
 }
 
 
-class BayesianSampleLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double, val betaDecay: Double = 1.0)
-    extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta, betaDecay){
+class BayesianSampleLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double)
+    extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta){
     def predict(x: Array[Double]): Double = predictProb(x).sample
 }
 
 //basically identical to point estimate linear regression - not used at the moment
-class BayesianMeanLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double, val betaDecay: Double = 1.0)
-    extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta, betaDecay){
+class BayesianMeanLinearRegression(val nfeatures: Int, val alpha: Double, val beta: Double)
+    extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta){
     def predict(x: Array[Double]): Double = predictProb(x).mean
 }
 
