@@ -21,7 +21,7 @@ object ThompsonSamplingDemo{
                 case(ensemble, nModels, nIter, shares) => {
                     val nGoodModels = nModels
                     val nFeatures = 1
-                    val selections = Utilities.selectAndAverageNoContext[Unit, Double, BetaDistribution](ensemble, (), nModels, 100)
+                    val selections = Utilities.selectAndAverageStackable[Unit, Double, BetaDistribution](ensemble, (), nModels, 100)
                     Utilities.report(Map(), selections, nModels, nIter, nFeatures, nGoodModels, shares)
                 } 
             }
@@ -88,7 +88,7 @@ object ThompsonSamplingDemo{
             val reward = if(rnd.nextDouble() < conversionRate(selectedModel(0))) 1*learningMultiplier else -1*learningMultiplier
             ensemble.update(selectedModel, reward)
             if(i % scala.math.max(1, (nIter / 100).toInt) == 0){
-                val averages = Utilities.selectAndAverageNoContext[Unit, Double, BetaDistribution](ensemble, (), nModels, 1000)
+                val averages = Utilities.selectAndAverageStackable[Unit, Double, BetaDistribution](ensemble, (), nModels, 1000)
                 shares.zipWithIndex.map{
                     case(s, i) => s += averages(i)
                 }
@@ -96,7 +96,7 @@ object ThompsonSamplingDemo{
             i += 1
 
         }
-        val selections = Utilities.selectAndAverageNoContext[Unit, Double, BetaDistribution](ensemble, (), nModels, 100)
+        val selections = Utilities.selectAndAverageStackable[Unit, Double, BetaDistribution](ensemble, (), nModels, 100)
         Utilities.report(Map(), selections, nModels, nIter, nFeatures, nGoodModels, shares)
 
         (ensemble, nModels, nIter, shares)

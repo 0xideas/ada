@@ -58,7 +58,7 @@ object StackedBayesianRegressionContextDemo{
 
     def run(): Unit = {
 
-        val shares = Utilities.run2[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
+        val shares = Utilities.runStackable[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
 
         highIndexMaps.zipWithIndex.map{
             case(highIndexMap, f) => {

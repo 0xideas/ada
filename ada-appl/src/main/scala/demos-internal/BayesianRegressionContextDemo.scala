@@ -48,7 +48,7 @@ object BayesianRegressionContextDemo{
 
     def run(): Unit = {
 
-        val shares = Utilities.run[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
+        val shares = Utilities.runContext[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
 
         highIndexMaps.zipWithIndex.map{
             case(highIndexMap, f) => {

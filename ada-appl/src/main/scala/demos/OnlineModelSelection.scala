@@ -54,7 +54,7 @@ class OnlineModelSelection{
 
             }
 
-            val selections = Utilities.selectAndAverageNoContext[Array[Array[Array[Array[Float]]]], Int, BetaDistribution](ensemble, data(0), 5, 1000)
+            val selections = Utilities.selectAndAverageStackable[Array[Array[Array[Array[Float]]]], Int, BetaDistribution](ensemble, data(0), 5, 1000)
             println(selections)
             selections
         }

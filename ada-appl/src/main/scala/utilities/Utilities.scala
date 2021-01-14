@@ -33,8 +33,7 @@ object Utilities{
             selectedModels.toList.map(s => if(s == m) 1.0 else 0.0).sum / selectedModels.length
         }.toList
     }
-
-    def selectAndAverageNoContext[B, C, D <: Exportable](ensemble: StackableEnsemble[Int, B, C, D], data: B, nModels: Int, iter: Int = 100): List[Double] = {
+    def selectAndAverageStackable[B, C, D <: Exportable](ensemble: StackableEnsemble[Int, B, C, D], data: B, nModels: Int, iter: Int = 100): List[Double] = {
         val selectedModels = (for{
             i <- (0 until iter)
         } yield(ensemble.actWithID(data, List()))).map(_._2)
@@ -85,7 +84,7 @@ object Utilities{
         println(chart.render())
     }
 
-    def run[D, E <: Exportable](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], highIndexMaps: List[Map[Int, Double]], 
+    def runContext[D, E <: Exportable](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], highIndexMaps: List[Map[Int, Double]], 
                     nModels: Int, nIter: Int, nFeatures: Int, nGoodModels: Int,
                     rnd: scala.util.Random,
                     conversionRate: Map[Int, Double]): ListBuffer[ListBuffer[ListBuffer[Double]]] = {
@@ -128,7 +127,7 @@ object Utilities{
         shares
     }
 
-    def run2[C, D <: Exportable](ensemble: StackableEnsemble2[Int, Array[Double], C, D] , highIndexMaps: List[Map[Int, Double]], 
+    def runStackable[C, D <: Exportable](ensemble: StackableEnsemble2[Int, Array[Double], C, D] , highIndexMaps: List[Map[Int, Double]], 
                     nModels: Int, nIter: Int, nFeatures: Int, nGoodModels: Int,
                     rnd: scala.util.Random,
                     conversionRate: Map[Int, Double]): ListBuffer[ListBuffer[ListBuffer[Double]]] = {
