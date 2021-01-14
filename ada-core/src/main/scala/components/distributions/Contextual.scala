@@ -6,6 +6,8 @@ import smile.data.formula.Formula
 import smile.data.DataFrame
 import io.circe.Json
 
+import breeze.linalg._
+
 import ada.core.components.contextmodels.BayesianSampleLinearRegression
 import ada._
 
@@ -29,13 +31,18 @@ class PointRegressionContext(
 class BayesianSampleRegressionContext(
     val nfeatures: Int,
     val alpha: Double = 0.3,
-    val _beta: Double = 1.0)
+    beta: Double = 1.0)
     extends SmileModelContextDistribution[Array[Double], BayesianSampleLinearRegression](
-        new BayesianSampleLinearRegression(nfeatures, alpha, _beta)
+        new BayesianSampleLinearRegression(nfeatures, alpha, beta)
     ){
         override def export: Json = model.export
         def changeBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
             model.changeBeta(increment, factor, max)
         }
         def beta(): Double = model.beta
+
+        def setParameters(mean: Array[Double], covInv: Array[Double]): Unit = {
+            model.set(DenseVector(mean), DenseMatrix(covInv).reshape(nfeatures, nfeatures))
+        } 
+
     }
