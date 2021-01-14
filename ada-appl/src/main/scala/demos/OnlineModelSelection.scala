@@ -18,7 +18,7 @@ class OnlineModelSelection{
     val fine_labels_path = "/home/leon/data/onnx/ada-example/fine_labels_narrow.txt"
 
     val models = (101 until 106).map{i => 
-        new OnnxClassifier[Int, Array[Array[Float]], Int](f"/home/leon/data/onnx/ada-example/conv-seed${i}.onnx", "input", i => i)
+        new OnnxClassifier[Int, Array[Array[Array[Array[Float]]]], Int](f"/home/leon/data/onnx/ada-example/conv-seed${i}.onnx", "input", i => i)
     }
 
     def run(): Unit = {
