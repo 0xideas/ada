@@ -1,6 +1,7 @@
 package ada.demos
 
 import scala.collection.mutable.{ListBuffer}
+import ada.demos.utility.Utilities
 
 import ada.core.models.{StaticModel}
 import ada.core.ensembles.{ThompsonSamplingEnsemble, ThompsonSamplingGeneric}

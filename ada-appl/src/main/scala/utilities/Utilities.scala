@@ -1,4 +1,4 @@
-package ada.demos
+package ada.demos.utility
 
 import ada.core.interface._
 import scala.collection.mutable.{Map => MutableMap}

@@ -1,5 +1,6 @@
 package ada.demos
 
+import ada.demos.utility.Utilities
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
 import ada.core.ensembles.PassiveThompsonSamplingEnsemble

@@ -1,6 +1,6 @@
 package ada.demos
 
-import ada.demos.Utilities
+import ada.demos.utility.Utilities
 import scala.collection.mutable.{ListBuffer}
 
 import ada.core.components.distributions.BayesianSampleRegressionContext
@@ -35,7 +35,7 @@ object BayesianRegressionContextDemo{
         //Map(0 -> 3.2, 1 -> 3.2, 2 -> 3.2),
         Map()
     )
-    
+
 
     val rnd = scala.util.Random
 

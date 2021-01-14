@@ -1,6 +1,6 @@
 package ada.demos
 
-import ada.demos.Utilities
+import ada.demos.utility.Utilities
 import scala.collection.mutable.{ListBuffer}
 
 import ada.core.components.distributions.BayesianSampleRegressionContext
