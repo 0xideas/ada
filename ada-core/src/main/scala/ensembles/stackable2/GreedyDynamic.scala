@@ -19,10 +19,6 @@ abstract class GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, Ag
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) =
     	_actImpl2[AggregateReward](models, modelKeys, modelRewards, epsilon, data, selectedIds)
 
-    def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
-        modelRewards(modelIds(0)).update(data, reward)
-        models(modelIds.head).update(modelIds.tail, data, reward)
-    }
 }
 
 class GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]

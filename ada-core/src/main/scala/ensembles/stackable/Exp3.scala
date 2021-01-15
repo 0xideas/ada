@@ -23,11 +23,11 @@ class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Rewar
         _actImpl[AggregateReward](models, modelKeys, modelRewards , 1.0, data, selectedIds, gamma, k)
     }
 
-    def update(modelIds: List[ModelID], reward: Reward): Unit = {
+    override def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
                                             //this variable comes from the Exp3 Actor Trait
         val probability = (1.0-gamma)*reward/totalReward + gamma/k
         modelRewards(modelIds(0)).update(reward/probability)
-        models(modelIds.head).update(modelIds.tail, reward)
+        models(modelIds.head).update(modelIds.tail, data, reward)
     }
 }
 

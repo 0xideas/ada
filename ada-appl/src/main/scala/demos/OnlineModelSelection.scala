@@ -51,7 +51,7 @@ class OnlineModelSelection{
                 val pick = math.abs(rnd.nextInt % n)
                 val (action, modelIds) = ensemble.actWithID(data(pick), List())
                 val reward =  if(action == labels(pick)) 1.0 else 0.0
-                ensemble.update(modelIds, reward)
+                ensemble.update(modelIds, data(pick), reward)
 
             }
 

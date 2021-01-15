@@ -17,4 +17,6 @@ class GreedySoftmaxWithContext
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends GreedyWithContextAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
-    with GreedySoftmax[ModelID, ModelData, ModelAction]
+    with GreedySoftmax[ModelID, ModelData, ModelAction]{
+
+}

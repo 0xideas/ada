@@ -61,6 +61,7 @@ class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends Simpl
     def update(reward: Reward): Unit = {
         value = value * math.exp(gamma* reward/(k))
     }
+    
 
     def export: Json = Json.fromFields(Map(
         "value" -> Json.fromDouble(value).get,

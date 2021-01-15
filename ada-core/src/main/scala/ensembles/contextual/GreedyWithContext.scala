@@ -23,9 +23,6 @@ abstract class GreedyWithContextAbstract
         _actImpl[Context, AggregateReward](models, modelKeys, modelRewards, epsilon, data, context)
     }
 
-
-    def update(modelId: ModelID, context: Context, reward: Reward): Unit = 
-        modelRewards(modelId).update(context, reward)
 }
 
 class GreedyWithContext

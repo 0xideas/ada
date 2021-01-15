@@ -17,11 +17,12 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: E
     def modelRewards(): Map[ModelID, AggregateReward] = modelRewards
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
     def export = export(models, modelKeys, modelRewards)
+    def update(data: ModelData, reward: Reward): Unit = ()
 
 
 }
 
-abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
+abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]
     (models: ModelID  => SimpleModel[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
@@ -29,12 +30,12 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
     with SimpleModel[ModelData, ModelAction]{
     def actWithID(data: ModelData): (ModelAction, ModelID)
     def act(data: ModelData): ModelAction = actWithID(data)._1
-    def update(modelId: ModelID, reward: Reward): Unit
+    def update(modelId: ModelID, data: ModelData, reward: Reward): Unit
 
 
 }
 
-abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: Exportable]
+abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[Context]]
     (models: ModelID  => SimpleModel[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
@@ -42,12 +43,15 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
     with ContextualModel[Context, ModelData, ModelAction]{
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID)
     def act(context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
-    def update(modelId: ModelID, context: Context, reward: Reward): Unit
-
+    def update(modelId: ModelID, context: Context, data: ModelData, reward: Reward): Unit = {
+        models(modelId).update(data, reward)
+        modelRewards(modelId).update(context, reward)
+    }
+    def update(context: Context, data: ModelData, reward: Reward): Unit = ()
 }
 
 
-abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
+abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable](
     models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
@@ -56,10 +60,14 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
         def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
         def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
         def act(data: ModelData): ModelAction = actWithID(data, List())._1
-        def update(modelIds: List[ModelID], reward: Reward): Unit
+        def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
+            modelRewards(modelIds(0)).update(reward)
+            models(modelIds.head).update(modelIds.tail, data, reward)
+        }
+
 }
 
-abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
+abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData]](
     models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
@@ -68,6 +76,9 @@ abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateRewa
         def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
         def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
         def act(data: ModelData): ModelAction = actWithID(data, List())._1
-        def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit
+        def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
+            modelRewards(modelIds(0)).update(data, reward)
+            models(modelIds.head).update(modelIds.tail, data, reward)
+        }
 }
 

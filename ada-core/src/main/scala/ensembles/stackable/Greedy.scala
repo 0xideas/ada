@@ -20,11 +20,6 @@ abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, Aggregate
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) =
         _actImpl[AggregateReward](models, modelKeys, modelRewards, epsilon, data, selectedIds)
 
-    def update(modelIds: List[ModelID], reward: Reward): Unit = {
-        modelRewards(modelIds(0)).update(reward)
-        models(modelIds.head).update(modelIds.tail,  reward)
-    }
-
 }
 
 

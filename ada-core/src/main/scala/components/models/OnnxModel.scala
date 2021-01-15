@@ -13,10 +13,18 @@ import ai.onnxruntime.OnnxTensor
 import scala.jdk.CollectionConverters._
 import ai.onnxruntime.OrtUtil
 
+trait InertModel[ModelID, ModelData, ModelAction]{
+    def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit =  ()
+    def update(modelIds: List[ModelID],reward: Reward): Unit =  ()
+    def update(data: ModelData, reward: Reward): Unit =  ()
+    def update(reward: Reward): Unit =  ()
+}
+
 
 class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: String, input_name: String)
     extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
-    with SimpleModel[ModelData, ModelAction]{
+    with SimpleModel[ModelData, ModelAction]
+    with InertModel[ModelID, ModelData, ModelAction]{
 
     val env = OrtEnvironment.getEnvironment();
     val session = env.createSession(path ,new OrtSession.SessionOptions());
@@ -28,9 +36,6 @@ class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: Str
         //predictions
         result.get(0).getValue().asInstanceOf[Array[Array[ModelAction]]](0)(0)
     }
-
-    def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit =  ()
-    def update(modelIds: List[ModelID], reward: Reward): Unit =  ()
 
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = 
         (act(data), selectedIds)
@@ -44,7 +49,8 @@ class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
     input_name: String,
     modelActionFn: Int => ModelAction)
     extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
-    with SimpleModel[ModelData, ModelAction]{
+    with SimpleModel[ModelData, ModelAction]
+    with InertModel[ModelID, ModelData, ModelAction]{
 
     val env = OrtEnvironment.getEnvironment();
     val session = env.createSession(path ,new OrtSession.SessionOptions());
@@ -57,9 +63,6 @@ class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
         val probabilities = result.get(0).getValue().asInstanceOf[Array[Array[Float]]](0)
         modelActionFn(probabilities.indexOf(probabilities.max))
     }
-
-    def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit =  ()
-    def update(modelIds: List[ModelID], reward: Reward): Unit =  ()
 
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = 
         (act(data), selectedIds)

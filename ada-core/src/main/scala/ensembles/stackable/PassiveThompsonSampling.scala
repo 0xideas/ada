@@ -10,7 +10,7 @@ import ada.core.interface.PassiveEnsemble
 
 class PassiveThompsonSamplingEnsemble
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
-    (models: ModelID  => StackableModelPassive[ModelID, ModelData, ModelAction, Distr],
+    (models: ModelID  => StackableModelPassive1[ModelID, ModelData, ModelAction, Distr],
      modelKeys: () => List[ModelID],
      modelRewards: Map[ModelID, Distr],
     evaluateFn: (ModelAction, ModelAction) => Reward)
@@ -19,10 +19,9 @@ class PassiveThompsonSamplingEnsemble
         modelKeys,
         modelRewards,
         0.0
-    ) with PassiveEnsembleStackable[ModelID, ModelData, ModelAction, Distr]{
+    ) with PassiveEnsembleStackable1[ModelID, ModelData, ModelAction, Distr]{
         def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluateFn(action, optimalAction)
         def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit = {
-            val updateFn = (modelIds: List[ModelID], context: ModelData, reward: Reward ) => this.update(modelIds, reward)
-            _updateAllImplStackable(data, optimalAction, modelIds, models, modelKeys, modelRewards,  updateFn)
+            _updateAllImplStackable1(data, optimalAction, modelIds, models, modelKeys, modelRewards)
         }
 }

@@ -21,7 +21,7 @@ object Utilities{
         context
     }
 
-    def selectAndAverageContext[D, E <: Exportable](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], nModels: Int,
+    def selectAndAverageContext[D, E <: ExportUpdateableContext[Array[Double]]](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], nModels: Int,
                                         highIndexMap: Map[Int, Double], nFeatures: Int, rnd: scala.util.Random,
                                         iter: Int = 100): List[Double] = {
         val context = createContext(highIndexMap, nFeatures, rnd)
@@ -33,7 +33,7 @@ object Utilities{
             selectedModels.toList.map(s => if(s == m) 1.0 else 0.0).sum / selectedModels.length
         }.toList
     }
-    def selectAndAverageStackable[B, C, D <: Exportable](ensemble: StackableEnsemble1[Int, B, C, D], data: B, nModels: Int, iter: Int = 100): List[Double] = {
+    def selectAndAverageStackable[B, C, D <: ExportUpdateable](ensemble: StackableEnsemble1[Int, B, C, D], data: B, nModels: Int, iter: Int = 100): List[Double] = {
         val selectedModels = (for{
             i <- (0 until iter)
         } yield(ensemble.actWithID(data, List()))).map(_._2)
@@ -47,7 +47,7 @@ object Utilities{
         }.toList
     }
 
-    def selectAndAverageDynamic[C, D <: Exportable](ensemble: StackableEnsemble2[Int, Array[Double], C, D ], highIndexMap: Map[Int, Double], nFeatures: Int , nModels: Int, rnd: scala.util.Random, iter: Int = 100): List[Double] = {
+    def selectAndAverageDynamic[C, D <: ExportUpdateableContext[Array[Double]]](ensemble: StackableEnsemble2[Int, Array[Double], C, D ], highIndexMap: Map[Int, Double], nFeatures: Int , nModels: Int, rnd: scala.util.Random, iter: Int = 100): List[Double] = {
         val modelData = createContext(highIndexMap, nFeatures, rnd)
         val selectedModels = (for{
             i <- (0 until iter)
@@ -84,7 +84,7 @@ object Utilities{
         println(chart.render())
     }
 
-    def runContext[D, E <: Exportable](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], highIndexMaps: List[Map[Int, Double]], 
+    def runContext[D, E <: ExportUpdateableContext[Array[Double]]](ensemble: ContextualEnsemble[Int, Array[Double], Unit, D, E], highIndexMaps: List[Map[Int, Double]], 
                     nModels: Int, nIter: Int, nFeatures: Int, nGoodModels: Int,
                     rnd: scala.util.Random,
                     conversionRate: Map[Int, Double]): ListBuffer[ListBuffer[ListBuffer[Double]]] = {
@@ -117,7 +117,7 @@ object Utilities{
             val setReward = if((id < nFeatures * nGoodModels) &&  //if the id belongs to a model that sees positive reward
                     ((rnd.nextDouble()*(1+context(id % nFeatures))) > (1-conversionRate(id)))) 5 else 0   // and the customer converts
 
-            ensemble.update(id, context,  setReward)
+            ensemble.update(id, context, (),  setReward)
 
             if(i % 10000 == 0) println(i) 
 
@@ -127,7 +127,7 @@ object Utilities{
         shares
     }
 
-    def runStackable[C, D <: Exportable](ensemble: StackableEnsemble2[Int, Array[Double], C, D] , highIndexMaps: List[Map[Int, Double]], 
+    def runStackable[C, D <: ExportUpdateableContext[Array[Double]]](ensemble: StackableEnsemble2[Int, Array[Double], C, D] , highIndexMaps: List[Map[Int, Double]], 
                     nModels: Int, nIter: Int, nFeatures: Int, nGoodModels: Int,
                     rnd: scala.util.Random,
                     conversionRate: Map[Int, Double]): ListBuffer[ListBuffer[ListBuffer[Double]]] = {

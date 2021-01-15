@@ -27,7 +27,7 @@ object PointRegressionContextDemo{
         Map(0 -> model0, 1 -> model1),
         () => List(0, 1),
         Map(0 -> regressionContext1, 1 -> regressionContext2),
-        0.1,
+        0.1
     )
 
     def getAverages():(Double, Double, Double, Double) = {
@@ -57,15 +57,15 @@ object PointRegressionContextDemo{
             }
 
             if(i > 25){
-                ensemble.update(0, Array(1.0, 0.0, 1.0), 0.49)
-                ensemble.update(0, Array(1.0, 1.0, 0.0), 0.51)
-                ensemble.update(1, Array(1.0, 1.0, 0.0), 0.49)
-                ensemble.update(1, Array(1.0, 0.0, 1.0), 0.51)
+                ensemble.update(0, Array(1.0, 0.0, 1.0), (), 0.49)
+                ensemble.update(0, Array(1.0, 1.0, 0.0), (), 0.51)
+                ensemble.update(1, Array(1.0, 1.0, 0.0), (), 0.49)
+                ensemble.update(1, Array(1.0, 0.0, 1.0), (), 0.51)
             } else {
-                ensemble.update(1, Array(1.0, 0.0, 1.0), 0.49)
-                ensemble.update(1, Array(1.0, 1.0, 0.0), 0.51)
-                ensemble.update(0, Array(1.0, 1.0, 0.0), 0.49)
-                ensemble.update(0, Array(1.0, 0.0, 1.0), 0.51)
+                ensemble.update(1, Array(1.0, 0.0, 1.0), (), 0.49)
+                ensemble.update(1, Array(1.0, 1.0, 0.0), (), 0.51)
+                ensemble.update(0, Array(1.0, 1.0, 0.0), (), 0.49)
+                ensemble.update(0, Array(1.0, 0.0, 1.0), (), 0.51)
             }
             i += 1
         }

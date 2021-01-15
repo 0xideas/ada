@@ -41,9 +41,9 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
             val generator = new ConstantGenerator(const1)
 
-            val models = List(new GenericStaticModel[ModelId, ModelData, ModelAction](const1)(x => Json.fromString(x.toString())),
-                          new GenericStaticModel[ModelId, ModelData, ModelAction](const2)(x => Json.fromString(x.toString())),
-                          new GenericStaticModel[ModelId, ModelData, ModelAction](const2)(x => Json.fromString(x.toString())))
+            val models = List(new GenericStaticModel[ModelId, ModelData, ModelAction, ExpDouble](const1)(x => Json.fromString(x.toString())),
+                          new GenericStaticModel[ModelId, ModelData, ModelAction, ExpDouble](const2)(x => Json.fromString(x.toString())),
+                          new GenericStaticModel[ModelId, ModelData, ModelAction, ExpDouble](const2)(x => Json.fromString(x.toString())))
 
             val modelMap = Map(id1 -> models(0), id2 -> models(1), id3 -> models(2))
             val ensemble = new GreedySoftmaxEnsemble[ModelId, ModelData, ModelAction, ExpDouble](
@@ -101,7 +101,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
                     /*println(action)
                     println(const1)
                     println(reward)*/
-                    ensemble.update(selectedIds, reward)
+                    ensemble.update(selectedIds, modelData, reward)
                 }
 
                 val rounds = for {

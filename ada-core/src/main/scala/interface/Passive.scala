@@ -8,33 +8,42 @@ import ada.core.interface._
 import ada.core.components.distributions._
 import ada.core.components.selectors.Selector
 
-//not used at the moment
-trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
+
+trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]{
     def _updateAllImplSimple(data: ModelData,
                        optimalAction: ModelAction,
                        models: ModelID => SimpleModel[ModelData, ModelAction],
                        modelKeys: () => List[ModelID],
-                       modelRewards: Map[ModelID, AggregateReward],
-                       update: (ModelID, Reward) => Unit): Unit = {
+                       modelRewards: Map[ModelID, AggregateReward]): Unit = {
         modelKeys().map{modelId => {
                 val model = models(modelId)
                 val modelAction = model.act(data)
-                update(modelId, evaluate(modelAction, optimalAction))
+                val reward = evaluate(modelAction, optimalAction)
+                model.update(data, reward)
+                modelRewards(modelId).update(reward)
             }
         } 
     }
-    def _updateAllImplContextual[Context]
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
+
+}
+
+trait PassiveEnsembleContext[ModelID, Context, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[Context]]{
+    
+    def _updateAllImplContextual
                        (data: ModelData,
                        optimalAction: ModelAction,
                        models: ModelID => ContextualModel[Context, ModelData, ModelAction],
                        modelKeys: () => List[ModelID],
                        modelRewards: Map[ModelID, AggregateReward],
-                       update: (ModelID, Context, Reward) => Unit,
                        context: Context): Unit = {
         modelKeys().map{modelId => {
                 val model = models(modelId)
                 val modelAction = model.act(context, data)
-                update(modelId, context, evaluate(modelAction, optimalAction))
+                val reward = evaluate(modelAction, optimalAction)
+                model.update(context, data, reward )
+                modelRewards(modelId).update(context, reward )
+
             }
         }
     }
@@ -45,22 +54,47 @@ trait PassiveEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 }
 
 
-trait PassiveEnsembleStackable[ModelID, ModelData, ModelAction, AggregateReward]{
+trait PassiveEnsembleStackable1[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]{
 
-    def _updateAllImplStackable
+    def _updateAllImplStackable1
                        (data: ModelData,
                        optimalAction: ModelAction,
                        modelIds: List[ModelID],
-                       models: ModelID => StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward],
+                       models: ModelID => StackableModelPassive1[ModelID, ModelData, ModelAction, AggregateReward],
                        modelKeys: () => List[ModelID],
-                       modelRewards: Map[ModelID, AggregateReward],
-                       update: (List[ModelID], ModelData, Reward) => Unit): Unit = {
+                       modelRewards: Map[ModelID, AggregateReward]): Unit = {
 
         modelKeys().map{modelId => {
                 val model = models(modelId)
                 val (modelAction, modelIdsOut) = model.actWithID(data, modelIds)
-                update(List(modelId) ++ modelIds, data, evaluate(modelAction, optimalAction))
-                model.updateAll(modelIds, data, optimalAction)
+                val reward = evaluate(modelAction, optimalAction)
+                model.updateAll(List(modelId)++modelIds, data, optimalAction)
+                modelRewards(modelId).update(reward)
+            }
+        } 
+    }
+
+    def evaluate(action: ModelAction, optimalAction: ModelAction): Reward
+
+    def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit
+}
+
+trait PassiveEnsembleStackable2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData]]{
+
+    def _updateAllImplStackable2
+                       (data: ModelData,
+                       optimalAction: ModelAction,
+                       modelIds: List[ModelID],
+                       models: ModelID => StackableModelPassive2[ModelID, ModelData, ModelAction, AggregateReward],
+                       modelKeys: () => List[ModelID],
+                       modelRewards: Map[ModelID, AggregateReward]): Unit = {
+
+        modelKeys().map{modelId => {
+                val model = models(modelId)
+                val (modelAction, modelIdsOut) = model.actWithID(data, modelIds)
+                val reward = evaluate(modelAction, optimalAction)
+                model.updateAll(List(modelId)++modelIds, data, optimalAction)
+                modelRewards(modelId).update(data, reward)
             }
         } 
     }
