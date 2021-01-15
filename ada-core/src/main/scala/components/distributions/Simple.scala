@@ -22,9 +22,11 @@ class BetaDistribution (private var alpha: Double, private var beta: Double)
         betaDistribution = Beta(alpha, beta)
     }
     def update(reward: Reward):Unit = {
-        alpha = alpha  + math.max(0, reward)
-        beta = beta + math.max(0, 1 -reward)
-        betaDistribution = Beta(alpha, beta)
+        if(!(reward.isInfinite || reward.isNaN() )){
+            alpha = alpha  + math.max(0, reward)
+            beta = beta + math.max(0, 1 -reward)
+            betaDistribution = Beta(alpha, beta)
+        }
     }
     def updateRecency(reward: Reward, recencyBias: Double):Unit = {
         alpha = (alpha + math.max(0, reward)) * (1-recencyBias) + 1.0 * recencyBias
@@ -42,26 +44,34 @@ class BetaDistribution (private var alpha: Double, private var beta: Double)
 class ExpDouble(private var value: Double) extends SimpleDistribution {
     def export: Json = Json.fromDouble(value).get
     def draw: Double = value
-    def update(reward: Reward): Unit = {value = reward; ()}
+    def update(reward: Reward): Unit = {if(!(reward.isInfinite || reward.isNaN() )){value = reward}; ()}
 }
 object ExpDouble{
     implicit def expDouble: Double => ExpDouble = (d:Double) => new ExpDouble(d) 
 }
 
 class MeanDouble(private var value: Double) extends SimpleDistribution {
-    private var i = 1
+    private var i = 1.0
     def export: Json = Json.fromDouble(value).get
     def draw: Double = value
-    def update(reward: Reward): Unit = {value = value*(1.0-1.0/i) + reward * (1.0/i); ()}
+    def update(reward: Reward): Unit = {
+        val oldValue = value
+        if(!(reward.isInfinite || reward.isNaN() )){
+            value = value*(1.0-1.0/i) + reward * (1.0/i)
+            i+=1.0
+        }
+        //println(f"${oldValue} - ${reward} - ${value}")
+    }
 }
 
 class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends SimpleDistribution{
     def draw: Double = value
 
     def update(reward: Reward): Unit = {
-        value = value * math.exp(gamma* reward/(k))
+        if(!(reward.isInfinite || reward.isNaN() )){
+            value = value * math.exp(gamma* reward/(k))
+        }
     }
-    
 
     def export: Json = Json.fromFields(Map(
         "value" -> Json.fromDouble(value).get,

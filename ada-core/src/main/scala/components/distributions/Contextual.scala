@@ -14,7 +14,11 @@ import ada._
 class SmileModelContextDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
     extends ContextualDistribution[Context]{
         def draw(context: Context): Double = model.predict(context)
-        def update(context: Context, reward: Reward): Unit = model.update(context, reward)
+        def update(context: Context, reward: Reward): Unit = {
+            if(!(reward.isInfinite || reward.isNaN() )){
+                model.update(context, reward)
+            }
+        } 
         def export: Json = Json.fromString(model.toString())
 }
 

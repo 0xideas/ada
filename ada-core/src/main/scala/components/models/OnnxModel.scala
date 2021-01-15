@@ -14,12 +14,15 @@ import scala.jdk.CollectionConverters._
 import ai.onnxruntime.OrtUtil
 
 trait InertModel[ModelID, ModelData, ModelAction]{
+    def update(modelIds: List[ModelID], data: ModelData, action: ModelAction): Unit =  ()
     def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit =  ()
     def update(modelIds: List[ModelID],reward: Reward): Unit =  ()
     def update(data: ModelData, reward: Reward): Unit =  ()
     def update(reward: Reward): Unit =  ()
+    def update(data: ModelData, action: ModelAction): Unit = ()
     def evaluate(action: ModelAction, optimalAction: ModelAction): ada.Reward = 0.0
 }
+
 
 
 class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: String, input_name: String)

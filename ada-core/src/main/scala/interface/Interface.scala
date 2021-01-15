@@ -49,6 +49,8 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
         modelRewards(modelId).update(context, reward)
     }
     def update(context: Context, data: ModelData, reward: Reward): Unit = ()
+    def update(context: Context, data: ModelData, action: ModelAction): Unit = ()
+
 }
 
 
@@ -65,6 +67,7 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
             modelRewards(modelIds(0)).update(reward)
             models(modelIds.head).update(modelIds.tail, data, reward)
         }
+        def update(modelIds: List[ModelID], data: ModelData, action: ModelAction): Unit = ()
 
 }
 
@@ -81,6 +84,8 @@ abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateRewa
             modelRewards(modelIds(0)).update(data, reward)
             models(modelIds.head).update(modelIds.tail, data, reward)
         }
+        def update(modelIds: List[ModelID], data: ModelData, action: ModelAction): Unit = ()
+
 }
 
 

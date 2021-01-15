@@ -8,15 +8,14 @@ import ada.core.interface._
 
 
 
-class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](value: ModelAction)(implicit g: ModelAction => Json)
+class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](private var value: ModelAction)(implicit g: ModelAction => Json)
     extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{
 
     def act(data: ModelData): ModelAction = value
 
-    def update(value: ModelAction): GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward] = 
-        new GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](value)
+    def update(value: ModelAction): Unit = this.value = value
 
     override def toString: String = "$Model: " + value.toString() + "$"
 

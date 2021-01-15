@@ -41,7 +41,7 @@ trait PassiveEnsembleContext[ModelID, Context, ModelData, ModelAction, Aggregate
                 val model = models(modelId)
                 val modelAction = model.act(context, data)
                 val reward = evaluate(modelAction, optimalAction)
-                model.update(context, data, reward )
+                model.update(context, data, optimalAction )
                 modelRewards(modelId).update(context, reward )
 
             }
