@@ -44,7 +44,7 @@ trait StackableActor1[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
     with Actor{
     def _actImpl[AggregateReward <: SimpleDistribution]
-                (models: ModelID => StackableModel1[ModelID, ModelData, ModelAction],
+                (models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -56,7 +56,7 @@ trait StackableActor2[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
     with Actor{
     def _actImpl2[AggregateReward <: ContextualDistribution[ModelData]]
-                (models: ModelID => StackableModel2[ModelID, ModelData, ModelAction],
+                (models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -111,7 +111,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
 
 
     def _actImpl[AggregateReward <: SimpleDistribution]
-                (models: ModelID => StackableModel1[ModelID, ModelData, ModelAction],
+                (models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -132,7 +132,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
     }
 
     def _actImpl2[AggregateReward <: ContextualDistribution[ModelData]]
-                (models: ModelID => StackableModel2[ModelID, ModelData, ModelAction],
+                (models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -170,7 +170,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
     }
 
     def _actImpl[AggregateReward <: SimpleDistribution](
-                models: ModelID => StackableModel1[ModelID, ModelData, ModelAction],
+                models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
@@ -207,7 +207,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
     }
 
     def _actImpl[AggregateReward <: SimpleDistribution](
-                models: ModelID => StackableModel1[ModelID, ModelData, ModelAction],
+                models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,

@@ -44,6 +44,7 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
     def actWithID(context: Context, data: ModelData): (ModelAction, ModelID)
     def act(context: Context, data: ModelData): ModelAction = actWithID(context, data)._1
     def update(modelId: ModelID, context: Context, data: ModelData, reward: Reward): Unit = {
+
         models(modelId).update(data, reward)
         modelRewards(modelId).update(context, reward)
     }
@@ -52,11 +53,11 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 
 
 abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable](
-    models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
+    models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with StackableModel1[ModelID, ModelData, ModelAction]{
+    with StackableModel[ModelID, ModelData, ModelAction]{
         def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
         def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
         def act(data: ModelData): ModelAction = actWithID(data, List())._1
@@ -68,11 +69,11 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
 }
 
 abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData]](
-    models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
+    models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with StackableModel2[ModelID, ModelData, ModelAction]{
+    with StackableModel[ModelID, ModelData, ModelAction]{
         def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
         def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
         def act(data: ModelData): ModelAction = actWithID(data, List())._1

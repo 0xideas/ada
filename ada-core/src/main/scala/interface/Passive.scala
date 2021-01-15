@@ -60,7 +60,7 @@ trait PassiveEnsembleStackable1[ModelID, ModelData, ModelAction, AggregateReward
                        (data: ModelData,
                        optimalAction: ModelAction,
                        modelIds: List[ModelID],
-                       models: ModelID => StackableModelPassive1[ModelID, ModelData, ModelAction, AggregateReward],
+                       models: ModelID => StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward],
                        modelKeys: () => List[ModelID],
                        modelRewards: Map[ModelID, AggregateReward]): Unit = {
 
@@ -85,7 +85,7 @@ trait PassiveEnsembleStackable2[ModelID, ModelData, ModelAction, AggregateReward
                        (data: ModelData,
                        optimalAction: ModelAction,
                        modelIds: List[ModelID],
-                       models: ModelID => StackableModelPassive2[ModelID, ModelData, ModelAction, AggregateReward],
+                       models: ModelID => StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward],
                        modelKeys: () => List[ModelID],
                        modelRewards: Map[ModelID, AggregateReward]): Unit = {
 

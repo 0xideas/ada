@@ -9,7 +9,7 @@ import ada.core.components.selectors._
 import ada.core.components.distributions._
 
 abstract class GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
-    (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
@@ -22,7 +22,7 @@ abstract class GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, Ag
 }
 
 class GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
-    (models: ModelID  => StackableModel2[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)

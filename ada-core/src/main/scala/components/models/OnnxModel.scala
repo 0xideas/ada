@@ -22,7 +22,7 @@ trait InertModel[ModelID, ModelData, ModelAction]{
 
 
 class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: String, input_name: String)
-    extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
+    extends StackableModelPassiveBottom1[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{
 
@@ -48,7 +48,7 @@ class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
     (path: String,
     input_name: String,
     modelActionFn: Int => ModelAction)
-    extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
+    extends StackableModelPassiveBottom1[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{
 
