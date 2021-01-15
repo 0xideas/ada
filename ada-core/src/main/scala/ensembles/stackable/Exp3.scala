@@ -10,11 +10,11 @@ import ada.core.components.distributions._
 
 
 class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Reward]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     gamma: Double)
-    extends StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with Exp3[ModelID, ModelData, ModelAction]{
 
     private var k: Int = modelKeys().length

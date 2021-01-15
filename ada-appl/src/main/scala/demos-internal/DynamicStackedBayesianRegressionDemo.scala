@@ -42,7 +42,7 @@ object StackedBayesianRegressionContextDemo{
     //initialisation of the ensemble
 
     val ensembles = (0 until 3).map{i =>
-        val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double]](x.toDouble)).toList
+        val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double], BayesianSampleRegressionContext](x.toDouble)).toList
         val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
 
         

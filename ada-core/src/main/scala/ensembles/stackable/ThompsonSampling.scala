@@ -9,7 +9,7 @@ import breeze.stats.distributions.Beta
 
 class ThompsonSamplingGeneric
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
      modelRewards: Map[ModelID, Distr])
     extends GreedyEnsemble[ModelID, ModelData, ModelAction, Distr](
@@ -20,7 +20,7 @@ class ThompsonSamplingGeneric
     )
 
 class ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]
-    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
+    (models: Map[ModelID, StackableModel1[ModelID, ModelData, ModelAction]],
          alpha: Double,
          beta: Double)
     extends ThompsonSamplingGeneric[ModelID, ModelData, ModelAction, BetaDistribution](

@@ -10,12 +10,12 @@ import ada.core.components.distributions._
 
 
 abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
-    extends StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with StackableActor[ModelID, ModelData, ModelAction]{
+    extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    with StackableActor1[ModelID, ModelData, ModelAction]{
 
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) =
         _actImpl[AggregateReward](models, modelKeys, modelRewards, epsilon, data, selectedIds)
@@ -29,7 +29,7 @@ abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, Aggregate
 
 
 class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)

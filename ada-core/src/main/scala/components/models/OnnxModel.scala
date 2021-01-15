@@ -14,9 +14,8 @@ import scala.jdk.CollectionConverters._
 import ai.onnxruntime.OrtUtil
 
 
-class OnnxRegression[ModelID, ModelData, ModelAction](path: String, input_name: String)
-    extends StackableModel[ModelID, ModelData, ModelAction]
-    with StackableModel2[ModelID, ModelData, ModelAction]
+class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: String, input_name: String)
+    extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]{
 
     val env = OrtEnvironment.getEnvironment();
@@ -40,12 +39,11 @@ class OnnxRegression[ModelID, ModelData, ModelAction](path: String, input_name: 
 
 }
 
-class OnnxClassifier[ModelID, ModelData, ModelAction]
+class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
     (path: String,
     input_name: String,
     modelActionFn: Int => ModelAction)
-    extends StackableModel[ModelID, ModelData, ModelAction]
-    with StackableModel2[ModelID, ModelData, ModelAction]
+    extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]{
 
     val env = OrtEnvironment.getEnvironment();

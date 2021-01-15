@@ -47,12 +47,12 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 }
 
 
-abstract class StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
-    models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
+abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: Exportable](
+    models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with StackableModel[ModelID, ModelData, ModelAction]{
+    with StackableModel1[ModelID, ModelData, ModelAction]{
         def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
         def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
         def act(data: ModelData): ModelAction = actWithID(data, List())._1

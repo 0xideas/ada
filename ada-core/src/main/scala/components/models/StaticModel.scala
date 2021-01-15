@@ -8,15 +8,14 @@ import ada.core.interface._
 
 
 
-class GenericStaticModel[ModelID, ModelData, ModelAction](value: ModelAction)(implicit g: ModelAction => Json)
-    extends StackableModel[ModelID, ModelData, ModelAction]
-    with StackableModel2[ModelID, ModelData, ModelAction]
+class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](value: ModelAction)(implicit g: ModelAction => Json)
+    extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]{
 
     def act(data: ModelData): ModelAction = value
 
-    def update(value: ModelAction): GenericStaticModel[ModelID, ModelData, ModelAction] = 
-        new GenericStaticModel[ModelID, ModelData, ModelAction](value)
+    def update(value: ModelAction): GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward] = 
+        new GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](value)
 
     override def toString: String = "$Model: " + value.toString() + "$"
 
@@ -30,4 +29,4 @@ class GenericStaticModel[ModelID, ModelData, ModelAction](value: ModelAction)(im
 } 
 
 
-class StaticModel[ModelID, ModelData](value: Double) extends GenericStaticModel[ModelID, ModelData, Double](value)((d:Double) => Json.fromDouble(d).get)
+class StaticModel[ModelID, ModelData, AggregateReward](value: Double) extends GenericStaticModel[ModelID, ModelData, Double, AggregateReward](value)((d:Double) => Json.fromDouble(d).get)
