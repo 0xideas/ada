@@ -121,6 +121,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
         }
     }
 
+    
     //these are the actual test executions
     testTypedEEGreedySoftmax("SDD", 1000, arbitrary[String], arbitrary[Double], arbitrary[Double])
     testTypedEEGreedySoftmax("SII", 1000, arbitrary[String], arbitrary[Int], arbitrary[Int])

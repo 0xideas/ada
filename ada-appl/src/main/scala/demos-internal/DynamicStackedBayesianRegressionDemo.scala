@@ -6,7 +6,7 @@ import scala.collection.mutable.{ListBuffer}
 import ada.core.components.distributions.BayesianSampleRegressionContext
 import ada.core.ensembles._
 import ada.core.models.StaticModel
-import ada.core.interface.StackableModel2
+import ada.core.interface.StackableModel
 
 import plotting.Chart
 import ada.core.components.contextmodels.BayesianSampleLinearRegression

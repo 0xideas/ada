@@ -8,7 +8,7 @@ import breeze.stats.distributions.Beta
 
 
 class PassiveGreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
-    (models: ModelID  => StackableModelPassive1[ModelID, ModelData, ModelAction, AggregateReward],
+    (models: ModelID  => StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     evaluateFn: (ModelAction, ModelAction) => Reward)
@@ -19,6 +19,7 @@ class PassiveGreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
             _updateAllImplStackable1(data, optimalAction, modelIds, models, modelKeys, modelRewards)
         }
 }
+
 
 
 

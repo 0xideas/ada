@@ -79,6 +79,7 @@ trait PassiveEnsembleStackable1[ModelID, ModelData, ModelAction, AggregateReward
     def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit
 }
 
+
 trait PassiveEnsembleStackable2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData]]{
 
     def _updateAllImplStackable2

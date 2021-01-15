@@ -10,7 +10,7 @@ import ada.core.components.distributions._
 
 
 abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
-    (models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
@@ -23,8 +23,9 @@ abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, Aggregate
 }
 
 
+
 class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
-    (models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)

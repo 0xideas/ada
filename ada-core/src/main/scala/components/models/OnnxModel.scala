@@ -18,11 +18,12 @@ trait InertModel[ModelID, ModelData, ModelAction]{
     def update(modelIds: List[ModelID],reward: Reward): Unit =  ()
     def update(data: ModelData, reward: Reward): Unit =  ()
     def update(reward: Reward): Unit =  ()
+    def evaluate(action: ModelAction, optimalAction: ModelAction): ada.Reward = 0.0
 }
 
 
 class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: String, input_name: String)
-    extends StackableModelPassiveBottom1[ModelID, ModelData, ModelAction, AggregateReward]
+    extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{
 
@@ -48,7 +49,7 @@ class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
     (path: String,
     input_name: String,
     modelActionFn: Int => ModelAction)
-    extends StackableModelPassiveBottom1[ModelID, ModelData, ModelAction, AggregateReward]
+    extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{
 

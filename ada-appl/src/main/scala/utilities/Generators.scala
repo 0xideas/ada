@@ -14,6 +14,7 @@ trait TimeseriesGenerator extends Generator[Double]{
 }
 
 
+
 class AutoregressionGenerator extends TimeseriesGenerator{
     private val rnd = new scala.util.Random
     private var value = rnd.nextDouble()

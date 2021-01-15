@@ -23,6 +23,7 @@ trait ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp
     ))
 }
 
+
 trait UpdateableContext[Context]{
     def update(context: Context, reward: ada.Reward): Unit
 }

@@ -182,6 +182,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
     }
 }
 
+
 trait Exp3[ModelID, ModelData, ModelAction]
     extends SoftmaxSelector[ModelID, ModelData, ModelAction]{
 

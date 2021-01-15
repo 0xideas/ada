@@ -10,9 +10,10 @@ import ada.core.components.distributions._
 
 
 
+
 class ThompsonSamplingDynamicLocal
     [ModelID, ModelData, ModelAction, ContextualDistr <: ContextualDistribution[ModelData]]
-    (models: Map[ModelID, StackableModel2[ModelID, ModelData, ModelAction]],
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
      modelRewards: Map[ModelID, ContextualDistr])
     extends GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, ContextualDistr](
         key => models(key),

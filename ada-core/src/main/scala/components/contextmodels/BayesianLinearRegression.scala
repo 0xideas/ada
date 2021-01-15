@@ -7,6 +7,7 @@ import smile.regression.{OnlineRegression, LinearModel}
 import io.circe.Json
 import scala.language.implicitConversions
 
+
 abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double)
     extends OnlineRegression[Array[Double]]{
     private var _beta: Double = beta

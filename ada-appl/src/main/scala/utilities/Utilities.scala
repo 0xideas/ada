@@ -9,6 +9,7 @@ import ada.core.ensembles._
 import ada.core.models.StaticModel
 import plotting.Chart
 
+
 object Utilities{
 
     def createContext(highIndexMap: Map[Int, Double], nFeatures: Int, rnd: scala.util.Random): Array[Double] = {

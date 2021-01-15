@@ -77,8 +77,6 @@ object ThompsonSamplingDemo{
         //val ensemble = new ThompsonSamplingLocalBeta[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)
 
         
-
-    
         print("-")
         var i = 0
         val selectedModels: ListBuffer[String] = ListBuffer.empty[String]

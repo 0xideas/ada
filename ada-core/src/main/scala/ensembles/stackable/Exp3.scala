@@ -10,7 +10,7 @@ import ada.core.components.distributions._
 
 
 class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Reward]
-    (models: ModelID  => StackableModel1[ModelID, ModelData, ModelAction],
+    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     gamma: Double)
@@ -30,6 +30,7 @@ class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Rewar
         models(modelIds.head).update(modelIds.tail, data, reward)
     }
 }
+
 
 
 

@@ -45,6 +45,7 @@ object PointRegressionContextDemo{
         (actions0.sum/1000, modelIds0.sum/1000, actions1.sum/1000, modelIds1.sum/1000)
     }
 
+    
     def run(): Unit = {
         println("started run")
         var i = 0

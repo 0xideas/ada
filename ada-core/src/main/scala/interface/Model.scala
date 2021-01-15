@@ -31,9 +31,9 @@ trait StackableModel[ModelID, ModelData, ModelAction]
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
 }
 */
-trait StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]
-    extends StackableModel[ModelID, ModelData, ModelAction]
-    with PassiveEnsembleStackable1[ModelID, ModelData, ModelAction, AggregateReward]{
+trait StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]
+    extends StackableModel[ModelID, ModelData, ModelAction]{
+        def evaluate(action: ModelAction,optimalAction: ModelAction): ada.Reward
         def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit
 }
 
@@ -44,9 +44,8 @@ trait StackableModelPassive2[ModelID, ModelData, ModelAction, AggregateReward <:
         def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit
 }*/
 
-trait StackableModelPassiveBottom[ModelID, ModelData, ModelAction]
-    extends StackableModel[ModelID, ModelData, ModelAction]{
-    def evaluate(action: ModelAction,optimalAction: ModelAction): ada.Reward
+trait StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
+    extends StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]{
     def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit = {
         val (action, modelIds2) = actWithID(data, modelIds)
         update(modelIds, data, evaluate(action, optimalAction) )

@@ -10,7 +10,7 @@ import ada.core.interface.PassiveEnsemble
 
 class PassiveThompsonSamplingEnsemble
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
-    (models: ModelID  => StackableModelPassive1[ModelID, ModelData, ModelAction, Distr],
+    (models: ModelID  => StackableModelPassive[ModelID, ModelData, ModelAction, Distr],
      modelKeys: () => List[ModelID],
      modelRewards: Map[ModelID, Distr],
     evaluateFn: (ModelAction, ModelAction) => Reward)
