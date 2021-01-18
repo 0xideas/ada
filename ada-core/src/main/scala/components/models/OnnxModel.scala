@@ -21,8 +21,8 @@ trait InertModel[ModelID, ModelData, ModelAction]{
     def update(reward: Reward): Unit =  ()
     def update(data: ModelData, action: ModelAction): Unit = ()
     def evaluate(action: ModelAction, optimalAction: ModelAction): ada.Reward = 0.0
+    
 }
-
 
 
 class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: String, input_name: String)

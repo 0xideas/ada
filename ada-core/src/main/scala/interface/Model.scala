@@ -50,7 +50,7 @@ trait StackableModelPassive2[ModelID, ModelData, ModelAction, AggregateReward <:
 
 trait StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     extends StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]{
-
+    def update(modelIds: List[ModelID], data: ModelData, action: ModelAction): Unit
     def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit = {
             update(data, optimalAction)
         }

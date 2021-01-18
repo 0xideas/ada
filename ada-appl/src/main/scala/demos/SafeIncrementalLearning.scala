@@ -18,7 +18,7 @@ import breeze.stats.distributions.Beta
 import ada.core.components.distributions.MeanDouble
 
 object SafeIncrementalLearning{
-    val nIter= 5000
+    val nIter= 1000000
     //initialise models
     val safeModelPath = "/home/leon/data/onnx/lr_autoregression5.onnx"
     val safeModel: StackableModelPassive[Int, Array[Array[Float]], Double, BayesianSampleRegressionContext] = new OnnxRegression[Int, Array[Array[Float]], Double, BayesianSampleRegressionContext](safeModelPath, "float_input")
@@ -55,8 +55,8 @@ object SafeIncrementalLearning{
             val rewardsNow = rewards.map(_.draw).map(_.toString).mkString(" - ")
             //println(rewardsNow)
 
-            println((0 until 4).map(j => models(j).actWithID(data, List())._1))
-
+            //println((0 until 4).map(j => models(j).actWithID(data, List())._1))
+            if(i % 100 == 0) println(f"${i}: ${modelIds(0)}: ${action} - ${value}")
             ensemble.updateAll(modelIds, data, value)
             errors(0).append(evaluateFn2(0,value))
             errors(1).append(evaluateFn2(values.takeRight(1)(0),value))
@@ -74,10 +74,10 @@ object SafeIncrementalLearning{
         val chart = Chart(top=(values.max)*1.1, bottom=(+values.min)*1.1, left=0, right=nIter, width = 150, height = 40)
         chart.plotLine(values.toList, None, "+")
         println(chart.render())
-        val selections = (0 until selectedModels.length).map{i =>
+        /*val selections = (0 until selectedModels.length).map{i =>
             f"${i+10}: ${selectedModels(i)}"
         }.mkString(" | ")
-        println(selections)
+        println(selections)*/
         println(errors.map(err => err.toList.sum).mkString("\n"))
         println(ensemble.export)
     }
