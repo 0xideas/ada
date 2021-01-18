@@ -22,11 +22,12 @@ class ThompsonSamplingGeneric
 class ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]
     (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
          alpha: Double,
-         beta: Double)
+         beta: Double,
+         learningRate: Double = 1.0)
     extends ThompsonSamplingGeneric[ModelID, ModelData, ModelAction, BetaDistribution](
         key => models(key),
         () => models.keys.toList,
-        Map(models.keys.map(k => (k, new BetaDistribution(alpha, beta))).toSeq:_*))
+        Map(models.keys.map(k => (k, new BetaDistribution(alpha, beta, learningRate))).toSeq:_*))
 
 
 

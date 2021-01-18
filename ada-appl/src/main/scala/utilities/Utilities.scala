@@ -35,16 +35,38 @@ object Utilities{
         }.toList
     }
     def selectAndAverageStackable[B, C, D <: ExportUpdateable](ensemble: StackableEnsemble1[Int, B, C, D], data: B, nModels: Int, iter: Int = 100): List[Double] = {
+        val selectedModels = selectStackable[B,C,D](ensemble, data, nModels, iter)
+        averageSelectedModels(selectedModels, nModels)
+    }
+
+    def selectStackable[B, C, D <: ExportUpdateable](ensemble: StackableEnsemble1[Int, B, C, D], data: B, nModels: Int, iter: Int = 100): IndexedSeq[List[Int]] = {
         val selectedModels = (for{
             i <- (0 until iter)
         } yield(ensemble.actWithID(data, List()))).map(_._2)
-        averageSelectedModels(selectedModels, nModels)
+        selectedModels
     }
-    
+
+    def selectAndAverageStackableFromTwo[B, C <: String, D <: ExportUpdateable](ensemble1: StackableEnsemble1[Int, B, C, D], ensemble2: StackableEnsemble1[Int, B, C, D],  data: B, nModels: Int, iter: Int = 1000): IndexedSeq[List[Int]] = {
+        val selectedModels = (for{
+            i <- (0 until iter)
+        } yield{
+            val (a1, ids1) = ensemble1.actWithID(data, List())
+            val (a2, ids2) = ensemble2.actWithID(data, List())
+            (a1 + a2, ids1 ++ ids2)
+        }).map(_._2)
+        selectedModels
+    }
+
 
     def averageSelectedModels(selectedModels: IndexedSeq[List[Int]], nModels: Int): List[Double] = {
         (0 until nModels).map{m => 
             selectedModels.toList.map(s => if(s(0) == m) 1.0 else 0.0).sum / selectedModels.length
+        }.toList
+    }
+
+    def averageSelectedModelsLevel2(selectedModels: IndexedSeq[List[Int]], nModelsLevel1: Int, nModelsLevel2: Int): List[Double] = {
+        (0 until nModelsLevel1*nModelsLevel2).map{m => 
+            selectedModels.toList.map(s => if( s(0) * nModelsLevel1 + s(1) == m) 1.0 else 0.0).sum / selectedModels.length
         }.toList
     }
 

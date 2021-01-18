@@ -40,7 +40,7 @@ class OnlineModelSelection{
     }
 
     def trainEnsemble(nIterL: List[Int] = List(1000)): List[List[Double]] = {
-        val ensemble = new ThompsonSamplingEnsemble[Int, Array[Array[Array[Array[Float]]]], Int]((0 until 5).zip(models).toMap, 1, 1)
+        val ensemble = new ThompsonSamplingEnsemble[Int, Array[Array[Array[Array[Float]]]], Int]((0 until 5).zip(models).toMap, 1, 1, 1.0)
 
         val (labels, data) = loadData()
         val rnd = util.Random

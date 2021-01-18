@@ -26,3 +26,5 @@ class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](priva
 
 
 class StaticModel[ModelID, ModelData, AggregateReward](value: Double) extends GenericStaticModel[ModelID, ModelData, Double, AggregateReward](value)((d:Double) => Json.fromDouble(d).get)
+
+class StaticModelString[ModelID, ModelData, AggregateReward](value: String) extends GenericStaticModel[ModelID, ModelData, String, AggregateReward](value)((s:String) => Json.fromString(s))
