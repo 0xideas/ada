@@ -12,32 +12,21 @@ import ada.core.interface.StackableEnsemble1
 import plotting.Chart
 
 object CoordinationLearning{
-    val nModelsLevel1 = 8
-    val nModelsLevel2 = 3
-    val nIter = 1000
-    val learningRate = 0.05
-    val strings = List("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n")
-    val payoffsBase = List(List(0.8, 0.7, 1.2, 1.25),
-                            List(0.7, 0.6, 2.4, 0.4),
-                            List(1.0, 1.1, 1.2, 1.0),
-                            List(0.8, 1.7, 1.3, 1.1))
-
-    /*val payoffsBase = List(List(1.1, 1.2, 1.3, 1.4),
-                            List(0.9, 1.0, 1.1, 1.2),
-                            List(0.7, 0.8, 0.9, 1.0),
-                            List(0.5, 0.7, 0.8, 0.9))*/
+    val nModelsLevel1 = 5 //the number of models on the first level of the stacked ensemble
+    val nModelsLevel2 = 5 // the number on the second level
+    val learningRate = 0.05 // the actual update of the Beta Distribution coefficient at rewards 1.0 and 0.0
+    val changePayoffs = 0.6 //position in the iterations where payoffs are reinitialised with a negative -Multiplier
+    val iMultiplierI: Double = 0.0 //hyperparameter to control the degree of correlation between level 1 model and reward
+    val minIter = 10000 //minimum number of iterations
+    val maxIter = 100000 //maximum number of iterations
 
 
-    val payoff1step1 = payoffsBase.map(payoff => (payoff++ payoff.map(_+0.2)).slice(0, nModelsLevel2))
-    val payoff1step2 = (payoff1step1 ++ payoff1step1.map(payoff => payoff.map(p =>p + 0.3))).slice(0, nModelsLevel1)
-    val minPayoff = payoff1step2.flatMap(i => i).min
-    val maxPayoff = payoff1step2.flatMap(i => i).map(i => i - minPayoff).max
-    val payoffs1 = payoff1step2.map(payoffs => payoffs.map(payoff => (payoff-minPayoff)/maxPayoff))
-    val payoffs2 = payoffs1.flatMap(i => i)
 
-    require(strings.length >= math.max(nModelsLevel1, nModelsLevel2), "strings not sufficiently long")
-    require(payoffs1.length == nModelsLevel1 && payoffs1.map(_.length == nModelsLevel2).reduce(_&&_), "payoffs incomplete")
-    require(payoffs2.length == nModelsLevel1*nModelsLevel2)
+    val nIter = math.max(math.min(100*nModelsLevel1*nModelsLevel2,maxIter), minIter)
+    val strings = List.fill(100)(List("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n")).flatMap(i => i)
+    val r = new scala.util.Random
+
+    var (payoffs1, payoffs2) = initialise_payoffs(iMultiplierI)
 
 
     val models1 = (0 until nModelsLevel1*nModelsLevel2).map(i =>  new StaticModelString[Int, Unit, String](strings(i/nModelsLevel2)+strings(i%nModelsLevel2)))
@@ -65,6 +54,12 @@ object CoordinationLearning{
             val (action3_2, modelIds3_2) = ensemble3_2.actWithID((), List())
             val (action3, modelIds3) = (action3_1 + action3_2, modelIds3_1 ++ modelIds3_2)
 
+            if(changePayoffs > 0.0 && i == nIter*changePayoffs){
+                val (newPayoffs1, newPayoffs2) = initialise_payoffs(-iMultiplierI)
+                payoffs1 = newPayoffs1
+                payoffs2 = newPayoffs2
+            }
+
             ensemble1.update(modelIds1, (), payoffs1(modelIds1(0))(modelIds1(1)))
             ensemble2.update(modelIds2, (), payoffs2(modelIds2(0)))
 
@@ -77,9 +72,10 @@ object CoordinationLearning{
 
 
             if(i % math.max((nIter/100), 1) == 0){
-                val selections1 = Utilities.averageSelectedModelsLevel2(Utilities.selectStackable[Unit, String, BetaDistribution](ensemble1, (), 5, 1000), nModelsLevel1, nModelsLevel2)
-                val selections2 = Utilities.selectAndAverageStackable[Unit, String, BetaDistribution](ensemble2, (), nModelsLevel1*nModelsLevel2, 1000)
-                val selections3 = Utilities.averageSelectedModelsLevel2(Utilities.selectAndAverageStackableFromTwo[Unit, String, BetaDistribution](ensemble3_1, ensemble3_2, (), nModelsLevel1*nModelsLevel2, 1000), nModelsLevel1, nModelsLevel2)
+                val nIterMeasure = if(i / math.max((nIter/100), 1) == 99) {math.min(100*nModelsLevel1*nModelsLevel2, 1000)} else math.min(10*nModelsLevel1*nModelsLevel2, 1000)
+                val selections1 = Utilities.averageSelectedModelsLevel2(Utilities.selectStackable[Unit, String, BetaDistribution](ensemble1, (), 5, nIterMeasure), nModelsLevel1, nModelsLevel2)
+                val selections2 = Utilities.selectAndAverageStackable[Unit, String, BetaDistribution](ensemble2, (), nModelsLevel1*nModelsLevel2, nIterMeasure)
+                val selections3 = Utilities.averageSelectedModelsLevel2(Utilities.selectAndAverageStackableFromTwo[Unit, String, BetaDistribution](ensemble3_1, ensemble3_2, (), nModelsLevel1*nModelsLevel2, nIterMeasure), nModelsLevel1, nModelsLevel2)
 
                 selectionsList1.append(selections1); selectionsList2.append(selections2); selectionsList3.append(selections3)
                 totalRewards1.append(calculateTotalReward(selections1, payoffs2)); totalRewards2.append(calculateTotalReward(selections2, payoffs2)); totalRewards3.append(calculateTotalReward(selections3, payoffs2))
@@ -92,22 +88,33 @@ object CoordinationLearning{
 
         val allRewards = totalRewards1.toList ++ totalRewards2.toList ++ totalRewards3.toList
         val chart = Chart(top=allRewards.max*1.1, bottom=allRewards.min*0.7, left=0, right=nIter, width = 150, height = 40)
-        chart.plotLine(totalRewards1.toList, Some("1"), "+")
-        chart.plotLine(totalRewards2.toList, Some("2"), "-")
-        chart.plotLine(totalRewards3.toList, Some("3"), "~")
+        chart.plotLine(totalRewards1.toList, Some("1"), "-")
+        chart.plotLine(totalRewards2.toList, Some("2"), "~")
+        chart.plotLine(totalRewards3.toList, Some("3"), "+")
         println(chart.render())
 
         val lastSelections1 = selectionsList1.takeRight(1).flatMap(i => i); val lastSelections2 = selectionsList2.takeRight(1).flatMap(i => i); val lastSelections3 = selectionsList3.takeRight(1).flatMap(i => i)
         payoffs2.zipWithIndex.map{ case(payoff, i) => println(f"${strings(i/nModelsLevel2)+strings(i%nModelsLevel2)}: " + "%1.2f".format(payoff) + f" - ${lastSelections1(i)} - ${lastSelections2(i)} - ${lastSelections3(i)}  ")}
 
         //println(chart1)
-        println("sum         " + "%1.2f".format(totalRewards1.takeRight(1)(0)) + " - " + "%1.2f".format(totalRewards2.takeRight(1)(0)) + " - " + "%1.2f".format(totalRewards3.takeRight(1)(0)))
+        println("sum        " + "%1.2f".format(totalRewards1.takeRight(1)(0)) + " - " + "%1.2f".format(totalRewards2.takeRight(1)(0)) + " - " + "%1.2f".format(totalRewards3.takeRight(1)(0)))
         //println(chart2)
 
-        println(ensemble3_1.export)
-        println(ensemble3_2.export)
+        //println(ensemble3_1.export)
+        //println(ensemble3_2.export)
 
     }
+
+    def initialise_payoffs(iMultiplier: Double): (List[List[Double]], List[Double]) = {
+
+        val payoffs1base = (0 until nModelsLevel1).map(i => (0 until nModelsLevel2).map(j =>  r.nextInt(100).toDouble + i.toDouble*iMultiplier).toList).toList
+        val min = payoffs1base.flatMap(i => i).min
+        val max = payoffs1base.flatMap(i => i).map(_-min).max
+        val payoffs1 = payoffs1base.map(pp => pp.map(p => (p-min)/max))
+        val payoffs2 = payoffs1.flatMap(i => i)
+        (payoffs1, payoffs2)
+    }
+
 
     def calculateTotalReward(selections: List[Double], payoffs: List[Double]): Double = {
         selections.zip(payoffs).map{case(prob, payoff) => prob*payoff}.sum
