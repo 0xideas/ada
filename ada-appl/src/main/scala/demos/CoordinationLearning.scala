@@ -15,23 +15,31 @@ object CoordinationLearning{
     val nModelsLevel1 = 5 //the number of models on the first level of the stacked ensemble
     val nModelsLevel2 = 5 // the number on the second level
     val learningRate = 0.05 // the actual update of the Beta Distribution coefficient at rewards 1.0 and 0.0
-    val changePayoffs = 0.6 //position in the iterations where payoffs are reinitialised with a negative -Multiplier
-    val iMultiplierI: Double = 0.0 //hyperparameter to control the degree of correlation between level 1 model and reward
-    val minIter = 10000 //minimum number of iterations
-    val maxIter = 100000 //maximum number of iterations
+
+    val changePayoffs = 0.5 //position in the iterations where payoffs are reinitialised with a negative -Multiplier
+    val level1Factor: Double = 0.4 //hyperparameter to control the degree of correlation between level 1 model and reward
+    val level2Factor: Double = 0.0 //hyperparameter to control the degree of correlation between level 2 model and reward
+    val driftValues = false
+    val driftInterval: Option[Int] = Some(10)
+    val driftFactor: Double = 0.05
+    val minIter = 1000 //minimum number of iterations
+    val maxIter = 10000 //maximum number of iterations
 
 
 
     val nIter = math.max(math.min(100*nModelsLevel1*nModelsLevel2,maxIter), minIter)
     val strings = List.fill(100)(List("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n")).flatMap(i => i)
     val r = new scala.util.Random
+    val iMultiplierI = level1Factor * 100/(nModelsLevel1-1)
+    val jMultiplierI = level2Factor * 100/(nModelsLevel2-1)
 
-    var (payoffs1, payoffs2) = initialise_payoffs(iMultiplierI)
+    val maxV = 100 + iMultiplierI*(nModelsLevel1-1) + jMultiplierI*(nModelsLevel2-1)
+    var (payoffs1, payoffs2) = initialise_payoffs(iMultiplierI, jMultiplierI, maxV)
 
 
     val models1 = (0 until nModelsLevel1*nModelsLevel2).map(i =>  new StaticModelString[Int, Unit, String](strings(i/nModelsLevel2)+strings(i%nModelsLevel2)))
     val ensembles1 = (0 until nModelsLevel1).map(i => new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel2).zip(models1.slice(i*nModelsLevel2, (i+1)*nModelsLevel2)).toMap, 1, 1, learningRate))
-    val ensemble1 = new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1).zip(ensembles1).toMap, 1, 1, 0.01)
+    val ensemble1 = new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1).zip(ensembles1).toMap, 1, 1, learningRate)
     
     val models2 = (0 until nModelsLevel1*nModelsLevel2).map(i =>  new StaticModelString[Int, Unit, String](strings(i/nModelsLevel1)+strings(i%nModelsLevel1)))
     val ensemble2 = new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1*nModelsLevel2).zip(models2).toMap, 1, 1, learningRate)
@@ -54,11 +62,17 @@ object CoordinationLearning{
             val (action3_2, modelIds3_2) = ensemble3_2.actWithID((), List())
             val (action3, modelIds3) = (action3_1 + action3_2, modelIds3_1 ++ modelIds3_2)
 
-            if(changePayoffs > 0.0 && i == nIter*changePayoffs){
-                val (newPayoffs1, newPayoffs2) = initialise_payoffs(-iMultiplierI)
+            val driftInterval2: Int = driftInterval match {
+                case None => nIter/2
+                case Some(interval) => math.max(interval, 1)
+            }
+
+            if(driftValues && i > 0 && i % driftInterval2 == 0){
+                val (newPayoffs1, newPayoffs2): (List[List[Double]], List[Double]) = initialise_payoffs(iMultiplierI, jMultiplierI, maxV, driftFactor, Some(payoffs1))
                 payoffs1 = newPayoffs1
                 payoffs2 = newPayoffs2
             }
+
 
             ensemble1.update(modelIds1, (), payoffs1(modelIds1(0))(modelIds1(1)))
             ensemble2.update(modelIds2, (), payoffs2(modelIds2(0)))
@@ -69,8 +83,6 @@ object CoordinationLearning{
             //println( f"ensemble 3 : ${action3} reward ${reward3}")
 
             //println(f"${i}:   ${action1}   ${action2}")
-
-
             if(i % math.max((nIter/100), 1) == 0){
                 val nIterMeasure = if(i / math.max((nIter/100), 1) == 99) {math.min(100*nModelsLevel1*nModelsLevel2, 1000)} else math.min(10*nModelsLevel1*nModelsLevel2, 1000)
                 val selections1 = Utilities.averageSelectedModelsLevel2(Utilities.selectStackable[Unit, String, BetaDistribution](ensemble1, (), 5, nIterMeasure), nModelsLevel1, nModelsLevel2)
@@ -81,6 +93,7 @@ object CoordinationLearning{
                 totalRewards1.append(calculateTotalReward(selections1, payoffs2)); totalRewards2.append(calculateTotalReward(selections2, payoffs2)); totalRewards3.append(calculateTotalReward(selections3, payoffs2))
 
             }
+
 
         }
         //val chart1 = chartSelections(selectionsList1)
@@ -105,12 +118,11 @@ object CoordinationLearning{
 
     }
 
-    def initialise_payoffs(iMultiplier: Double): (List[List[Double]], List[Double]) = {
-
-        val payoffs1base = (0 until nModelsLevel1).map(i => (0 until nModelsLevel2).map(j =>  r.nextInt(100).toDouble + i.toDouble*iMultiplier).toList).toList
-        val min = payoffs1base.flatMap(i => i).min
-        val max = payoffs1base.flatMap(i => i).map(_-min).max
-        val payoffs1 = payoffs1base.map(pp => pp.map(p => (p-min)/max))
+    def initialise_payoffs(iMultiplier: Double, jMultiplier: Double, maxV: Double, driftFactor: Double = 0.0,  payoffsBase: Option[List[List[Double]]] = None): (List[List[Double]], List[Double]) = {
+        val payoffs1 = payoffsBase match{
+            case(None) => (0 until nModelsLevel1).map(i => (0 until nModelsLevel2).map(j =>  ( r.nextInt(100).toDouble + i.toDouble*iMultiplier + j.toDouble*jMultiplier)/maxV).toList).toList
+            case(Some(payoffsBase_)) => payoffsBase_.zipWithIndex.map{case(payoffs,i) => payoffs.zipWithIndex.map{case(payoff, j) => payoff*(1.0-driftFactor) +  driftFactor* (r.nextInt(100).toDouble+iMultiplier*i +jMultiplier*j)/maxV}}
+        }
         val payoffs2 = payoffs1.flatMap(i => i)
         (payoffs1, payoffs2)
     }
