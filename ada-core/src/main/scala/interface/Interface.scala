@@ -52,7 +52,7 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 }
 
 
-abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable](
+abstract class StackableEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
@@ -68,22 +68,4 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
         def update(modelIds: List[ModelID], data: ModelData, action: ModelAction): Unit = ()
 
 }
-
-abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData]](
-    models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
-    modelKeys: () => List[ModelID],
-    modelRewards: Map[ModelID, AggregateReward])
-    extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with StackableModel[ModelID, ModelData, ModelAction]{
-        def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
-        def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
-        def act(data: ModelData): ModelAction = actWithID(data, List())._1
-        def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
-            modelRewards(modelIds.head).update(data, reward)
-            models(modelIds.head).update(modelIds.tail, data, reward)
-        }
-        def update(modelIds: List[ModelID], data: ModelData, action: ModelAction): Unit = ()
-
-}
-
 

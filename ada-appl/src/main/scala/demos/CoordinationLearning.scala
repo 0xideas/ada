@@ -8,7 +8,6 @@ import ada.core.ensembles.ThompsonSamplingEnsemble
 import ada.core.models._
 import ada.core.components.distributions.{Distribution, BetaDistribution}
 import scala.xml.persistent.Index
-import ada.core.interface.StackableEnsemble1
 import plotting.Chart
 import ada.`package`._
 
