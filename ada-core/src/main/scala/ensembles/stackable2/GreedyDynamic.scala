@@ -8,27 +8,26 @@ import ada.core.interface._
 import ada.core.components.selectors._
 import ada.core.components.distributions._
 
-
-abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
+abstract class GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
-    extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with StackableActor1[ModelID, ModelData, ModelAction]{
+    extends StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    with StackableActor2[ModelID, ModelData, ModelAction]{
 
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) =
-        _actImpl[AggregateReward](models, modelKeys, modelRewards, epsilon, data, selectedIds)
+    	_actImpl2[AggregateReward](models, modelKeys, modelRewards, epsilon, data, selectedIds)
 
 }
 
-
-
-class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
+class GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
-    extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
+    extends GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with GreedyRandom[ModelID, ModelData, ModelAction]
 
+
+    
