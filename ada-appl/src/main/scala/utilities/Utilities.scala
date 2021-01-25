@@ -30,10 +30,8 @@ object Utilities{
         val selectedModels = (for{
             i <- (0 until iter)
         } yield(ensemble.actWithID(context, (), List()))).map(_._2)
+        averageSelectedModels(selectedModels, nModels)
 
-        (0 until nModels).map{m => 
-            selectedModels.toList.map(s => if(s == m) 1.0 else 0.0).sum / selectedModels.length
-        }.toList
     }
     def selectAndAverageStackable[B, C, D <: ExportUpdateable](ensemble: StackableEnsemble1[Int, B, C, D], data: B, nModels: Int, iter: Int = 100): List[Double] = {
         val selectedModels = selectStackable[B,C,D](ensemble, data, nModels, iter)
