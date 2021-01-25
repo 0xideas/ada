@@ -66,4 +66,31 @@ object StackedBayesianRegressionContextDemo{
         }
 
     }
+
+    val ensembles2 = (0 until 3).map{i =>
+        val models = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](x.toDouble)).toList
+        val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
+
+        new ContextualThompsonSampling[Int, Unit, Double](
+            (0 until nModels).zip(models).toMap, Map((0 until nModels).zip(contexts):_*))
+    }
+
+    val contexts2 = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
+    val ensemble2 = new ContextualThompsonSampling[Int, Unit, Double](
+        (0 until nModels).zip(ensembles2).toMap,
+        Map((0 until nModels).zip(contexts2):_*)
+    )
+
+    def run2(): Unit = {
+
+        val shares = Utilities.runContext[Double, BayesianSampleRegressionContext](ensemble2, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
+
+        highIndexMaps.zipWithIndex.map{
+            case(highIndexMap, f) => {
+                val selections = Utilities.selectAndAverageContext[Double, BayesianSampleRegressionContext](ensemble2, nModels, highIndexMap, nFeatures,  rnd, 100)
+                Utilities.report(highIndexMap, selections,  nModels, nIter, nFeatures, nGoodModels, shares(f))
+            }
+        }
+
+    }
 }
