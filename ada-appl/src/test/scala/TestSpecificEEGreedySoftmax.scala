@@ -97,7 +97,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
                     val (action, selectedIds) = ensemble.actWithID(modelData, List())
                     //ensemble.update(selectedIds(0), if(action == const1) 3.0 else 0.0)
                     require(selectedIds.length == 1)
-                    val reward: Reward = if(action == const1) 3.0 else 1.0
+                    val reward: Reward = new Reward(if(action == const1) 3.0 else 1.0)
                     /*println(action)
                     println(const1)
                     println(reward)*/

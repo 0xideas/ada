@@ -27,7 +27,7 @@ class GreedyDynamicEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends GreedyDynamicEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
-    with Greedy[ModelID, ModelData, ModelAction]
+    with GreedyRandom[ModelID, ModelData, ModelAction]
 
 
     

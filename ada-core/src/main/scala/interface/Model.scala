@@ -13,11 +13,12 @@ trait SimpleModel[ModelData, ModelAction] extends Model[ModelData, ModelAction]{
     def act(data: ModelData): ModelAction
 }
 
-trait ContextualModel[Context, ModelData, ModelAction] 
+trait ContextualModel[ModelID, Context, ModelData, ModelAction] 
     extends Model[ModelData, ModelAction]{
+    def update(modelIds: List[ModelID], context: Context, data: ModelData, reward: Reward): Unit
     //def update(context: Context, data: ModelData, reward: Reward): Unit
-    def update(context: Context, data: ModelData, action: ModelAction): Unit
-    def act(context: Context, data: ModelData): ModelAction
+    def update(modelIds: List[ModelID], context: Context, data: ModelData, action: ModelAction): Unit
+    def actWithID(context: Context, data: ModelData, modelIds: List[ModelID]): (ModelAction, List[ModelID])
 }
 
 trait StackableModel[ModelID, ModelData, ModelAction]
@@ -27,12 +28,22 @@ trait StackableModel[ModelID, ModelData, ModelAction]
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
 }
 
+
 /*trait StackableModel2[ModelID, ModelData, ModelAction]
     extends Model[ModelData, ModelAction]{
     def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
 }
 */
+
+trait ContextualModelPassive[ModelID, Context, ModelData, ModelAction, AggregateReward]
+    extends ContextualModel[ModelID, Context, ModelData, ModelAction]{
+        def update(context: Context, data: ModelData, optimalAction: ModelAction): Unit
+        def evaluate(action: ModelAction,optimalAction: ModelAction): ada.Reward
+        //def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit
+        def updateAll(modelIds: List[ModelID], context: Context,  data: ModelData, optimalAction: ModelAction): Unit
+}
+
 trait StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]
     extends StackableModel[ModelID, ModelData, ModelAction]{
         def update(data: ModelData, optimalAction: ModelAction): Unit

@@ -7,6 +7,7 @@ import ada.core.models._
 import ada.core.components.distributions.{Distribution, BetaDistribution}
 import scala.xml.persistent.Index
 import ada.core.interface._
+import ada.`package`.Reward
 
 import plotting.Chart
 import ada.generators.AutoregressionGenerator
@@ -31,8 +32,8 @@ object SafeIncrementalLearning{
 
     val evaluateFn = (a: Double, b: Double) => {
         val step = 1.0-math.sqrt(math.abs(a-b))
-        if( !(step.isNaN() || step.isInfinite()) && step > 0){step}
-        else {/*println(f"a: ${a} b: ${b}");*/ 0.0}
+        if( !(step.isNaN() || step.isInfinite()) && step > 0){new Reward(step)}
+        else {/*println(f"a: ${a} b: ${b}");*/ new Reward(0.0)}
     }
     val ensemble = new PassiveGreedyEnsemble[Int, Array[Double], Double, MeanDouble](
                             models=(i: Int) => models(i),

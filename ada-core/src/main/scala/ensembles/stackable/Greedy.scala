@@ -30,5 +30,5 @@ class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleD
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
     extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
-    with Greedy[ModelID, ModelData, ModelAction]
+    with GreedyRandom[ModelID, ModelData, ModelAction]
 

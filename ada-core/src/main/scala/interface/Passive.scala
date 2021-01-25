@@ -33,16 +33,17 @@ trait PassiveEnsembleContext[ModelID, Context, ModelData, ModelAction, Aggregate
     def _updateAllImplContextual
                        (data: ModelData,
                        optimalAction: ModelAction,
-                       models: ModelID => ContextualModel[Context, ModelData, ModelAction],
+                       modelIds: List[ModelID],
+                       models: ModelID => ContextualModelPassive[ModelID, Context, ModelData, ModelAction, AggregateReward],
                        modelKeys: () => List[ModelID],
                        modelRewards: Map[ModelID, AggregateReward],
                        context: Context): Unit = {
         modelKeys().map{modelId => {
                 val model = models(modelId)
-                val modelAction = model.act(context, data)
+                val (modelAction, modelIdsOut) = model.actWithID(context, data, modelIds)
                 val reward = evaluate(modelAction, optimalAction)
-                model.update(context, data, optimalAction )
-                modelRewards(modelId).update(context, reward )
+                model.updateAll(List(modelId)++modelIds, context, data, optimalAction)
+                modelRewards(modelId).update(context, reward)
 
             }
         }

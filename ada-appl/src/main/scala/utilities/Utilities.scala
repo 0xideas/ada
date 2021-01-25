@@ -8,6 +8,7 @@ import ada.core.components.distributions.BayesianSampleRegressionContext
 import ada.core.ensembles._
 import ada.core.models.StaticModel
 import plotting.Chart
+import ada.`package`.Reward
 
 
 object Utilities{
@@ -28,7 +29,7 @@ object Utilities{
         val context = createContext(highIndexMap, nFeatures, rnd)
         val selectedModels = (for{
             i <- (0 until iter)
-        } yield(ensemble.actWithID(context, ()))).map(_._2)
+        } yield(ensemble.actWithID(context, (), List()))).map(_._2)
 
         (0 until nModels).map{m => 
             selectedModels.toList.map(s => if(s == m) 1.0 else 0.0).sum / selectedModels.length
@@ -130,7 +131,8 @@ object Utilities{
             }
 
             val context = Array.fill(nFeatures)(rnd.nextGaussian())
-            val (action, id) = ensemble.actWithID(context, List())
+            val (action, ids) = ensemble.actWithID(context, (), List())
+            val id = ids.head
             //for the first nGoodModels*nFeatures Models, the reward is the value of the context
             //at the position that is indexed by the remainder of the model id divided by the
             //number of features, for all other models it is 0
@@ -140,7 +142,7 @@ object Utilities{
             val setReward = if((id < nFeatures * nGoodModels) &&  //if the id belongs to a model that sees positive reward
                     ((rnd.nextDouble()*(1+context(id % nFeatures))) > (1-conversionRate(id)))) 5 else 0   // and the customer converts
 
-            ensemble.update(id, context, (),  setReward)
+            ensemble.update(ids, context, (),  new Reward(setReward))
 
             if(i % 10000 == 0) println(i) 
 
@@ -183,7 +185,7 @@ object Utilities{
             val setReward = if((id(0) < nFeatures * nGoodModels) &&  //if the id belongs to a model that sees positive reward
                     ((rnd.nextDouble()*(1+context(id(0) % nFeatures))) > (1-conversionRate(id(0))))) 5 else 0   // and the customer converts
 
-            ensemble.update(id, context,  setReward)
+            ensemble.update(id, context,  new Reward(setReward))
 
             if(i % 10000 == 0) println(i) 
 

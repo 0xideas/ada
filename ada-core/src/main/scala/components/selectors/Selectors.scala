@@ -17,6 +17,7 @@ trait Selector[ModelID, ModelData, ModelAction]{
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw))
                                         .toList
                                         .sortWith(_._2 > _._2)
+                                        .map{case(id, value) => (id, new Reward(value))}
         modelsSorted
     }
 
@@ -28,6 +29,8 @@ trait Selector[ModelID, ModelData, ModelAction]{
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw(context)))
                                         .toList
                                         .sortWith(_._2 > _._2)
+                                        .map{case(id, value) => (id, new Reward(value))}
+
         modelsSorted
     }
 
@@ -43,10 +46,10 @@ trait SoftmaxSelector[ModelID, ModelData, ModelAction]
 
     def _selectModel(modelKeys: () => List[ModelID],
                      aggregateRewardsDouble: List[(ModelID, Reward)]):  ModelID = {
-        val totalReward: Reward = aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2)
+        val totalReward: Reward = new Reward(aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2.value))
         val cumulativeProb: List[(Probability, Probability)] = 
         	aggregateRewardsDouble
-        		.scanLeft((0.0, 0.0))((acc, item) => (acc._2, acc._2 + item._2/totalReward)).tail
+        		.scanLeft((new Probability(0.0), new Probability(0.0)))((acc, item) => (acc._2, new Probability(acc._2.value + item._2.value/totalReward.value))).tail
 
         val modelsCumulativeProb: List[(ModelID, (Probability, Probability))] = 
         	aggregateRewardsDouble.map(_._1).zip(cumulativeProb)
@@ -54,7 +57,7 @@ trait SoftmaxSelector[ModelID, ModelData, ModelAction]
         val selector = rnd.nextDouble()
         val selectedModelId: ModelID = 
         	modelsCumulativeProb.filter{case(model, bounds) => 
-        								(selector >= bounds._1) && (selector <= bounds._2)}(0)._1
+        								(selector >= bounds._1.value) && (selector <= bounds._2.value)}(0)._1
 
 
         selectedModelId

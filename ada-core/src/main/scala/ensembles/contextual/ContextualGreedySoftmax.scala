@@ -9,14 +9,14 @@ import ada.core.components.selectors._
 import ada.core.components.distributions._
 
 
-class GreedySoftmaxWithContext
+class ContextualGreedySoftmax
 	[ModelID, Context, ModelData, ModelAction,
 	 AggregateReward <: ContextualDistribution[Context]]
-    (models: ModelID  => SimpleModel[ModelData, ModelAction],
+    (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
-    extends GreedyWithContextAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
+    extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with GreedySoftmax[ModelID, ModelData, ModelAction]{
 
 }

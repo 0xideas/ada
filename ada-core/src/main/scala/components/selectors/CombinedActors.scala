@@ -7,7 +7,7 @@ import ada._
 import ada.core.interface._
 import ada.core.components.distributions._
 
-trait Greedy[ModelID, ModelData, ModelAction] 
+trait GreedyRandom[ModelID, ModelData, ModelAction] 
     extends AbstractGreedy[ModelID, ModelData, ModelAction]
     with RandomSelector[ModelID, ModelData, ModelAction]
 

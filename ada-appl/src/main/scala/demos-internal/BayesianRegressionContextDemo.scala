@@ -5,8 +5,10 @@ import scala.collection.mutable.{ListBuffer}
 
 import ada.core.components.distributions.BayesianSampleRegressionContext
 import ada.core.ensembles._
-import ada.core.models.StaticModel
+import ada.core.interface.ContextualModel
+import ada.core.models.{StaticModelContext}
 
+import io.circe.Json
 
 import plotting.Chart
 
@@ -36,13 +38,13 @@ object BayesianRegressionContextDemo{
         Map()
     )
 
-
     val rnd = scala.util.Random
 
     //initialisation of the ensemble
-    val models = (0 until nModels).map(x => new StaticModel[Int, Unit, BayesianSampleRegressionContext](x.toDouble * 100000))
+    val models: IndexedSeq[ContextualModel[Int,Array[Double],Unit,Double]] = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](x.toDouble * 100000))
+    
     val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
-    val ensemble = new ThompsonSamplingWithContext[Int, Array[Double], Unit, Double,  BayesianSampleRegressionContext](
+    val ensemble = new ContextualThompsonSampling[Int,  Unit, Double](
         (0 until nModels).zip(models).toMap,
         Map((0 until nModels).zip(contexts):_*)
     )

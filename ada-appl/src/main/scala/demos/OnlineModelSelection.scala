@@ -8,6 +8,7 @@ import ada.core.ensembles.ThompsonSamplingEnsemble
 import ada.core.models._
 import ada.core.components.distributions.{Distribution, BetaDistribution}
 import scala.xml.persistent.Index
+import ada.`package`.Reward
 
 import java.nio.file.{Paths, Files}
 import java.nio.charset.StandardCharsets
@@ -50,7 +51,7 @@ class OnlineModelSelection{
             (0 until nIter).map{i =>
                 val pick = math.abs(rnd.nextInt % n)
                 val (action, modelIds) = ensemble.actWithID(data(pick), List())
-                val reward =  if(action == labels(pick)) 1.0 else 0.0
+                val reward =  new Reward( if(action == labels(pick)) 1.0 else 0.0 )
                 ensemble.update(modelIds, data(pick), reward)
 
             }
