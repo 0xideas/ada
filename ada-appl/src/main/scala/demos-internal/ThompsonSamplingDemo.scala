@@ -4,7 +4,7 @@ import scala.collection.mutable.{ListBuffer}
 import ada.demos.utility.Utilities
 
 import ada.core.models.{StaticModel}
-import ada.core.ensembles.{ThompsonSamplingEnsemble, ThompsonSamplingGeneric}
+import ada.core.ensembles.{ThompsonSamplingEnsemble}
 import ada.core.components.distributions.BetaDistribution
 import ada._
 import ada.core.components.distributions.{Distribution, BetaDistribution}

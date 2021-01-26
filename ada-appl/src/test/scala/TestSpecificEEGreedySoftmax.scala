@@ -89,6 +89,7 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
                 result
             }
         }
+        
         property(name + " - proportions of model selections correspond to eta value - after learning") = forAll(generator){
             tuple => {
                 val (eta, (id1, id2, id3), (const1, const2), (generator, models, ensemble), modelData) = tuple

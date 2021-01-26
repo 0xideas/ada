@@ -19,7 +19,7 @@ class PassiveThompsonSamplingEnsemble
         modelKeys,
         modelRewards,
         0.0
-    ) with PassiveEnsembleStackable1[ModelID, ModelData, ModelAction, Distr]{
+    ) with PassiveStackableEnsemble1[ModelID, ModelData, ModelAction, Distr]{
         def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluateFn(action, optimalAction)
         def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit = {
             _updateAllImplStackable1(data, optimalAction, modelIds, models, modelKeys, modelRewards)

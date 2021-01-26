@@ -11,8 +11,7 @@ import ada.core.interface.StackableModel
 import plotting.Chart
 import ada.core.components.contextmodels.BayesianSampleLinearRegression
 
-object StackedBayesianRegressionContextDemo{
-    //parameters for the demo
+object Hyperparameters{
     val nIter = 1000 * 10
     val nFeatures = 5
     val nModels = 3
@@ -36,8 +35,14 @@ object StackedBayesianRegressionContextDemo{
         //Map(0 -> 3.2, 1 -> 3.2, 2 -> 3.2),
         Map()
     )
-
     val rnd = scala.util.Random
+
+}
+
+object ThompsonSamplingEnsemble2Demo{
+    //parameters for the demo
+    import Hyperparameters._
+
 
     //initialisation of the ensemble
 
@@ -46,12 +51,12 @@ object StackedBayesianRegressionContextDemo{
         val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
 
         
-        new ThompsonSamplingDynamicLocal[Int, Array[Double], Double, BayesianSampleRegressionContext](
+        new ThompsonSamplingEnsemble2[Int, Array[Double], Double, BayesianSampleRegressionContext](
             (0 until nModels).zip(models).toMap, Map((0 until nModels).zip(contexts):_*))
     }
 
     val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
-    val ensemble = new ThompsonSamplingDynamicLocal[Int, Array[Double], Double, BayesianSampleRegressionContext](
+    val ensemble = new ThompsonSamplingEnsemble2[Int, Array[Double], Double, BayesianSampleRegressionContext](
         (0 until nModels).zip(ensembles).toMap,
         Map((0 until nModels).zip(contexts):_*)
     )
@@ -69,6 +74,14 @@ object StackedBayesianRegressionContextDemo{
         }
 
     }
+
+
+}
+
+
+object StackedContextualThompsonSamplingDemo{
+    import Hyperparameters._
+
     val ensembles2 = (0 until 3).map{i =>
         val models = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](x.toDouble)).toList
         val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
@@ -93,6 +106,5 @@ object StackedBayesianRegressionContextDemo{
                 Utilities.report(highIndexMap, selections,  nModels, nIter, nFeatures, nGoodModels, shares(f))
             }
         }
-
     }
 }
