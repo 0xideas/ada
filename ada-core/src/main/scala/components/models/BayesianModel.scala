@@ -26,7 +26,7 @@ class BayesianMeanLinearRegressionModel[ModelID, AggregateReward]
         def predict(x: Array[Double]): Double = predictProb(x).mean
 }
 
-class BayesianSampleLinearRegressionModel[ModelID, ModelAction, AggregateReward]
+class BayesianSampleLinearRegressionModel[ModelID, AggregateReward]
     (nfeatures: Int, alpha: Double, beta: Double,  evaluationFn: (Double, Double)=>ada.Reward= (a, oA)=>new Reward(math.pow(a-oA, 2)))
     extends BayesianLinearRegressionModelAbstract[ModelID, AggregateReward](nfeatures, alpha, beta, evaluationFn) {
         def predict(x: Array[Double]): Double = predictProb(x).sample

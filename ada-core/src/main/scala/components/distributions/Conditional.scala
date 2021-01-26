@@ -41,7 +41,7 @@ class BayesianSampleRegressionContext(
     )
     with ConditionalDistribution[Array[Double]]{
         override def export: Json = model.export
-        def changeBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
+        def setBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
             model.changeBeta(increment, factor, max)
         }
         def beta(): Double = model.beta
