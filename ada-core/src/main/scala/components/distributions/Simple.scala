@@ -37,17 +37,10 @@ class BetaDistribution (private var alpha: Double, private var beta: Double, lea
 }
 
 
-class ExpDouble(private var value: Double) extends SimpleDistribution {
-    def export: Json = Json.fromDouble(value).get
-    def draw: Double = value
-    def update(reward: Reward): Unit = {if(!(reward.value.isInfinite || reward.value.isNaN() )){value = reward.value}; ()}
-}
-object ExpDouble{
-    implicit def expDouble: Double => ExpDouble = (d:Double) => new ExpDouble(d) 
-}
 
-class MeanDouble(private var value: Double) extends SimpleDistribution {
+class MeanDouble extends SimpleDistribution {
     private var i = 1.0
+    private var value = 0.0
     def export: Json = Json.fromDouble(value).get
     def draw: Double = value
     def update(reward: Reward): Unit = {
@@ -56,7 +49,6 @@ class MeanDouble(private var value: Double) extends SimpleDistribution {
             value = value*(1.0-1.0/i) + reward.value * (1.0/i)
             i+=1.0
         }
-        //println(f"${oldValue} - ${reward} - ${value}")
     }
 }
 
@@ -74,4 +66,18 @@ class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends Simpl
         "gamma" -> Json.fromDouble(gamma).get,
         "k" -> Json.fromInt(k)
     ))
+}
+
+
+
+//TEST
+
+class ExpDouble(private var value: Double) extends SimpleDistribution {
+    def export: Json = Json.fromDouble(value).get
+    def draw: Double = value
+    def update(reward: Reward): Unit = {if(!(reward.value.isInfinite || reward.value.isNaN() )){value = reward.value}; ()}
+}
+
+object ExpDouble{
+    implicit def expDouble: Double => ExpDouble = (d:Double) => new ExpDouble(d) 
 }

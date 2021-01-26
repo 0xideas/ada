@@ -24,8 +24,6 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
 
     //def evaluationFn[ActionType](action: ActionType, correctAction: ActionType): Double =  if(action == correctAction) 1.0 else 0.1
 
-
-
     def makeGenerator[ModelId, ModelData, ModelAction](idGenerator: Gen[ModelId], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
         val generator = for{
             modelData <- dataGenerator
@@ -121,7 +119,6 @@ class TestGreedySoftmax extends Properties("TestSpecificEEGreedySoftmax") {
             }
         }
     }
-
     
     //these are the actual test executions
     testTypedEEGreedySoftmax("SDD", 1000, arbitrary[String], arbitrary[Double], arbitrary[Double])
