@@ -9,7 +9,7 @@ import ada.core.models._
 import ada.core.interface.StackableModel
 
 import plotting.Chart
-import ada.core.components.contextmodels.BayesianSampleLinearRegression
+import ada.core.components.learners.BayesianSampleLinearRegression
 
 object Hyperparameters{
     val nIter = 1000 * 10

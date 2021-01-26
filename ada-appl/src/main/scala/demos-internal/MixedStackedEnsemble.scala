@@ -8,7 +8,7 @@ import ada.core.models._
 import ada.core.components.distributions.{Distribution, BetaDistribution}
 import scala.xml.persistent.Index
 import ada.`package`.Reward
-import ada.core.components.contextmodels.BayesianSampleLinearRegression
+import ada.core.components.learners.BayesianSampleLinearRegression
 import ada.core.components.distributions.BayesianSampleRegressionContext
 
 object MixedStackedEnsemble{

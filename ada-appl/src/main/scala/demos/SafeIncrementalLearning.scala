@@ -13,7 +13,7 @@ import plotting.Chart
 import ada.generators.AutoregressionGenerator
 
 
-import ada.core.components.contextmodels.BayesianSampleLinearRegression
+import ada.core.components.learners.BayesianSampleLinearRegression
 import ada.core.components.distributions.BayesianSampleRegressionContext
 import breeze.stats.distributions.Beta
 import ada.core.components.distributions.MeanDouble
