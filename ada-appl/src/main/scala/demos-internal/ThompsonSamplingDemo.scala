@@ -71,7 +71,7 @@ object ThompsonSamplingDemo{
         val models = (0 until nModels).map(x => new StaticModel[Int, Unit, BetaDistribution](x.toDouble))
 
 
-        val ensemble = new ThompsonSamplingEnsemble[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)
+        val ensemble = ThompsonSamplingEnsemble[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)
         //stacked ensemble
         //val ensembles = (0 until 3).map{_ => new ThompsonSamplingLocalBeta[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)}
         //val ensemble = new ThompsonSamplingLocalBeta[Int, Unit, Double]((0 until nModels).zip(models).toMap, 100, 100)

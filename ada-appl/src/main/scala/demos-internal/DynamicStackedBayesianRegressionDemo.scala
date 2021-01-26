@@ -49,12 +49,12 @@ object ThompsonSamplingEnsemble2Demo{
     val ensembles = (0 until 3).map{i =>
         val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double], BayesianSampleRegressionContext](x.toDouble)).toList
         val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
-        new ThompsonSamplingEnsemble2[Int, Array[Double], Double, BayesianSampleRegressionContext](
+        ThompsonSamplingEnsemble2[Int, Double](
             (0 until nModels).zip(models).toMap, Map((0 until nModels).zip(contexts):_*))
     }
 
     val contexts = (0 until ensembles.length).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
-    val ensemble = new ThompsonSamplingEnsemble2[Int, Array[Double], Double, BayesianSampleRegressionContext](
+    val ensemble = ThompsonSamplingEnsemble2[Int, Double](
         (0 until ensembles.length).zip(ensembles).toMap,
         Map((0 until ensembles.length).zip(contexts):_*)
     )
@@ -84,12 +84,12 @@ object StackedContextualThompsonSamplingDemo{
         val models = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](x.toDouble)).toList
         val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
 
-        new ContextualThompsonSampling[Int, Unit, Double](
+        ContextualThompsonSampling[Int, Unit, Double](
             (0 until nModels).zip(models).toMap, Map((0 until nModels).zip(contexts):_*))
     }
 
     val contexts2 = (0 until ensembles2.length).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
-    val ensemble2 = new ContextualThompsonSampling[Int, Unit, Double](
+    val ensemble2 = ContextualThompsonSampling[Int, Unit, Double](
         (0 until ensembles2.length).zip(ensembles2).toMap,
         Map((0 until ensembles2.length).zip(contexts2):_*)
     )

@@ -39,16 +39,16 @@ object CoordinationLearning{
 
 
     val models1 = (0 until nModelsLevel1*nModelsLevel2).map(i =>  new StaticModelString[Int, Unit, String](strings(i/nModelsLevel2)+strings(i%nModelsLevel2)))
-    val ensembles1 = (0 until nModelsLevel1).map(i => new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel2).zip(models1.slice(i*nModelsLevel2, (i+1)*nModelsLevel2)).toMap, 1, 1, learningRate))
-    val ensemble1 = new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1).zip(ensembles1).toMap, 1, 1, learningRate)
+    val ensembles1 = (0 until nModelsLevel1).map(i => ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel2).zip(models1.slice(i*nModelsLevel2, (i+1)*nModelsLevel2)).toMap, 1, 1, learningRate))
+    val ensemble1 = ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1).zip(ensembles1).toMap, 1, 1, learningRate)
     
     val models2 = (0 until nModelsLevel1*nModelsLevel2).map(i =>  new StaticModelString[Int, Unit, String](strings(i/nModelsLevel1)+strings(i%nModelsLevel1)))
-    val ensemble2 = new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1*nModelsLevel2).zip(models2).toMap, 1, 1, learningRate)
+    val ensemble2 = ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1*nModelsLevel2).zip(models2).toMap, 1, 1, learningRate)
 
     val models3_1 = (0 until nModelsLevel1).map(i =>  new StaticModelString[Int, Unit, String](strings(i)))
-    val ensemble3_1 = new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1).zip(models3_1).toMap, 1, 1, learningRate)
+    val ensemble3_1 = ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel1).zip(models3_1).toMap, 1, 1, learningRate)
     val models3_2 = (0 until nModelsLevel2).map(i =>  new StaticModelString[Int, Unit, String](strings(i)))
-    val ensemble3_2 = new ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel2).zip(models3_2).toMap, 1, 1, learningRate)
+    val ensemble3_2 = ThompsonSamplingEnsemble[Int, Unit, String]((0 until nModelsLevel2).zip(models3_2).toMap, 1, 1, learningRate)
 
     val selectionsList1 = ListBuffer[List[Double]](); val selectionsList2 = ListBuffer[List[Double]](); val selectionsList3 = ListBuffer[List[Double]]()
     val totalRewards1 = ListBuffer[Double](); val totalRewards2 = ListBuffer[Double](); val totalRewards3 = ListBuffer[Double]()

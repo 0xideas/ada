@@ -44,7 +44,7 @@ object BayesianRegressionContextDemo{
     val models: IndexedSeq[ContextualModel[Int,Array[Double],Unit,Double]] = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](x.toDouble * 100000))
     
     val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
-    val ensemble = new ContextualThompsonSampling[Int,  Unit, Double](
+    val ensemble = ContextualThompsonSampling[Int,  Unit, Double](
         (0 until nModels).zip(models).toMap,
         Map((0 until nModels).zip(contexts):_*)
     )
