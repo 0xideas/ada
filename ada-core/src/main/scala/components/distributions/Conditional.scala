@@ -12,7 +12,7 @@ import ada.core.components.contextmodels.BayesianSampleLinearRegression
 import ada._
 
 class SmileModelContextDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
-    extends ContextualDistribution[Context]{
+    extends ConditionalDistribution[Context]{
         def draw(context: Context): Double = model.predict(context)
         def update(context: Context, reward: Reward): Unit = {
             if(!(reward.value.isInfinite || reward.value.isNaN() )){
@@ -39,7 +39,7 @@ class BayesianSampleRegressionContext(
     extends SmileModelContextDistribution[Array[Double], BayesianSampleLinearRegression](
         new BayesianSampleLinearRegression(nfeatures, alpha, beta)
     )
-    with ContextualDistribution[Array[Double]]{
+    with ConditionalDistribution[Array[Double]]{
         override def export: Json = model.export
         def changeBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
             model.changeBeta(increment, factor, max)

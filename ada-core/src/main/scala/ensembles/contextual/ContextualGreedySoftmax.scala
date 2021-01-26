@@ -11,7 +11,7 @@ import ada.core.components.distributions._
 
 class ContextualGreedySoftmax
 	[ModelID, Context, ModelData, ModelAction,
-	 AggregateReward <: ContextualDistribution[Context]]
+	 AggregateReward <: ConditionalDistribution[Context]]
     (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],

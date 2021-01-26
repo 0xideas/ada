@@ -21,7 +21,7 @@ trait Selector[ModelID, ModelData, ModelAction]{
         modelsSorted
     }
 
-    def _sortModel[Context, AggregateReward <: ContextualDistribution[Context]]
+    def _sortModel[Context, AggregateReward <: ConditionalDistribution[Context]]
     			  (modelKeys: () => List[ModelID],
                    modelRewards: ModelID => AggregateReward,
                    context: Context): List[(ModelID, Reward)] = {

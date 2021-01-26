@@ -30,7 +30,7 @@ trait SimpleActor[ModelID, ModelData, ModelAction]
 trait ContextualActor[ModelID, Context, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
     with Actor{
-    def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]]
+    def _actImpl[Context, AggregateReward <: ConditionalDistribution[Context]]
     			(models: ModelID => ContextualModel[ModelID, Context, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
@@ -55,7 +55,7 @@ trait StackableActor1[ModelID, ModelData, ModelAction]
 trait StackableActor2[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
     with Actor{
-    def _actImpl2[AggregateReward <: ContextualDistribution[ModelData]]
+    def _actImpl2[AggregateReward <: ConditionalDistribution[ModelData]]
                 (models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
@@ -88,7 +88,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
         }
     }
 
-    def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]]
+    def _actImpl[Context, AggregateReward <: ConditionalDistribution[Context]]
     			(models: ModelID => ContextualModel[ModelID, Context, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
@@ -132,7 +132,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
         }
     }
 
-    def _actImpl2[AggregateReward <: ContextualDistribution[ModelData]]
+    def _actImpl2[AggregateReward <: ConditionalDistribution[ModelData]]
                 (models: ModelID => StackableModel[ModelID, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
@@ -158,7 +158,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
 trait Softmax[ModelID, ModelData, ModelAction]
     extends SoftmaxSelector[ModelID, ModelData, ModelAction]{
 
-    def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]](
+    def _actImpl[Context, AggregateReward <: ConditionalDistribution[Context]](
                 models: ModelID => ContextualModel[ModelID, Context, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,
@@ -195,7 +195,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
         modelsSorted.map{case(id, reward) => (id, new Reward(((1.0 - gamma) * reward.value/totalReward.value + gamma/k )))}
     }
 
-    def _actImpl[Context, AggregateReward <: ContextualDistribution[Context]](
+    def _actImpl[Context, AggregateReward <: ConditionalDistribution[Context]](
                 models: ModelID => ContextualModel[ModelID, Context, ModelData, ModelAction],
                 modelKeys: () => List[ModelID],
                 modelRewards: ModelID => AggregateReward,

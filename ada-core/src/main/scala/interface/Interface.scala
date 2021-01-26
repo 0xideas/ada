@@ -2,7 +2,7 @@ package ada.core.interface
 
 
 import ada._
-import ada.core.components.distributions.ContextualDistribution
+import ada.core.components.distributions.ConditionalDistribution
 import org.apache.logging.log4j.core.appender.rewrite.MapRewritePolicy.Mode
 
 

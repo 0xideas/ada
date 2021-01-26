@@ -16,7 +16,7 @@ trait SimpleDistribution
     def act(data: Unit = ()): Double = draw
 }
 
-trait ContextualDistribution[Context]
+trait ConditionalDistribution[Context]
     extends Distribution
     with Model[Context, Double]
     with ExportUpdateableContext[Context]{

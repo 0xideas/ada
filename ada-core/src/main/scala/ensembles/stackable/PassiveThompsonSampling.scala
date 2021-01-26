@@ -8,6 +8,7 @@ import breeze.stats.distributions.Beta
 import ada.core.interface.PassiveEnsemble
 
 
+
 class PassiveThompsonSamplingEnsemble
     [ModelID, ModelData, ModelAction, Distr <: SimpleDistribution]
     (models: ModelID  => StackableModelPassive[ModelID, ModelData, ModelAction, Distr],

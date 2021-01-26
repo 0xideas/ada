@@ -11,7 +11,7 @@ import ada.core.components.distributions._
 
 abstract class ContextualGreedyAbstract
 	[ModelID, Context, ModelData, ModelAction,
-	 AggregateReward <: ContextualDistribution[Context]]
+	 AggregateReward <: ConditionalDistribution[Context]]
     (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
@@ -27,7 +27,7 @@ abstract class ContextualGreedyAbstract
 
 class ContextualGreedy
 	[ModelID, Context, ModelData, ModelAction,
-	 AggregateReward <: ContextualDistribution[Context]]
+	 AggregateReward <: ConditionalDistribution[Context]]
     (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],

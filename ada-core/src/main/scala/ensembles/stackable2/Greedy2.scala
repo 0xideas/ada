@@ -8,7 +8,7 @@ import ada.core.interface._
 import ada.core.components.selectors._
 import ada.core.components.distributions._
 
-abstract class GreedyEnsembleAbstract2[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
+abstract class GreedyEnsembleAbstract2[ModelID, ModelData, ModelAction, AggregateReward <: ConditionalDistribution[ModelData]]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
@@ -21,7 +21,7 @@ abstract class GreedyEnsembleAbstract2[ModelID, ModelData, ModelAction, Aggregat
 
 }
 
-class GreedyEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
+class GreedyEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ConditionalDistribution[ModelData]]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],

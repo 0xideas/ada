@@ -7,7 +7,7 @@ import ada.core.components.distributions._
 import breeze.stats.distributions.Beta
 
 
-class PassiveGreedyEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ContextualDistribution[ModelData]]
+class PassiveGreedyEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ConditionalDistribution[ModelData]]
     (models: ModelID  => StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
