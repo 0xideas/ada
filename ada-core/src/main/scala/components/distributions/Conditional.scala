@@ -8,7 +8,7 @@ import io.circe.Json
 
 import breeze.linalg._
 
-import ada.core.components.contextmodels.BayesianSampleLinearRegression
+import ada.core.components.learners.BayesianSampleLinearRegression
 import ada._
 
 class SmileModelContextDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)

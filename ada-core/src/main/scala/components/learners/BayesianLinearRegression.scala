@@ -1,4 +1,4 @@
-package ada.core.components.contextmodels
+package ada.core.components.learners
 
 import breeze.linalg._
 import breeze.numerics._

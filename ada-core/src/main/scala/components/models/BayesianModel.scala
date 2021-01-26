@@ -1,7 +1,7 @@
 package ada.core.models
 
 import ada.core.components.distributions._
-import ada.core.components.contextmodels._
+import ada.core.components.learners._
 import ada.core.interface._
 import ada.`package`.Reward
 trait BottomModel
