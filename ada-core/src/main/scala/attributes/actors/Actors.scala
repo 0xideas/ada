@@ -83,7 +83,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             (selectedModel.act(data), selectedModelId)
         }
         else {
-            val modelId = _selectModel(modelKeys, modelsSorted.tail) 
+            val modelId = _selectModel(modelsSorted.tail) 
             (models(modelId).act(data), modelId)
         }
     }
@@ -105,7 +105,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             selectedModel.actWithID(context, data, selectedIds++List(selectedModelId))
         }
         else {
-            val selectedModelId = _selectModel(modelKeys, modelsSorted.tail) 
+            val selectedModelId = _selectModel(modelsSorted.tail) 
             models(selectedModelId).actWithID(context, data, selectedIds ++ List(selectedModelId))
         }
     }
@@ -127,7 +127,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             selectedModel.actWithID(data, selectedIds ::: List(selectedModelId))
         }
         else {
-            val selectedModelId = _selectModel(modelKeys, modelsSorted.tail)
+            val selectedModelId = _selectModel(modelsSorted.tail)
             models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
         }
     }
@@ -148,7 +148,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             selectedModel.actWithID(data, selectedIds ::: List(selectedModelId))
         }
         else {
-            val selectedModelId = _selectModel(modelKeys, modelsSorted.tail)
+            val selectedModelId = _selectModel(modelsSorted.tail)
             models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
         }
     }
@@ -167,7 +167,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
                 context: Context,
                 selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[Context, AggregateReward](modelKeys, modelRewards, context)
-        val modelId = _selectModel(modelKeys, modelsSorted)
+        val modelId = _selectModel(modelsSorted)
         models(modelId).actWithID(context, data, selectedIds ++ List(modelId))
     }
 
@@ -179,7 +179,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
                 data: ModelData,
                 selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
-        val selectedModelId = _selectModel(modelKeys, modelsSorted)
+        val selectedModelId = _selectModel(modelsSorted)
         models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
     }
 }
@@ -206,7 +206,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 gamma: Double,
                 k: Int): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[Context, AggregateReward](modelKeys, modelRewards, context)
-        val selectedModelId = _selectModel(modelKeys, _adjustRewards(modelsSorted, gamma, k))
+        val selectedModelId = _selectModel(_adjustRewards(modelsSorted, gamma, k))
         models(selectedModelId).actWithID(context, data, selectedIds ::: List(selectedModelId))
     }
 
@@ -220,7 +220,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 gamma: Double,
                 k: Int): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
-        val selectedModelId = _selectModel(modelKeys, modelsSorted)
+        val selectedModelId = _selectModel(modelsSorted)
         models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
     }
 }

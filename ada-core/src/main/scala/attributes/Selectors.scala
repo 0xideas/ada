@@ -34,8 +34,7 @@ trait Selector[ModelID, ModelData, ModelAction]{
         modelsSorted
     }
 
-    def _selectModel(modelKeys: () => List[ModelID],
-            aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID
+    def _selectModel( aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID
     
 }
 
@@ -44,8 +43,7 @@ trait Selector[ModelID, ModelData, ModelAction]{
 trait SoftmaxSelector[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]{
 
-    def _selectModel(modelKeys: () => List[ModelID],
-                     aggregateRewardsDouble: List[(ModelID, Reward)]):  ModelID = {
+    def _selectModel(aggregateRewardsDouble: List[(ModelID, Reward)]):  ModelID = {
         val totalReward: Reward = new Reward(aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2.value))
         val cumulativeProb: List[(Probability, Probability)] = 
         	aggregateRewardsDouble
@@ -67,9 +65,8 @@ trait SoftmaxSelector[ModelID, ModelData, ModelAction]
 trait RandomSelector[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]{
 
-    def _selectModel(modelKeys: () => List[ModelID],
-                     aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID = {
-        val modelKeysV = modelKeys()
+    def _selectModel(aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID = {
+        val modelKeysV = aggregateRewardsDouble.map(_._1)
         val selector = rnd.nextInt(modelKeysV.length)
         val selectedModelId = modelKeysV(selector)
         selectedModelId
