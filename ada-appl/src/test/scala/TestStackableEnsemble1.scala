@@ -103,7 +103,7 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
                 val (epsilon, ids, ensemble, modelData) = tuple
 
                 if(ids.length > 1){
-                    ids.map(id => ensemble.update(List(id), modelData, new Reward(0.1)))
+                    ids.map(id => ensemble.update(List(id), modelData, new Reward(0.5)))
                     ensemble.update(ids.take(1), modelData, new Reward(1.0))
                     val rounds = measureActionShares[ModelID, ModelData, ModelAction](modelData, nActions, ensemble)
                     val (accordingToEpsilon, otherIdsEquallyLikely) = testActionShares[ModelID, ModelData, ModelAction](rounds, epsilon, ids.head, ids.tail)
