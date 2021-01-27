@@ -79,5 +79,5 @@ class ExpDouble(private var value: Double) extends SimpleDistribution {
 }
 
 object ExpDouble{
-    implicit def expDouble: Double => ExpDouble = (d:Double) => new ExpDouble(d) 
+    implicit def expDouble: Double => ExpDouble = (d:Double) => new ExpDouble( d)
 }

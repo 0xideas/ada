@@ -85,7 +85,7 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
     def testStackableEnsemble1[ModelID, ModelData, ModelAction](name: String, nActions: Int, idGenerator: Gen[ModelID], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
         val generator = makeGenerator(idGenerator, dataGenerator, actionGenerator, makeEnsembleFn[ModelID, ModelData, ModelAction])
 
-        property(name + " epsilon model selection") = forAllNoShrink(generator){
+        property(name + " epsilon model selection") = forAll(generator){
             tuple => {
                 val (epsilon, ids, ensemble, modelData) = tuple
                 if(ids.length > 2){
@@ -98,7 +98,7 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
             }
         }
         
-        property(name + " epsilon model selection after training") = forAllNoShrink(generator){
+        property(name + " epsilon model selection after training") = forAll(generator){
             tuple => {
                 val (epsilon, ids, ensemble, modelData) = tuple
 
