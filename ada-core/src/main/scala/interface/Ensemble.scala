@@ -17,8 +17,6 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: E
     def modelRewards(): Map[ModelID, AggregateReward] = modelRewards
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
     def export = export(models, modelKeys, modelRewards)
-    def update(data: ModelData, reward: Reward): Unit = ()
-
 
 }
 
@@ -26,12 +24,13 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
     (models: ModelID  => SimpleModel[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])
-    extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
-    with SimpleModel[ModelData, ModelAction]{
+    extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards){
     def actWithID(data: ModelData): (ModelAction, ModelID)
     def act(data: ModelData): ModelAction = actWithID(data)._1
-    def update(modelId: ModelID, data: ModelData, reward: Reward): Unit
-
+    def update(modelId: ModelID, reward: Reward): Unit = modelRewards(modelId).update(reward)
+    def update(modelId: ModelID, data: ModelData, action: ModelAction): Unit = {
+        models(modelId).update(data, action)
+    }
 
 }
 

@@ -5,7 +5,6 @@ import ada.core.interface._
 import ada.core.components.selectors._
 import ada.core.components.distributions._
 import breeze.stats.distributions.Beta
-import ada.core.interface.PassiveEnsemble
 
 
 

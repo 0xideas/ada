@@ -9,7 +9,7 @@ trait Model[ModelData, ModelAction] extends Exportable{
 }
 
 trait SimpleModel[ModelData, ModelAction] extends Model[ModelData, ModelAction]{
-    def update(data: ModelData, reward: Reward): Unit
+    def update(data: ModelData, action: ModelAction): Unit
     def act(data: ModelData): ModelAction
 }
 
