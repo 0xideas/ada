@@ -45,6 +45,7 @@ trait SoftmaxSelector[ModelID, ModelData, ModelAction]
 
     def _selectModel(aggregateRewardsDouble: List[(ModelID, Reward)]):  ModelID = {
         val totalReward: Reward = new Reward(aggregateRewardsDouble.foldLeft(0.0)((agg, tup) => agg + tup._2.value))
+        require(totalReward.value > 0.0, "the rewards of the available models cannot sum to less than 0")
         val cumulativeProb: List[(Probability, Probability)] = 
         	aggregateRewardsDouble
         		.scanLeft((new Probability(0.0), new Probability(0.0)))((acc, item) => (acc._2, new Probability(acc._2.value + item._2.value/totalReward.value))).tail

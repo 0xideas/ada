@@ -124,11 +124,11 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
         if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
             val selectedModel = models(selectedModelId)
-            selectedModel.actWithID(data, selectedIds ::: List(selectedModelId))
+            selectedModel.actWithID(data, selectedIds ++ List(selectedModelId))
         }
         else {
             val selectedModelId = _selectModel(modelsSorted.tail)
-            models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
+            models(selectedModelId).actWithID(data, selectedIds ++ List(selectedModelId))
         }
     }
 
@@ -145,11 +145,11 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
         if(epsilon == 0.0 || rnd.nextDouble() > epsilon) {
             val selectedModelId = modelsSorted.head._1
             val selectedModel = models(selectedModelId)
-            selectedModel.actWithID(data, selectedIds ::: List(selectedModelId))
+            selectedModel.actWithID(data, selectedIds ++ List(selectedModelId))
         }
         else {
             val selectedModelId = _selectModel(modelsSorted.tail)
-            models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
+            models(selectedModelId).actWithID(data, selectedIds ++ List(selectedModelId))
         }
     }
 }
@@ -180,7 +180,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
                 selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
         val selectedModelId = _selectModel(modelsSorted)
-        models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
+        models(selectedModelId).actWithID(data, selectedIds ++ List(selectedModelId))
     }
 }
 
@@ -207,7 +207,7 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 k: Int): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[Context, AggregateReward](modelKeys, modelRewards, context)
         val selectedModelId = _selectModel(_adjustRewards(modelsSorted, gamma, k))
-        models(selectedModelId).actWithID(context, data, selectedIds ::: List(selectedModelId))
+        models(selectedModelId).actWithID(context, data, selectedIds ++ List(selectedModelId))
     }
 
     def _actImpl[AggregateReward <: SimpleDistribution](
@@ -221,6 +221,6 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 k: Int): (ModelAction, List[ModelID]) = {
         val modelsSorted = _sortModel[AggregateReward](modelKeys, modelRewards)
         val selectedModelId = _selectModel(modelsSorted)
-        models(selectedModelId).actWithID(data, selectedIds ::: List(selectedModelId))
+        models(selectedModelId).actWithID(data, selectedIds ++ List(selectedModelId))
     }
 }

@@ -28,8 +28,6 @@ trait TestEnsembleHelpers{
         rewardValues <- Gen.listOfN(numIds, arbitrary[Int])
     } yield {(idsRaw.toSet.toList, rewardValues)}
 
-
-        
         
     val generator = for{
             modelData <- dataGenerator
@@ -37,7 +35,7 @@ trait TestEnsembleHelpers{
             (ids, rewardValues) <- idsRewardsGenerator
             epsilon <- choose(0.1, 0.7)
         } yield {
-            println(epsilon)
+            //println(epsilon)
             val modelMap = ids.map{id => (id, new GenericStaticModel[ModelId, ModelData, ModelAction, ExpDouble](const1)(x => Json.fromString(x.toString())))}.toMap
             val rewardValues2 = rewardValues.map(r => math.abs(r.toDouble)).sorted
             val rewardValues3 = (rewardValues2.take(ids.length - 2).map(r => r/5.0) ++ rewardValues2.drop(ids.length-2).take(1).map(_/1.1) ++ rewardValues2.takeRight(1)).map(r => r/rewardValues2.max)
@@ -49,13 +47,15 @@ trait TestEnsembleHelpers{
     }
 
     def measureActionShares[ModelID, ModelData, ModelAction](data: ModelData, nActions: Int, ensemble: StackableEnsemble1[ModelID, ModelData, ModelAction, ExpDouble]) = {
+        //println("measureActionSharesStart")
         val rounds = for {
             i <- (0 until nActions)
         } yield{
             val (action, selectedIds) = ensemble.actWithID(data, List())
-            println(selectedIds.length)
+            //println(selectedIds)
             (action, selectedIds(0))
         }
+        //println("measureActionSharesEnd")
         rounds
     } 
 
@@ -63,12 +63,12 @@ trait TestEnsembleHelpers{
         val highRewardIdAccordingToepsilon = math.abs(rounds.count(_._2 == highRewardId).toDouble/rounds.length - (1.0-epsilon)) < 0.05
         val shares = otherIds.map(id => rounds.count(t => t._2 == id).toDouble/rounds.length)
         //print(epsilon.toString + " ")
-        println(shares ++ List(rounds.count(_._2 == highRewardId).toDouble/rounds.length))
+        //println(shares ++ List(rounds.count(_._2 == highRewardId).toDouble/rounds.length))
         val comparisons = shares.flatMap(s => shares.map(t => 1.0 - math.min(s,t)/math.max(s,t)))
-        print(comparisons)
+        //print(comparisons)
         val otherIdsEquallyLikely = comparisons.sum <= comparisons.length*0.1
         val result = highRewardIdAccordingToepsilon && otherIdsEquallyLikely
-        println((highRewardIdAccordingToepsilon, otherIdsEquallyLikely))
+        //println((highRewardIdAccordingToepsilon, otherIdsEquallyLikely))
         (highRewardIdAccordingToepsilon, otherIdsEquallyLikely)
     }
 }
@@ -85,7 +85,7 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
     def testStackableEnsemble1[ModelID, ModelData, ModelAction](name: String, nActions: Int, idGenerator: Gen[ModelID], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
         val generator = makeGenerator(idGenerator, dataGenerator, actionGenerator, makeEnsembleFn[ModelID, ModelData, ModelAction])
 
-        /*property(name + " epsilon model selection") = forAllNoShrink(generator){
+        property(name + " epsilon model selection") = forAllNoShrink(generator){
             tuple => {
                 val (epsilon, ids, ensemble, modelData) = tuple
                 if(ids.length > 2){
@@ -96,17 +96,15 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
                     true
                 }
             }
-        }*/
+        }
         
         property(name + " epsilon model selection after training") = forAllNoShrink(generator){
             tuple => {
                 val (epsilon, ids, ensemble, modelData) = tuple
 
                 if(ids.length > 1){
-                    ids.map(id => ensemble.update(List(id), modelData, new Reward(0.0)))
-                    println(ensemble.export)
+                    ids.map(id => ensemble.update(List(id), modelData, new Reward(0.1)))
                     ensemble.update(ids.take(1), modelData, new Reward(1.0))
-                    println(ensemble.export)
                     val rounds = measureActionShares[ModelID, ModelData, ModelAction](modelData, nActions, ensemble)
                     val (accordingToEpsilon, otherIdsEquallyLikely) = testActionShares[ModelID, ModelData, ModelAction](rounds, epsilon, ids.head, ids.tail)
                     accordingToEpsilon && (otherIdsEquallyLikely )
@@ -121,8 +119,8 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
     //these are the actual test executions
 
     testStackableEnsemble1("SDD", 10000, arbitrary[String], arbitrary[Double], arbitrary[Double])
-    //testStackableEnsemble1("SII", 10000, arbitrary[String], arbitrary[Int], arbitrary[Int])
-    //testStackableEnsemble1("IDIX", 10000, arbitrary[Int], arbitrary[Double], Gen.pick(5, (0 until 1000).toSet))
+    testStackableEnsemble1("SII", 10000, arbitrary[String], arbitrary[Int], arbitrary[Int])
+    testStackableEnsemble1("IDIX", 10000, arbitrary[Int], arbitrary[Double], Gen.pick(5, (0 until 1000).toSet))
 
 }
 
@@ -146,6 +144,5 @@ trait MakeEnsembleFnGreedySoftmax{
     }
 }
 
-//class TestEpsilonGreedy extends TestBasis("GreedyEnsemble", true) with MakeEnsembleFnGreedy
-
+class TestEpsilonGreedy extends TestBasis("GreedyEnsemble", true) with MakeEnsembleFnGreedy
 class TestEpsilonGreedySoftmax extends TestBasis("GreedySoftmaxEnsemble", false) with MakeEnsembleFnGreedySoftmax
