@@ -53,19 +53,20 @@ trait TestEnsembleHelpers{
             i <- (0 until nActions)
         } yield{
             val (action, selectedIds) = ensemble.actWithID(data, List())
+            println(selectedIds.length)
             (action, selectedIds(0))
         }
         rounds
     } 
 
     def testActionShares[ModelID, ModelData, ModelAction](rounds: IndexedSeq[(ModelAction, ModelID)], epsilon: Double, highRewardId: ModelID, otherIds: List[ModelID]) = {
-        val highRewardIdAccordingToepsilon = math.abs(rounds.count(_._2 == highRewardId).toDouble/rounds.length - (1.0-epsilon)) < 0.1
+        val highRewardIdAccordingToepsilon = math.abs(rounds.count(_._2 == highRewardId).toDouble/rounds.length - (1.0-epsilon)) < 0.05
         val shares = otherIds.map(id => rounds.count(t => t._2 == id).toDouble/rounds.length)
-        print(epsilon.toString + " ")
+        //print(epsilon.toString + " ")
         println(shares ++ List(rounds.count(_._2 == highRewardId).toDouble/rounds.length))
         val comparisons = shares.flatMap(s => shares.map(t => 1.0 - math.min(s,t)/math.max(s,t)))
-        println((otherIds.length).toString + " " + comparisons.length.toString)
-        val otherIdsEquallyLikely = comparisons.sum >= comparisons.length*0.1
+        print(comparisons)
+        val otherIdsEquallyLikely = comparisons.sum <= comparisons.length*0.1
         val result = highRewardIdAccordingToepsilon && otherIdsEquallyLikely
         println((highRewardIdAccordingToepsilon, otherIdsEquallyLikely))
         (highRewardIdAccordingToepsilon, otherIdsEquallyLikely)
@@ -84,7 +85,7 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
     def testStackableEnsemble1[ModelID, ModelData, ModelAction](name: String, nActions: Int, idGenerator: Gen[ModelID], dataGenerator: Gen[ModelData], actionGenerator: Gen[ModelAction]) = {
         val generator = makeGenerator(idGenerator, dataGenerator, actionGenerator, makeEnsembleFn[ModelID, ModelData, ModelAction])
 
-        property(name + " epsilon model selection") = forAllNoShrink(generator){
+        /*property(name + " epsilon model selection") = forAllNoShrink(generator){
             tuple => {
                 val (epsilon, ids, ensemble, modelData) = tuple
                 if(ids.length > 2){
@@ -95,24 +96,26 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
                     true
                 }
             }
-        }
+        }*/
         
-        /*property(name + " epsilon model selection after training") = forAll(generator){
+        property(name + " epsilon model selection after training") = forAllNoShrink(generator){
             tuple => {
                 val (epsilon, ids, ensemble, modelData) = tuple
 
                 if(ids.length > 1){
                     ids.map(id => ensemble.update(List(id), modelData, new Reward(0.0)))
-                    ensemble.update(List(ids.head), modelData, new Reward(1.0))
+                    println(ensemble.export)
+                    ensemble.update(ids.take(1), modelData, new Reward(1.0))
+                    println(ensemble.export)
                     val rounds = measureActionShares[ModelID, ModelData, ModelAction](modelData, nActions, ensemble)
                     val (accordingToEpsilon, otherIdsEquallyLikely) = testActionShares[ModelID, ModelData, ModelAction](rounds, epsilon, ids.head, ids.tail)
-                    accordingToEpsilon && (otherIdsEquallyLikely)
+                    accordingToEpsilon && (otherIdsEquallyLikely )
 
                 } else {
                     true
                 }
             }
-        }*/
+        }
     }
     
     //these are the actual test executions
@@ -143,6 +146,6 @@ trait MakeEnsembleFnGreedySoftmax{
     }
 }
 
-class TestEpsilonGreedy extends TestBasis("GreedyEnsemble", true) with MakeEnsembleFnGreedy
+//class TestEpsilonGreedy extends TestBasis("GreedyEnsemble", true) with MakeEnsembleFnGreedy
 
-// class TestEpsilonGreedySoftmax extends TestBasis("GreedySoftmaxEnsemble", false) with MakeEnsembleFnGreedySoftmax
+class TestEpsilonGreedySoftmax extends TestBasis("GreedySoftmaxEnsemble", false) with MakeEnsembleFnGreedySoftmax
