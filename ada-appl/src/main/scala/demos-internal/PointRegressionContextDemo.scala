@@ -11,7 +11,6 @@ import ada.`package`.Reward
 
 import plotting.Chart
 import ada.core.components.distributions.BayesianSampleRegressionDistribution
-
 object PointRegressionDistributionDemo{
 
     val model0 = new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionDistribution](0.0)

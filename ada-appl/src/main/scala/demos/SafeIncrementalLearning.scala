@@ -12,6 +12,7 @@ import ada.`package`.Reward
 import plotting.Chart
 import ada.generators.AutoregressionGenerator
 
+import scala.collection.immutable.SortedMap
 
 import ada.core.components.learners.BayesianSampleLinearRegression
 import ada.core.components.distributions.BayesianSampleRegressionDistribution
@@ -19,7 +20,7 @@ import breeze.stats.distributions.Beta
 import ada.core.components.distributions.MeanDouble
 
 object SafeIncrementalLearning{
-    val nIter= 1000000
+    val nIter= 10000
     //initialise models
     val safeModelPath = "/home/leon/data/onnx/lr_autoregression5.onnx"
     val safeModel: StackableModelPassive[Int, Array[Array[Float]], Double, BayesianSampleRegressionDistribution] = new OnnxRegression[Int, Array[Array[Float]], Double, BayesianSampleRegressionDistribution](safeModelPath, "float_input")
@@ -44,7 +45,7 @@ object SafeIncrementalLearning{
     val generator = new AutoregressionGenerator
 
     val values = ListBuffer((0 until 10).map(i => generator.next/5.0):_*)
-    val errors:ListBuffer[ListBuffer[Double]] = ListBuffer.fill(7)(ListBuffer())
+    val errors:Map[String, ListBuffer[Double]] = SortedMap(List("predict 0.0", "predict last value", "ensemble prediction", "model 0", "model 1", "model 2", "model 3").map(i => (i, ListBuffer[Double]())):_*)
     val selectedModels = ListBuffer[Int]()
 
     val evaluateFn2 = (a1:Double, a2: Double) => math.abs(a1 - a2)
@@ -59,13 +60,13 @@ object SafeIncrementalLearning{
             //println((0 until 4).map(j => models(j).actWithID(data, List())._1))
             if(i % 100 == 0) println(f"${i}: ${modelIds(0)}: ${action} - ${value}")
             ensemble.updateAll(modelIds, data, value)
-            errors(0).append(evaluateFn2(0,value))
-            errors(1).append(evaluateFn2(values.takeRight(1)(0),value))
-            errors(2).append(evaluateFn2(action,value))
-            errors(3).append(evaluateFn2(models(0).actWithID(data, List())._1,value))
-            errors(4).append(evaluateFn2(models(1).actWithID(data, List())._1,value))
-            errors(5).append(evaluateFn2(models(2).actWithID(data, List())._1,value))
-            errors(6).append(evaluateFn2(models(3).actWithID(data, List())._1,value))
+            errors("predict 0.0").append(evaluateFn2(0,value))
+            errors("predict last value").append(evaluateFn2(values.takeRight(1)(0),value))
+            errors("ensemble prediction").append(evaluateFn2(action,value))
+            errors("model 0").append(evaluateFn2(models(0).actWithID(data, List())._1,value))
+            errors("model 1").append(evaluateFn2(models(1).actWithID(data, List())._1,value))
+            errors("model 2").append(evaluateFn2(models(2).actWithID(data, List())._1,value))
+            errors("model 3").append(evaluateFn2(models(3).actWithID(data, List())._1,value))
 
             values.append(value)
             staticModel.update(value)
@@ -79,11 +80,7 @@ object SafeIncrementalLearning{
             f"${i+10}: ${selectedModels(i)}"
         }.mkString(" | ")
         println(selections)*/
-        println(errors.map(err => err.toList.sum).mkString("\n"))
-        println(ensemble.export)
+        println(errors.map{case(label, errors) => f" $label: ${errors.toList.sum}"}.mkString("\n"))
     }
-    
-
-
 } 
 
