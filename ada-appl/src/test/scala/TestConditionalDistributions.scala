@@ -21,34 +21,81 @@ import ada.core.interface.{AdaEnsemble}
 import ada.core.components.distributions._
 import _root_.breeze.stats.mode
 
-trait PointRegressionDistributionMount{
-
+trait hasConditionalDistribution{
     val rnd = scala.util.Random
+    def conditionalDistributionGetter: ConditionalDistribution[Array[Double]]
+}
+
+
+trait hasTrainingDecreasesTest extends hasConditionalDistribution{
+    def trainingDecreasesTest: Boolean = {
+        val conditionalDistribution = conditionalDistributionGetter
+        val context = Array(rnd.nextDouble(), rnd.nextDouble())
+        val targetValue = context(0)*0.5 + context(1)*3 + rnd.nextGaussian()/2
+        val predictionBefore = conditionalDistribution.draw(context)
+        conditionalDistribution.update(context, new Reward(targetValue))
+        val predictionAfter = conditionalDistribution.draw(context)
+        math.abs(predictionAfter - targetValue) < math.abs(predictionBefore - targetValue)
+    }
+}
+
+trait hasConvergenceTest extends hasConditionalDistribution{
+    def convergenceTest: Boolean = {
+        val conditionalDistribution = conditionalDistributionGetter
+        val context = Array(rnd.nextDouble(), rnd.nextDouble())
+        val targetValue = context(0) + context(1)
+        (0 until 100000).map{j =>
+            conditionalDistribution.update(context, new Reward(targetValue))
+        }
+        val prediction = conditionalDistribution.draw(context)
+        math.abs(prediction-targetValue) < 0.3
+    }
+}
+
+abstract class TestRegressionDistribution(name: String) extends Properties(name)
+    with hasTrainingDecreasesTest
+    with hasConvergenceTest{
+
+    property(" training decreases absolute error") = Prop.forAllNoShrink {(i: Int) =>
+        trainingDecreasesTest
+    }
+
+    property(" converges") = Prop.forAllNoShrink {(i: Int) =>
+        convergenceTest
+    } 
+}
+
+trait PointRegressionDistributionMount extends hasConditionalDistribution{
     val initIndependent = DataFrame.of(Array.fill(50, 1){rnd.nextDouble}, "1" )
     val initTarget =  DataFrame.of(Array.fill(50, 1){rnd.nextDouble}, "target")
     val initData = initIndependent.merge(initTarget)
-}
-class TestPointRegressionDistribution extends Properties("TestPointRegressionDistribution")
-    with PointRegressionDistributionMount{
+    def conditionalDistributionGetter = new PointRegressionDistribution("target" ~, initData )
 
-    property("PointRegressionDistribution training decreases absolute error") = Prop.forAll {(i: Int) =>
-        val pointRegression = new PointRegressionDistribution("target" ~, initData )
+}
+
+trait BayesianMeanRegressionDistributionMount{
+    def conditionalDistributionGetter = new BayesianMeanRegressionDistribution(2)
+}
+
+class TestPointRegressionDistribution extends TestRegressionDistribution("TestPointRegressionDistribution")
+                                    with PointRegressionDistributionMount
+
+class TestBayesianMeanRegressionDistribution extends TestRegressionDistribution("TestBayesianMeanRegressionDistribution")
+                                    with BayesianMeanRegressionDistributionMount
+
+
+class TestBayesianSampleRegressionDistribution extends Properties("TestBayesianSampleRegressionDistribution"){
+    val conditionalDistribution = new BayesianSampleRegressionDistribution(2)
+    val conditionalDistributionComp = new BayesianMeanRegressionDistribution(2)
+    val rnd = scala.util.Random
+
+    property(" training updates identical to BayesianMeanRegressionDistribution") = Prop.forAllNoShrink {(i: Int) =>
+
         val context = Array(rnd.nextDouble(), rnd.nextDouble())
         val targetValue = context(0)*0.5 + context(1)*3 + rnd.nextGaussian()/2
-        val predictionBefore = pointRegression.draw(context)
-        pointRegression.update(context, new Reward(targetValue))
-        val predictionAfter = pointRegression.draw(context)
-        math.abs(predictionAfter - targetValue) < math.abs(predictionBefore - targetValue)
-    }
+        conditionalDistribution.update(context, new Reward(targetValue))
+        conditionalDistributionComp.update(context, new Reward(targetValue))
+        math.abs(conditionalDistributionComp.act(context)- (0 until 1000).map{j => conditionalDistribution.act(context)}.sum/1000) < 0.1
 
-    property("PointRegressionDistribution converges") = Prop.forAll {(i: Int) =>
-        val pointRegression = new PointRegressionDistribution("target" ~, initData )
-        val context = Array(rnd.nextDouble(), rnd.nextDouble())
-        val targetValue = context(0) + context(1)
-        (0 until 10000).map{j =>
-            pointRegression.update(context, new Reward(targetValue))
-        }
-        val prediction = pointRegression.draw(context)
-        math.abs(prediction-targetValue) < 0.3
     }
-} 
+}
