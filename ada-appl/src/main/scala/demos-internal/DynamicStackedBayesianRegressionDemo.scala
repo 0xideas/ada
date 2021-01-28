@@ -3,7 +3,7 @@ package ada.demos
 import ada.demos.utility.Utilities
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.components.distributions.BayesianSampleRegressionContext
+import ada.core.components.distributions.BayesianSampleRegressionDistribution
 import ada.core.ensembles._
 import ada.core.models._
 import ada.core.interface.StackableModel
@@ -47,13 +47,13 @@ object ThompsonSamplingEnsemble2Demo{
     //initialisation of the ensemble
 
     val ensembles = (0 until 3).map{i =>
-        val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double], BayesianSampleRegressionContext](x.toDouble)).toList
-        val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
+        val models = (0 until nModels).map(x => new StaticModel[Int, Array[Double], BayesianSampleRegressionDistribution](x.toDouble)).toList
+        val contexts = (0 until nModels).map(x => new BayesianSampleRegressionDistribution(nFeatures, 0.15, 1.0))
         ThompsonSamplingEnsemble2[Int, Double](
             (0 until nModels).zip(models).toMap, Map((0 until nModels).zip(contexts):_*))
     }
 
-    val contexts = (0 until ensembles.length).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
+    val contexts = (0 until ensembles.length).map(x => new BayesianSampleRegressionDistribution(nFeatures, 0.15, 1.0))
     val ensemble = ThompsonSamplingEnsemble2[Int, Double](
         (0 until ensembles.length).zip(ensembles).toMap,
         Map((0 until ensembles.length).zip(contexts):_*)
@@ -62,11 +62,11 @@ object ThompsonSamplingEnsemble2Demo{
 
     def run(): Unit = {
 
-        val shares = Utilities.runStackable[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
+        val shares = Utilities.runStackable[Double, BayesianSampleRegressionDistribution](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
 
         highIndexMaps.zipWithIndex.map{
             case(highIndexMap, f) => {
-                val selections = Utilities.selectAndAverageDynamic[Double, BayesianSampleRegressionContext](ensemble, highIndexMap, nFeatures, nModels, rnd, 100)
+                val selections = Utilities.selectAndAverageDynamic[Double, BayesianSampleRegressionDistribution](ensemble, highIndexMap, nFeatures, nModels, rnd, 100)
                 Utilities.report(highIndexMap, selections,  nModels, nIter, nFeatures, nGoodModels, shares(f))
             }
         }
@@ -81,14 +81,14 @@ object StackedContextualThompsonSamplingDemo{
     import Hyperparameters._
 
     val ensembles2 = (0 until 3).map{i =>
-        val models = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](x.toDouble)).toList
-        val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
+        val models = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionDistribution](x.toDouble)).toList
+        val contexts = (0 until nModels).map(x => new BayesianSampleRegressionDistribution(nFeatures, 0.15, 1.0))
 
         ContextualThompsonSampling[Int, Unit, Double](
             (0 until nModels).zip(models).toMap, Map((0 until nModels).zip(contexts):_*))
     }
 
-    val contexts2 = (0 until ensembles2.length).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
+    val contexts2 = (0 until ensembles2.length).map(x => new BayesianSampleRegressionDistribution(nFeatures, 0.15, 1.0))
     val ensemble2 = ContextualThompsonSampling[Int, Unit, Double](
         (0 until ensembles2.length).zip(ensembles2).toMap,
         Map((0 until ensembles2.length).zip(contexts2):_*)
@@ -96,11 +96,11 @@ object StackedContextualThompsonSamplingDemo{
 
     def run2(): Unit = {
 
-        val shares = Utilities.runContext[Double, BayesianSampleRegressionContext](ensemble2, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
+        val shares = Utilities.runContext[Double, BayesianSampleRegressionDistribution](ensemble2, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
 
         highIndexMaps.zipWithIndex.map{
             case(highIndexMap, f) => {
-                val selections = Utilities.selectAndAverageContext[Double, BayesianSampleRegressionContext](ensemble2, nModels, highIndexMap, nFeatures,  rnd, 100)
+                val selections = Utilities.selectAndAverageContext[Double, BayesianSampleRegressionDistribution](ensemble2, nModels, highIndexMap, nFeatures,  rnd, 100)
                 Utilities.report(highIndexMap, selections,  nModels, nIter, nFeatures, nGoodModels, shares(f))
             }
         }

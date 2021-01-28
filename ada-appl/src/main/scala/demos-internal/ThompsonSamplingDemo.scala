@@ -11,7 +11,7 @@ import ada.core.components.distributions.{Distribution, BetaDistribution}
 
 import plotting.Chart
 import ada.core.interface.AdaEnsemble
-import ada.core.components.distributions.BayesianSampleRegressionContext
+import ada.core.components.distributions.BayesianSampleRegressionDistribution
 
 
 object ThompsonSamplingDemo{

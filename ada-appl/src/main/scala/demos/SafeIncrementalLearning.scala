@@ -14,7 +14,7 @@ import ada.generators.AutoregressionGenerator
 
 
 import ada.core.components.learners.BayesianSampleLinearRegression
-import ada.core.components.distributions.BayesianSampleRegressionContext
+import ada.core.components.distributions.BayesianSampleRegressionDistribution
 import breeze.stats.distributions.Beta
 import ada.core.components.distributions.MeanDouble
 
@@ -22,7 +22,7 @@ object SafeIncrementalLearning{
     val nIter= 1000000
     //initialise models
     val safeModelPath = "/home/leon/data/onnx/lr_autoregression5.onnx"
-    val safeModel: StackableModelPassive[Int, Array[Array[Float]], Double, BayesianSampleRegressionContext] = new OnnxRegression[Int, Array[Array[Float]], Double, BayesianSampleRegressionContext](safeModelPath, "float_input")
+    val safeModel: StackableModelPassive[Int, Array[Array[Float]], Double, BayesianSampleRegressionDistribution] = new OnnxRegression[Int, Array[Array[Float]], Double, BayesianSampleRegressionDistribution](safeModelPath, "float_input")
 
     val staticModel = new StaticModel[Int, Array[Double], MeanDouble](0.0)
     val models= List(staticModel) ++

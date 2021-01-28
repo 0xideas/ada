@@ -2,28 +2,28 @@ package ada.demos
 
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.components.distributions.PointRegressionContext
+import ada.core.components.distributions.PointRegressionDistribution
 import ada.core.ensembles._
 import ada.core.models.StaticModelContext
 import smile.data.DataFrame
 import smile.data.formula._
 
 import plotting.Chart
-import ada.core.components.distributions.BayesianSampleRegressionContext
+import ada.core.components.distributions.BayesianSampleRegressionDistribution
 
-object PointRegressionContextDemo{
+object PointRegressionDistributionDemo{
 
-    val model0 = new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](0.0)
-    val model1 = new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](1.0)
+    val model0 = new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionDistribution](0.0)
+    val model1 = new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionDistribution](1.0)
 
     val rnd = scala.util.Random
     val initIndependent = DataFrame.of(Array.fill(50, 2){rnd.nextDouble})
     val initTarget =  DataFrame.of((Array.fill(25)(0.0) ++ Array.fill(25)(1.0)).map(Array(_)), "target")
     val initData = initIndependent.merge(initTarget)
-    val regressionContext1 = new PointRegressionContext("target" ~, initData )
-    val regressionContext2 = new PointRegressionContext("target" ~, initData )
+    val regressionContext1 = new PointRegressionDistribution("target" ~, initData )
+    val regressionContext2 = new PointRegressionDistribution("target" ~, initData )
 
-    val ensemble = new ContextualGreedySoftmax[Int, Array[Double], Unit, Double, PointRegressionContext](
+    val ensemble = new ContextualGreedySoftmax[Int, Array[Double], Unit, Double, PointRegressionDistribution](
         Map(0 -> model0, 1 -> model1),
         () => List(0, 1),
         Map(0 -> regressionContext1, 1 -> regressionContext2),

@@ -11,8 +11,8 @@ class ContextualThompsonSampling
     [ModelID, ModelData, ModelAction]
     (models: ModelID  => ContextualModel[ModelID, Array[Double], ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-     modelRewards: Map[ModelID, BayesianSampleRegressionContext])
-    extends ContextualGreedy[ModelID, Array[Double], ModelData, ModelAction, BayesianSampleRegressionContext](
+     modelRewards: Map[ModelID, BayesianSampleRegressionDistribution])
+    extends ContextualGreedy[ModelID, Array[Double], ModelData, ModelAction, BayesianSampleRegressionDistribution](
         models,
         modelKeys,
         modelRewards,
@@ -22,7 +22,7 @@ class ContextualThompsonSampling
 object ContextualThompsonSampling{
     def apply[ModelID, ModelData, ModelAction](
         models: Map[ModelID, ContextualModel[ModelID, Array[Double], ModelData, ModelAction]],
-        modelRewards: Map[ModelID, BayesianSampleRegressionContext]) = {
+        modelRewards: Map[ModelID, BayesianSampleRegressionDistribution]) = {
             new ContextualThompsonSampling[ModelID, ModelData, ModelAction](
                 key => models(key),
                 () => models.keys.toList,

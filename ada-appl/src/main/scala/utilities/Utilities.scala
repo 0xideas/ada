@@ -4,7 +4,7 @@ import ada.core.interface._
 import scala.collection.mutable.{Map => MutableMap}
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.components.distributions.BayesianSampleRegressionContext
+import ada.core.components.distributions.BayesianSampleRegressionDistribution
 import ada.core.ensembles._
 import ada.core.models.StaticModel
 import plotting.Chart

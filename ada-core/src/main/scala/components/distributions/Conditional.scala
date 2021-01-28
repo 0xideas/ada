@@ -11,7 +11,7 @@ import breeze.linalg._
 import ada.core.components.learners.BayesianSampleLinearRegression
 import ada._
 
-class SmileModelContextDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
+class SmileModelConditionalDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
     extends ConditionalDistribution[Context]{
         def draw(context: Context): Double = model.predict(context)
         def update(context: Context, reward: Reward): Unit = {
@@ -22,21 +22,21 @@ class SmileModelContextDistribution[Context <: Array[Double], SmileModel <: Onli
         def export: Json = Json.fromString(model.toString())
 }
 
-class PointRegressionContext(
+class PointRegressionDistribution(
     formula: Formula,
     data: DataFrame,
     method: String = "qr",
     stderr: Boolean = true,
     recursive: Boolean = true)
-    extends SmileModelContextDistribution[Array[Double], LinearModel](
+    extends SmileModelConditionalDistribution[Array[Double], LinearModel](
         lm(formula, data, method, stderr, recursive)
     )
 
-class BayesianSampleRegressionContext(
+class BayesianSampleRegressionDistribution(
     val nfeatures: Int,
     val alpha: Double = 0.3,
     beta: Double = 1.0)
-    extends SmileModelContextDistribution[Array[Double], BayesianSampleLinearRegression](
+    extends SmileModelConditionalDistribution[Array[Double], BayesianSampleLinearRegression](
         new BayesianSampleLinearRegression(nfeatures, alpha, beta)
     )
     with ConditionalDistribution[Array[Double]]{

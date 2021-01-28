@@ -3,7 +3,7 @@ package ada.demos
 import ada.demos.utility.Utilities
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.components.distributions.BayesianSampleRegressionContext
+import ada.core.components.distributions.BayesianSampleRegressionDistribution
 import ada.core.ensembles._
 import ada.core.interface.ContextualModel
 import ada.core.models.{StaticModelContext}
@@ -41,9 +41,9 @@ object BayesianRegressionContextDemo{
     val rnd = scala.util.Random
 
     //initialisation of the ensemble
-    val models: IndexedSeq[ContextualModel[Int,Array[Double],Unit,Double]] = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionContext](x.toDouble * 100000))
+    val models: IndexedSeq[ContextualModel[Int,Array[Double],Unit,Double]] = (0 until nModels).map(x => new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionDistribution](x.toDouble * 100000))
     
-    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionContext(nFeatures, 0.15, 1.0))
+    val contexts = (0 until nModels).map(x => new BayesianSampleRegressionDistribution(nFeatures, 0.15, 1.0))
     val ensemble = ContextualThompsonSampling[Int,  Unit, Double](
         (0 until nModels).zip(models).toMap,
         Map((0 until nModels).zip(contexts):_*)
@@ -52,11 +52,11 @@ object BayesianRegressionContextDemo{
 
     def run(): Unit = {
 
-        val shares = Utilities.runContext[Double, BayesianSampleRegressionContext](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
+        val shares = Utilities.runContext[Double, BayesianSampleRegressionDistribution](ensemble, highIndexMaps, nModels, nIter, nFeatures, 100, rnd, conversionRate)
 
         highIndexMaps.zipWithIndex.map{
             case(highIndexMap, f) => {
-                val selections = Utilities.selectAndAverageContext[Double, BayesianSampleRegressionContext](ensemble, nModels, highIndexMap, nFeatures, rnd, 100)
+                val selections = Utilities.selectAndAverageContext[Double, BayesianSampleRegressionDistribution](ensemble, nModels, highIndexMap, nFeatures, rnd, 100)
                 Utilities.report(highIndexMap, selections,  nModels, nIter, nFeatures, nGoodModels, shares(f))
             }
         }
