@@ -7,6 +7,7 @@ import ada.core.ensembles._
 import ada.core.models.StaticModelContext
 import smile.data.DataFrame
 import smile.data.formula._
+import ada.`package`.Reward
 
 import plotting.Chart
 import ada.core.components.distributions.BayesianSampleRegressionDistribution
@@ -58,15 +59,15 @@ object PointRegressionDistributionDemo{
             }
 
             if(i > 25){
-                ensemble.update(List(0), Array(1.0, 0.0, 1.0), (), 0.49)
-                ensemble.update(List(0), Array(1.0, 1.0, 0.0), (), 0.51)
-                ensemble.update(List(1), Array(1.0, 1.0, 0.0), (), 0.49)
-                ensemble.update(List(1), Array(1.0, 0.0, 1.0), (), 0.51)
+                ensemble.update(List(0), Array(1.0, 0.0, 1.0), (), new Reward(0.49))
+                ensemble.update(List(0), Array(1.0, 1.0, 0.0), (), new Reward(0.51))
+                ensemble.update(List(1), Array(1.0, 1.0, 0.0), (), new Reward(0.49))
+                ensemble.update(List(1), Array(1.0, 0.0, 1.0), (), new Reward(0.51))
             } else {
-                ensemble.update(List(1), Array(1.0, 0.0, 1.0), (), 0.49)
-                ensemble.update(List(1), Array(1.0, 1.0, 0.0), (), 0.51)
-                ensemble.update(List(0), Array(1.0, 1.0, 0.0), (), 0.49)
-                ensemble.update(List(0), Array(1.0, 0.0, 1.0), (), 0.51)
+                ensemble.update(List(1), Array(1.0, 0.0, 1.0), (), new Reward(0.49))
+                ensemble.update(List(1), Array(1.0, 1.0, 0.0), (), new Reward(0.51))
+                ensemble.update(List(0), Array(1.0, 1.0, 0.0), (), new Reward(0.49))
+                ensemble.update(List(0), Array(1.0, 0.0, 1.0), (), new Reward(0.51))
             }
             i += 1
         }
