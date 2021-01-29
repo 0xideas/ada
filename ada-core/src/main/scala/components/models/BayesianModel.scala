@@ -9,8 +9,7 @@ trait BottomModel
 abstract class BayesianLinearRegressionModelAbstract[ModelID, AggregateReward]
     (nfeatures: Int, alpha: Double, beta: Double, evaluationFn: (Double, Double)=>ada.Reward = (a, oA)=>new Reward(math.pow(a-oA, 2)))
     extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta)
-    with StackableModelPassiveBottom[ModelID, Array[Double], Double, AggregateReward]
-    with BottomModel{
+    with StackableModelPassiveBottom[ModelID, Array[Double], Double, AggregateReward]{
     def predict(x: Array[Double]): Double
     def actWithID(data: Array[Double], selectedIds: List[ModelID]): (Double, List[ModelID]) = (predict(data), selectedIds)
     //def update(modelIds: List[ModelID], data: Array[Double], reward: ada.Reward): Unit = ()
@@ -20,13 +19,13 @@ abstract class BayesianLinearRegressionModelAbstract[ModelID, AggregateReward]
 }
 
 
-class BayesianMeanLinearRegressionModel[ModelID, AggregateReward]
+class BayesianMeanRegressionModel[ModelID, AggregateReward]
     (nfeatures: Int, alpha: Double, beta: Double,  evaluationFn: (Double, Double)=>ada.Reward= (a, oA)=>new Reward(math.pow(a-oA, 2)))
     extends BayesianLinearRegressionModelAbstract[ModelID, AggregateReward](nfeatures, alpha, beta, evaluationFn) {
         def predict(x: Array[Double]): Double = predictProb(x).mean
 }
 
-class BayesianSampleLinearRegressionModel[ModelID, AggregateReward]
+class BayesianSampleRegressionModel[ModelID, AggregateReward]
     (nfeatures: Int, alpha: Double, beta: Double,  evaluationFn: (Double, Double)=>ada.Reward= (a, oA)=>new Reward(math.pow(a-oA, 2)))
     extends BayesianLinearRegressionModelAbstract[ModelID, AggregateReward](nfeatures, alpha, beta, evaluationFn) {
         def predict(x: Array[Double]): Double = predictProb(x).sample

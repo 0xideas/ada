@@ -27,7 +27,7 @@ object SafeIncrementalLearning{
 
     val staticModel = new StaticModel[Int, Array[Double], MeanDouble](0.0)
     val models= List(staticModel) ++
-        (0 until 3).map(i => new BayesianMeanLinearRegressionModel[Int, MeanDouble](5, 0.3, 1.0+(i*16))).toList
+        (0 until 3).map(i => new BayesianMeanRegressionModel[Int, MeanDouble](5, 0.3, 1.0+(i*16))).toList
 
     val rewards = (0 until 4).map(i => new MeanDouble)
 

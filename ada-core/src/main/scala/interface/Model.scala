@@ -29,7 +29,6 @@ trait StackableModel[ModelID, ModelData, ModelAction]
 }
 
 
-
 trait ContextualModelPassive[ModelID, Context, ModelData, ModelAction, AggregateReward]
     extends ContextualModel[ModelID, Context, ModelData, ModelAction]{
         def update(context: Context, data: ModelData, optimalAction: ModelAction): Unit

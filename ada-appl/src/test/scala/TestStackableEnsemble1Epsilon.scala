@@ -118,9 +118,9 @@ abstract class TestBasis(label: String, equallyLikely: Boolean) extends Properti
     
     //these are the actual test executions
 
-    testStackableEnsemble1("SDD", 10000, arbitrary[String], arbitrary[Double], arbitrary[Double])
+    //testStackableEnsemble1("SDD", 10000, arbitrary[String], arbitrary[Double], arbitrary[Double])
     testStackableEnsemble1("SII", 10000, arbitrary[String], arbitrary[Int], arbitrary[Int])
-    testStackableEnsemble1("IDIX", 10000, arbitrary[Int], arbitrary[Double], Gen.pick(5, (0 until 1000).toSet))
+    //testStackableEnsemble1("IDIX", 10000, arbitrary[Int], arbitrary[Double], Gen.pick(5, (0 until 1000).toSet))
 
 }
 
