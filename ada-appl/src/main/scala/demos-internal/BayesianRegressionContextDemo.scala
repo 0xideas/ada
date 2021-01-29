@@ -3,10 +3,10 @@ package ada.demos
 import ada.demos.utility.Utilities
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.components.distributions.BayesianSampleRegressionDistribution
-import ada.core.ensembles._
-import ada.core.interface.ContextualModel
-import ada.core.models.{StaticModelContext}
+import ada.components.distributions.BayesianSampleRegressionDistribution
+import ada.ensembles._
+import ada.interface.ContextualModel
+import ada.models.{StaticModelContext}
 
 import io.circe.Json
 

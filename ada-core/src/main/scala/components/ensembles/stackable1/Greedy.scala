@@ -1,12 +1,12 @@
-package ada.core.ensembles
+package ada.ensembles
 
 import breeze.stats.mode
 import io.circe.Json
 
 import ada._
-import ada.core.interface._
-import ada.core.components.selectors._
-import ada.core.components.distributions._
+import ada.interface._
+import ada.components.selectors._
+import ada.components.distributions._
 
 
 abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]

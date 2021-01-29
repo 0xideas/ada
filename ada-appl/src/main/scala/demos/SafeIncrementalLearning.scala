@@ -2,11 +2,11 @@ package ada.demos
 
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
-import ada.core.ensembles.PassiveGreedyEnsemble
-import ada.core.models._
-import ada.core.components.distributions.{Distribution, BetaDistribution}
+import ada.ensembles.PassiveGreedyEnsemble
+import ada.models._
+import ada.components.distributions.{Distribution, BetaDistribution}
 import scala.xml.persistent.Index
-import ada.core.interface._
+import ada.interface._
 import ada.`package`.Reward
 
 import plotting.Chart
@@ -14,16 +14,16 @@ import ada.generators.AutoregressionGenerator
 
 import scala.collection.immutable.SortedMap
 
-import ada.core.components.learners.BayesianSampleLinearRegression
-import ada.core.components.distributions.BayesianSampleRegressionDistribution
+import ada.components.learners.BayesianSampleLinearRegression
+import ada.components.distributions.BayesianSampleRegressionDistribution
 import breeze.stats.distributions.Beta
-import ada.core.components.distributions.MeanDouble
+import ada.components.distributions.MeanDouble
 
 object SafeIncrementalLearning{
     val nIter= 10000
     //initialise models
-    val safeModelPath = "/home/leon/data/onnx/lr_autoregression5.onnx"
-    val safeModel: StackableModelPassive[Int, Array[Array[Float]], Double, BayesianSampleRegressionDistribution] = new OnnxRegression[Int, Array[Array[Float]], Double, BayesianSampleRegressionDistribution](safeModelPath, "float_input")
+    //val safeModelPath = "/home/leon/data/onnx/lr_autoregression5.onnx"
+    //val safeModel: StackableModelPassive[Int, Array[Array[Float]], Double, BayesianSampleRegressionDistribution] = new OnnxRegression[Int, Array[Array[Float]], Double, BayesianSampleRegressionDistribution](safeModelPath, "float_input", d => d)
 
     val staticModel = new StaticModel[Int, Array[Double], MeanDouble](0.0)
     val models= List(staticModel) ++

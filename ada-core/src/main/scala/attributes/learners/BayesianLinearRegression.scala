@@ -1,4 +1,4 @@
-package ada.core.components.learners
+package ada.components.learners
 
 import breeze.linalg._
 import breeze.numerics._

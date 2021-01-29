@@ -1,10 +1,10 @@
-package ada.core.components.selectors
+package ada.components.selectors
 
 import scala.collection.mutable.{Map => MutableMap}
 
 import ada._
-import ada.core.interface._
-import ada.core.components.distributions._
+import ada.interface._
+import ada.components.distributions._
 
 
 
@@ -188,11 +188,11 @@ trait Softmax[ModelID, ModelData, ModelAction]
 trait Exp3[ModelID, ModelData, ModelAction]
     extends SoftmaxSelector[ModelID, ModelData, ModelAction]{
 
-    protected var totalReward: Reward = new Reward(0.0)
+    protected var totalReward = new Reward(0.0)
 
     def _adjustRewards(modelsSorted: List[(ModelID, Reward)], gamma: Double, k: Int): List[(ModelID, Reward)] = {
-        totalReward = new Reward(modelsSorted.map(_._2.value).sum)
-        modelsSorted.map{case(id, reward) => (id, new Reward(((1.0 - gamma) * reward.value/totalReward.value + gamma/k )))}
+        totalReward = new Reward(modelsSorted.map(_._2.value).sum + modelsSorted.length*gamma/k)
+        modelsSorted.map{case(id, reward) => (id, new Reward((1.0 - gamma) * reward.value/totalReward.value + gamma/k ))}
     }
 
     def _actImpl[Context, AggregateReward <: ConditionalDistribution[Context]](

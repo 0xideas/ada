@@ -1,4 +1,4 @@
-package ada.core.components.distributions
+package ada.components.distributions
 
 import smile.regression.{OnlineRegression, LinearModel}
 import smile.regression.lm
@@ -8,7 +8,7 @@ import io.circe.Json
 
 import breeze.linalg._
 
-import ada.core.components.learners.{BayesianSampleLinearRegression, BayesianMeanLinearRegression}
+import ada.components.learners.{BayesianSampleLinearRegression, BayesianMeanLinearRegression}
 import ada._
 
 class SmileModelConditionalDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)

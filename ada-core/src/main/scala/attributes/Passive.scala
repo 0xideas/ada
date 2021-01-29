@@ -1,12 +1,12 @@
-package ada.core.interface
+package ada.interface
 
 import scala.collection.mutable.{Map => MutableMap}
 import io.circe.Json
 
 import ada._
-import ada.core.interface._
-import ada.core.components.distributions._
-import ada.core.components.selectors.Selector
+import ada.interface._
+import ada.components.distributions._
+import ada.components.selectors.Selector
 
 
 trait PassiveEnsemble[ModelData, ModelAction]{

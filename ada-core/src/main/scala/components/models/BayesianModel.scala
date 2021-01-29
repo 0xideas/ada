@@ -1,8 +1,8 @@
-package ada.core.models
+package ada.models
 
-import ada.core.components.distributions._
-import ada.core.components.learners._
-import ada.core.interface._
+import ada.components.distributions._
+import ada.components.learners._
+import ada.interface._
 import ada.`package`.Reward
 trait BottomModel
 

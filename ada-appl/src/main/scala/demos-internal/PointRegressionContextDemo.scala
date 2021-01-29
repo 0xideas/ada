@@ -2,15 +2,15 @@ package ada.demos
 
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.components.distributions.PointRegressionDistribution
-import ada.core.ensembles._
-import ada.core.models.StaticModelContext
+import ada.components.distributions.PointRegressionDistribution
+import ada.ensembles._
+import ada.models.StaticModelContext
 import smile.data.DataFrame
 import smile.data.formula._
 import ada.`package`.Reward
 
 import plotting.Chart
-import ada.core.components.distributions.BayesianSampleRegressionDistribution
+import ada.components.distributions.BayesianSampleRegressionDistribution
 object PointRegressionDistributionDemo{
 
     val model0 = new StaticModelContext[Int, Array[Double], Unit, BayesianSampleRegressionDistribution](0.0)

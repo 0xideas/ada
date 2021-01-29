@@ -3,15 +3,15 @@ package ada.demos
 import scala.collection.mutable.{ListBuffer}
 import ada.demos.utility.Utilities
 
-import ada.core.models.{StaticModel}
-import ada.core.ensembles.{ThompsonSamplingEnsemble}
-import ada.core.components.distributions.BetaDistribution
+import ada.models.{StaticModel}
+import ada.ensembles.{ThompsonSamplingEnsemble}
+import ada.components.distributions.BetaDistribution
 import ada._
-import ada.core.components.distributions.{Distribution, BetaDistribution}
+import ada.components.distributions.{Distribution, BetaDistribution}
 
 import plotting.Chart
-import ada.core.interface.AdaEnsemble
-import ada.core.components.distributions.BayesianSampleRegressionDistribution
+import ada.interface.AdaEnsemble
+import ada.components.distributions.BayesianSampleRegressionDistribution
 
 
 object ThompsonSamplingDemo{

@@ -1,10 +1,10 @@
-package ada.core.ensembles
+package ada.ensembles
 
 
 import ada._
-import ada.core.interface._
-import ada.core.components.selectors._
-import ada.core.components.distributions._
+import ada.interface._
+import ada.components.selectors._
+import ada.components.distributions._
 import breeze.stats.distributions.Beta
 
 class ContextualThompsonSampling

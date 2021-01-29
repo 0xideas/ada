@@ -1,10 +1,10 @@
-package ada.core.components.selectors
+package ada.components.selectors
 
 import scala.collection.mutable.{Map => MutableMap}
 
 import ada._
-import ada.core.interface._
-import ada.core.components.distributions._
+import ada.interface._
+import ada.components.distributions._
 
 
 trait Selector[ModelID, ModelData, ModelAction]{

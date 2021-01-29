@@ -6,14 +6,14 @@ import Gen._
 import Prop._
 import io.circe.Json
 
-import ada.core.components.distributions.MeanDouble
+import ada.components.distributions.MeanDouble
 
-import ada.core.models.{StaticModel, GenericStaticModel}
-import ada.core.ensembles.GreedySoftmaxEnsemble
+import ada.models.{StaticModel, GenericStaticModel}
+import ada.ensembles.GreedySoftmaxEnsemble
 import ada.generators.{ConstantGenerator}
 import ada.generators.Generator
-import ada.core.interface.{AdaEnsemble}
-import ada.core.components.distributions._
+import ada.interface.{AdaEnsemble}
+import ada.components.distributions._
 import _root_.breeze.stats.mode
 
 

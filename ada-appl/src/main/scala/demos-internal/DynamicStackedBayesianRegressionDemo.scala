@@ -3,13 +3,13 @@ package ada.demos
 import ada.demos.utility.Utilities
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.components.distributions.BayesianSampleRegressionDistribution
-import ada.core.ensembles._
-import ada.core.models._
-import ada.core.interface.StackableModel
+import ada.components.distributions.BayesianSampleRegressionDistribution
+import ada.ensembles._
+import ada.models._
+import ada.interface.StackableModel
 
 import plotting.Chart
-import ada.core.components.learners.BayesianSampleLinearRegression
+import ada.components.learners.BayesianSampleLinearRegression
 
 object Hyperparameters{
     val nIter = 1000 * 10

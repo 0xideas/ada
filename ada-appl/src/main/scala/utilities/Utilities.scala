@@ -1,12 +1,12 @@
 package ada.demos.utility
 
-import ada.core.interface._
+import ada.interface._
 import scala.collection.mutable.{Map => MutableMap}
 import scala.collection.mutable.{ListBuffer}
 
-import ada.core.components.distributions.BayesianSampleRegressionDistribution
-import ada.core.ensembles._
-import ada.core.models.StaticModel
+import ada.components.distributions.BayesianSampleRegressionDistribution
+import ada.ensembles._
+import ada.models.StaticModel
 import plotting.Chart
 import ada.`package`.Reward
 

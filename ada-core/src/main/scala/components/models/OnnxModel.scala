@@ -1,10 +1,10 @@
-package ada.core.models
+package ada.models
 
 import ada._
 
 import io.circe.Json
 
-import ada.core.interface._
+import ada.interface._
 
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
@@ -15,7 +15,7 @@ import ai.onnxruntime.OrtUtil
 
 
 
-class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: String, input_name: String)
+class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](path: String, input_name: String, modelActionFn: Double => ModelAction)
     extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{

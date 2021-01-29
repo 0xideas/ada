@@ -1,10 +1,10 @@
-package ada.core.models
+package ada.models
 
 import ada._
 
 import io.circe.Json
 
-import ada.core.interface._
+import ada.interface._
 
 
 

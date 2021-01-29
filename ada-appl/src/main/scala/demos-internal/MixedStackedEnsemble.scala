@@ -3,13 +3,13 @@ package ada.demos
 import ada.demos.utility.Utilities
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
-import ada.core.ensembles.{ThompsonSamplingEnsemble2, ThompsonSamplingEnsemble}
-import ada.core.models._
-import ada.core.components.distributions.{Distribution, BetaDistribution}
+import ada.ensembles.{ThompsonSamplingEnsemble2, ThompsonSamplingEnsemble}
+import ada.models._
+import ada.components.distributions.{Distribution, BetaDistribution}
 import scala.xml.persistent.Index
 import ada.`package`.Reward
-import ada.core.components.learners.BayesianSampleLinearRegression
-import ada.core.components.distributions.BayesianSampleRegressionDistribution
+import ada.components.learners.BayesianSampleLinearRegression
+import ada.components.distributions.BayesianSampleRegressionDistribution
 
 object MixedStackedEnsemble{
     val nModels = 5

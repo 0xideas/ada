@@ -1,4 +1,4 @@
-package ada.core.components.distributions
+package ada.components.distributions
 
 import breeze.stats.distributions.{Beta, Bernoulli}
 import io.circe.Json

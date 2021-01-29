@@ -1,8 +1,8 @@
-package ada.core.components.distributions
+package ada.components.distributions
 
 
 import ada._
-import ada.core.interface.{Model, Exportable, ExportUpdateable, ExportUpdateableContext}
+import ada.interface.{Model, Exportable, ExportUpdateable, ExportUpdateableContext}
 
 sealed trait Distribution extends Exportable
 

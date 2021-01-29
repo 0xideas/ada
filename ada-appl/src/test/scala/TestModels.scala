@@ -9,19 +9,19 @@ import smile.regression.{OnlineRegression, LinearModel}
 import smile.regression.lm
 import smile.data.formula.Formula
 import smile.data.DataFrame
-import ada.core.components.distributions.MeanDouble
+import ada.components.distributions.MeanDouble
 import smile.data.formula._
 import breeze.linalg._
 
-import ada.core.models.{StaticModel, GenericStaticModel}
-import ada.core.ensembles.GreedySoftmaxEnsemble
+import ada.models.{StaticModel, GenericStaticModel}
+import ada.ensembles.GreedySoftmaxEnsemble
 import ada.generators.{ConstantGenerator}
 import ada.generators.Generator
-import ada.core.interface.{AdaEnsemble}
-import ada.core.components.distributions._
+import ada.interface.{AdaEnsemble}
+import ada.components.distributions._
 import _root_.breeze.stats.mode
-import ada.core.interface.StackableModelPassiveBottom
-import ada.core.models._
+import ada.interface.StackableModelPassiveBottom
+import ada.models._
 
 trait hasModelGetter{
     val rnd = scala.util.Random

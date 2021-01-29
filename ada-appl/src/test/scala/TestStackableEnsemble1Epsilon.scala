@@ -7,12 +7,12 @@ import Prop._
 import io.circe.Json
 
 
-import ada.core.models.{StaticModel, GenericStaticModel}
-import ada.core.ensembles.{GreedyEnsemble, GreedySoftmaxEnsemble}
+import ada.models.{StaticModel, GenericStaticModel}
+import ada.ensembles.{GreedyEnsemble, GreedySoftmaxEnsemble}
 import ada.generators.{ConstantGenerator}
 import ada.generators.Generator
-import ada.core.interface.{StackableEnsemble1}
-import ada.core.components.distributions.ExpDouble
+import ada.interface.{StackableEnsemble1}
+import ada.components.distributions.ExpDouble
 import _root_.breeze.stats.mode
 import breeze.util.Index
 

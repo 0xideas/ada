@@ -1,9 +1,9 @@
-package ada.core.interface
+package ada.interface
 
 import scala.collection.mutable.{Map => MutableMap}
 
 import io.circe.Json
-import ada.core.components.distributions.SimpleDistribution
+import ada.components.distributions.SimpleDistribution
 import ada._
 
 trait Exportable{

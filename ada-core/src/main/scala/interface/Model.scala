@@ -1,4 +1,4 @@
-package ada.core.interface
+package ada.interface
 
 import ada._
 

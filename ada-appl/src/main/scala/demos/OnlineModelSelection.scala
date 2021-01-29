@@ -3,10 +3,10 @@ package ada.demos
 import ada.demos.utility.Utilities
 import scala.collection.mutable.ListBuffer
 import scala.io.Source
-import ada.core.ensembles.PassiveThompsonSamplingEnsemble
-import ada.core.ensembles.ThompsonSamplingEnsemble
-import ada.core.models._
-import ada.core.components.distributions.{Distribution, BetaDistribution}
+import ada.ensembles.PassiveThompsonSamplingEnsemble
+import ada.ensembles.ThompsonSamplingEnsemble
+import ada.models._
+import ada.components.distributions.{Distribution, BetaDistribution}
 import scala.xml.persistent.Index
 import ada.`package`.Reward
 
