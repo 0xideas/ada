@@ -67,7 +67,7 @@
 
 AdaEnsemble is a framework for creating adaptive ensembles. An adaptive ensemble consists in a multi armed bandit algorithm that chooses between different machine learning models, and passes the data passed to the ensemble down to the selected machine learning model. The output of the selected model, given the data, is the output of the ensemble. This can be used for online model selection over supervised machine learning models, or as another layer to reinforcement learning algorithms. For broad applications, see this [blog entry](https://leonluithlen.eu/blog/ada-ensemble-three-patterns) on my website.
 
-![](../basic-explanation.jpg)
+![](./basic-explanation.jpg)
 
 ### Built With
 
