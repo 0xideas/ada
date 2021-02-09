@@ -87,7 +87,7 @@ For a brief overview over the classes needed to construct an adaptive ensemble, 
 <!-- LICENSE -->
 ## License
 
-Distributed under the LGPL License. See `LGPL` for more information.
+Distributed under the [LGPL](./LGPL) License.
 
 
 
