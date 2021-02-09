@@ -75,7 +75,7 @@ Distributed under the [LGPL](./LGPL) License.
 <!-- CONTACT -->
 ## Contact
 
-[leon](https://leonluithlen.eu) - [@leontist](https://twitter.com/leontist)
+[leon luithlen](https://leonluithlen.eu) - [@leontist](https://twitter.com/leontist)
 
 Project Link: [https://github.com/leontl/ada-ensemble](https://github.com/leontl/ada-ensemble)
 
