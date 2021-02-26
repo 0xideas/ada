@@ -5,15 +5,16 @@ import scala.collection.mutable.{Map => MutableMap}
 import ada._
 import ada.interface._
 import ada.components.distributions._
-
+import scala.collection.mutable.MutableList
 
 trait Selector[ModelID, ModelData, ModelAction]{
     protected val rnd = new scala.util.Random(101)
+    protected val mask: MutableList[ModelID] = MutableList()
 
     def _sortModel[AggregateReward <: SimpleDistribution](
                  modelKeys: () => List[ModelID],
                  modelRewards: ModelID => AggregateReward): List[(ModelID, Reward)] = {
-        val modelIds = modelKeys()
+        val modelIds = modelKeys().filter(id => if(mask.length == 0) true else mask.contains(id) == false)
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw))
                                         .toList
                                         .sortWith(_._2 > _._2)
@@ -25,7 +26,7 @@ trait Selector[ModelID, ModelData, ModelAction]{
     			  (modelKeys: () => List[ModelID],
                    modelRewards: ModelID => AggregateReward,
                    context: Context): List[(ModelID, Reward)] = {
-        val modelIds = modelKeys()
+        val modelIds = modelKeys().filter(id => if(mask.length == 0) true else mask.contains(id) == false)
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw(context)))
                                         .toList
                                         .sortWith(_._2 > _._2)
@@ -37,8 +38,6 @@ trait Selector[ModelID, ModelData, ModelAction]{
     def _selectModel( aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID
     
 }
-
-
 
 trait SoftmaxSelector[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]{

@@ -13,7 +13,6 @@ object LTree{
                 case LBranch(value, branches) => {
                     if(branches.length > 0) branches.flatMap(branch => inner(branch, acc.map(a => a ++ List(value))))
                     else acc.map(a => a ++ List(value))
-
                 }
                 case LLeaf(value) => acc.map(a => a ++ List(value))
             }

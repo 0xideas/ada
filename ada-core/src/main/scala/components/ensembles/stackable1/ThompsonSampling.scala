@@ -7,7 +7,6 @@ import ada.components.distributions._
 import breeze.stats.distributions.Beta
 
 
-
 class ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
