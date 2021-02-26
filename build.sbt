@@ -1,16 +1,14 @@
 
-
 lazy val root = project.
   in(file(".")).
-  aggregate(core, appl).
+  aggregate(core, priv, appl).
   dependsOn(core).
+  dependsOn(priv).
   settings(commonSettings).
   settings(libraryDependencies ++= dependencies)
 
 
-
-Compile / unmanagedSourceDirectories += baseDirectory.value / "ada-priv"
-Compile / unmanagedSourceDirectories += baseDirectory.value / "ada-appl"
+Compile / scalaSource := baseDirectory.value / "ada-appl/"
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oS")
 
 
@@ -27,19 +25,21 @@ lazy val core = (project.
   settings(commonSettings).
   settings(libraryDependencies ++= dependencies)
 
-lazy val appl = (project.
-  in(file("ada-appl"))).
-  dependsOn(core).
-  settings(name := "ada-appl").
-  settings(commonSettings).
-  settings(libraryDependencies ++= dependencies)
-
 lazy val priv = (project.
   in(file("ada-priv"))).
   dependsOn(core).
   settings(name := "ada-priv").
   settings(commonSettings).
   settings(libraryDependencies ++= dependencies)
+
+lazy val appl = (project.
+  in(file("ada-appl"))).
+  dependsOn(core).
+  dependsOn(priv).
+  settings(name := "ada-appl").
+  settings(commonSettings).
+  settings(libraryDependencies ++= dependencies)
+
 
 //resolvers += Resolver.bintrayRepo("rainier", "maven")
 
