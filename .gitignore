@@ -7,5 +7,7 @@ project/*
 target/*
 src/*
 ada-core/target/*
-ada-appl/target/*
+ada-appl/
 notebooks/*
+ada-priv
+ada-appl

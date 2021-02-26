@@ -69,6 +69,7 @@ trait InertModel[ModelID, ModelData, ModelAction]{
 }
 trait InertModelContext[ModelID, Context, ModelData, ModelAction] extends InertModel[ModelID, ModelData, ModelAction]{
 
-    def update(modelIds: List[ModelID],context: Context,data: ModelData,action: ModelAction): Unit = ()
-    def update(modelIds: List[ModelID],context: Context,data: ModelData,reward: ada.Reward): Unit = ()
+    def update(modelIds: List[ModelID], context: Context, data: ModelData, reward: Reward): Unit = ()
+    //def update(context: Context, data: ModelData, reward: Reward): Unit
+    def update(modelIds: List[ModelID], context: Context, data: ModelData, action: ModelAction): Unit = ()
 }

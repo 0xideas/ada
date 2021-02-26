@@ -13,6 +13,7 @@ class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](priva
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{
 
+    def getValue: ModelAction = value
     def act(data: ModelData): ModelAction = value
 
     def update(value: ModelAction): Unit = this.value = value
@@ -23,6 +24,7 @@ class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](priva
 
     def export: Json = Json.fromFields(Map("value" -> g(value)))
 } 
+
 
 class GenericStaticModelContext[ModelID, Context, ModelData, ModelAction, AggregateReward](private var value: ModelAction)(implicit g: ModelAction => Json)
     extends GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](value)(g)
