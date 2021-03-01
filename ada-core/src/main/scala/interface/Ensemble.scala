@@ -70,6 +70,7 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
         models(modelIds.head).update(modelIds.tail, data, action)
     }
 
+    
 
 }
 

@@ -5,11 +5,11 @@ import scala.collection.mutable.{Map => MutableMap}
 import ada._
 import ada.interface._
 import ada.components.distributions._
-import scala.collection.mutable.MutableList
+import scala.collection.mutable.ListBuffer
 
 trait Selector[ModelID, ModelData, ModelAction]{
     protected val rnd = new scala.util.Random(101)
-    protected val mask: MutableList[ModelID] = MutableList()
+    protected val mask: ListBuffer[ModelID] = ListBuffer()
 
     def _sortModel[AggregateReward <: SimpleDistribution](
                  modelKeys: () => List[ModelID],
@@ -38,6 +38,7 @@ trait Selector[ModelID, ModelData, ModelAction]{
     def _selectModel( aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID
     
 }
+
 
 trait SoftmaxSelector[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]{

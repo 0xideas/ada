@@ -13,7 +13,7 @@ testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oS")
 
 
 lazy val commonSettings = Seq(
-  scalaVersion := "2.12.12",
+  scalaVersion := "2.13.4",
   name := "AdaEnsemble",
   version := "0.1",
   organization := "com.github.leontl"
