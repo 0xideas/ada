@@ -1,14 +1,16 @@
 
-lazy val root = project.
-  in(file(".")).
+lazy val root = (project.
+  in(file("."))).
   aggregate(core, priv, appl).
-  dependsOn(core).
-  dependsOn(priv).
+  dependsOn(core, priv, appl).
   settings(commonSettings).
   settings(libraryDependencies ++= dependencies)
 
+Compile / unmanagedSourceDirectories += baseDirectory.value / "ada-core"
+scalaSource in Compile := baseDirectory.value / "ada-priv/"
 
-Compile / scalaSource := baseDirectory.value / "ada-appl/"
+//Compile / sourceDirectories += baseDirectory.value / "ada-appl/"
+
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oS")
 
 
@@ -34,8 +36,7 @@ lazy val priv = (project.
 
 lazy val appl = (project.
   in(file("ada-appl"))).
-  dependsOn(core).
-  dependsOn(priv).
+  dependsOn(core, priv).
   settings(name := "ada-appl").
   settings(commonSettings).
   settings(libraryDependencies ++= dependencies)
