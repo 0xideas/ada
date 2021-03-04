@@ -10,13 +10,12 @@ import io.circe._
 import io.circe.generic.semiauto._
 import io.circe.syntax._
 
-abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable with Settable]
+abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Exportable]
     (models: ModelID  => Model[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])(implicit modelIdDecoder: Decoder[ModelID])
     extends Model[ModelData, ModelAction]
-    with ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    with Settable{
+    with ExportableEnsemble[ModelID, ModelData, ModelAction, AggregateReward]{
 
     def models(): Map[ModelID, Model[ModelData, ModelAction]] = modelKeys().map(id => (id, models(id))).toMap
     def modelRewards(): Map[ModelID, AggregateReward] = modelRewards
@@ -38,7 +37,7 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: E
     }
 }
 
-abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable with Settable]
+abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]
     (models: ModelID  => SimpleModel[ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])(implicit modelIdDecoder: Decoder[ModelID])
@@ -52,7 +51,7 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
 
 }
 
-abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[Context] with Settable]
+abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[Context]]
     (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])(implicit modelIdDecoder: Decoder[ModelID])
@@ -71,7 +70,7 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 }
 
 
-abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable with Settable](
+abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])(implicit modelIdDecoder: Decoder[ModelID])
@@ -93,7 +92,7 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
 
 }
 
-abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData] with Settable](
+abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData]](
     models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
     modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward])(implicit modelIdDecoder: Decoder[ModelID])

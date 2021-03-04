@@ -12,8 +12,7 @@ import io.circe.generic.semiauto._
 import io.circe.syntax._
 
 abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double)
-    extends OnlineRegression[Array[Double]]
-    with Settable{
+    extends OnlineRegression[Array[Double]]{
     private var _beta: Double = beta
     private var mean = DenseVector.zeros[Double](nfeatures)
     private var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)

@@ -4,7 +4,7 @@ import ada._
 
 import io.circe.Json
 
-trait Model[ModelData, ModelAction] extends Exportable with Settable{
+trait Model[ModelData, ModelAction] extends Exportable{
     def report: String = this.toString
 }
 

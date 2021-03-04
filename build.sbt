@@ -74,3 +74,4 @@ lazy val dependencies = Seq(
 
 
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "1")
+mainClass in (Compile, run) := Some("ada.demos.Main")

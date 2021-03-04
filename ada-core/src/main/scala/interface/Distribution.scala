@@ -9,8 +9,7 @@ sealed trait Distribution extends Exportable
 trait SimpleDistribution 
     extends Distribution
     with Model[Unit, Double]
-    with ExportUpdateable
-    with Settable{
+    with ExportUpdateable{
     def draw: Double
     def update(reward: Reward): Unit
 
@@ -20,8 +19,7 @@ trait SimpleDistribution
 trait ConditionalDistribution[Context]
     extends Distribution
     with Model[Context, Double]
-    with ExportUpdateableContext[Context]
-    with Settable{
+    with ExportUpdateableContext[Context]{
     def draw(context: Context): Double
     def update(context: Context, reward: Reward): Unit
 
