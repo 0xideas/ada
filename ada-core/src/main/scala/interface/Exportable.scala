@@ -6,7 +6,13 @@ import io.circe.Json
 import ada.components.distributions.SimpleDistribution
 import ada._
 
-trait Exportable{
+trait Settable{
+    def setParameters(parameters: Json): Unit
+}
+
+
+trait Exportable
+    extends Settable{
     def export: Json
 }
 

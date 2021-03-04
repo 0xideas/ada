@@ -7,6 +7,7 @@ import ada._
 import ada.interface._
 import ada.components.selectors._
 import ada.components.distributions._
+import io.circe.Decoder
 
 
 abstract class ContextualGreedyAbstract
@@ -15,7 +16,7 @@ abstract class ContextualGreedyAbstract
     (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
-    epsilon: Double)
+    epsilon: Double)(implicit modelIdDecoder: Decoder[ModelID])
     extends ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with ContextualActor[ModelID, Context, ModelData, ModelAction]{
 
@@ -31,7 +32,7 @@ class ContextualGreedy
     (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
-    epsilon: Double)
+    epsilon: Double)(implicit modelIdDecoder: Decoder[ModelID])
     extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with GreedyRandom[ModelID, ModelData, ModelAction]
 

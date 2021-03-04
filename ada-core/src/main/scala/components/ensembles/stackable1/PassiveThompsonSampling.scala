@@ -5,7 +5,7 @@ import ada.interface._
 import ada.components.selectors._
 import ada.components.distributions._
 import breeze.stats.distributions.Beta
-
+import io.circe.Decoder
 
 
 class PassiveThompsonSamplingEnsemble
@@ -13,7 +13,7 @@ class PassiveThompsonSamplingEnsemble
     (models: ModelID  => StackableModelPassive[ModelID, ModelData, ModelAction, Distr],
      modelKeys: () => List[ModelID],
      modelRewards: Map[ModelID, Distr],
-    evaluateFn: (ModelAction, ModelAction) => Reward)
+    evaluateFn: (ModelAction, ModelAction) => Reward)(implicit modelIdDecoder: Decoder[ModelID])
     extends GreedyEnsemble[ModelID, ModelData, ModelAction, Distr](
         models,
         modelKeys,

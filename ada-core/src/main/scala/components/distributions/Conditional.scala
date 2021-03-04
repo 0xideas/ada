@@ -5,7 +5,7 @@ import smile.regression.lm
 import smile.data.formula.Formula
 import smile.data.DataFrame
 import io.circe.Json
-
+import ada.interface.Settable
 import breeze.linalg._
 
 import ada.components.learners.{BayesianSampleLinearRegression, BayesianMeanLinearRegression}
@@ -20,6 +20,12 @@ class SmileModelConditionalDistribution[Context <: Array[Double], SmileModel <: 
             }
         } 
         def export: Json = Json.fromString(model.toString())
+        def setParameters(parameters: Json): Unit = {
+            model match {
+                case m: Settable => m.setParameters(parameters)
+                case(_) => {println("model not Settable"); ()}
+            }
+        } 
 }
 
 class PointRegressionDistribution(
@@ -49,7 +55,7 @@ class BayesianSampleRegressionDistribution(
 
         def setParameters(mean: Array[Double], covInv: Array[Double]): Unit = {
             model.set(DenseVector(mean), DenseMatrix(covInv).reshape(nfeatures, nfeatures))
-        } 
+        }
 
     }
 

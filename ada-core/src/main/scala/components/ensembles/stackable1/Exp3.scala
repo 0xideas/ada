@@ -7,16 +7,16 @@ import ada._
 import ada.interface._
 import ada.components.selectors._
 import ada.components.distributions._
-
+import io.circe.Decoder
 
 class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Reward]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
-    gamma: Double)
+    gamma: Double)(implicit modelIdDecoder: Decoder[ModelID])
     extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with Exp3[ModelID, ModelData, ModelAction]{
-
+    
     private var k: Int = modelKeys().length
 
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
@@ -30,7 +30,4 @@ class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Rewar
         models(modelIds.head).update(modelIds.tail, data, reward)
     }
 }
-
-
-
 

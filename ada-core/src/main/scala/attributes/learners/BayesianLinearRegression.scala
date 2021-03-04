@@ -4,12 +4,16 @@ import breeze.linalg._
 import breeze.numerics._
 import breeze.stats.distributions.{Gaussian, MultivariateGaussian}
 import smile.regression.{OnlineRegression, LinearModel}
-import io.circe.Json
-import scala.language.implicitConversions
 
+import scala.language.implicitConversions
+import ada.interface.Settable
+import io.circe._
+import io.circe.generic.semiauto._
+import io.circe.syntax._
 
 abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double)
-    extends OnlineRegression[Array[Double]]{
+    extends OnlineRegression[Array[Double]]
+    with Settable{
     private var _beta: Double = beta
     private var mean = DenseVector.zeros[Double](nfeatures)
     private var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
@@ -17,6 +21,10 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
     private var w_cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
 
     implicit def toVector(array: Array[Double]): DenseVector[Double] = DenseVector(array:_*)
+
+    private case class Update(mean: Array[Double], covInv: Array[Double])
+    private implicit val updateDecoder: Decoder[Update] = deriveDecoder[Update]
+    private implicit val updateEncoder: Encoder[Update] = deriveEncoder[Update]
 
     def beta(): Double = _beta
 
@@ -60,6 +68,16 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
     def set(mean: DenseVector[Double], covInv: DenseMatrix[Double]): Unit = {
         setMean(mean)
         setCovInv(covInv)
+    }
+    def setParameters(parameters: Json): Unit = {
+        val pars = parameters.as[Update]
+        pars match {
+            case Right(Update(meanV, covInvV)) => {
+                setMean(DenseVector(meanV))
+                setCovInv(DenseMatrix(covInvV).reshape(nfeatures, nfeatures))
+            }
+            case Left(decodingFailure) => println(decodingFailure)
+        }
     }
 
     def export: Json = Json.fromFields(Map(

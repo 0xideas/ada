@@ -1,17 +1,17 @@
 package ada.ensembles
 
-
 import ada._
 import ada.interface._
 import ada.components.selectors._
 import ada.components.distributions._
 import breeze.stats.distributions.Beta
+import io.circe.Decoder
 
 class ContextualThompsonSampling
     [ModelID, ModelData, ModelAction]
     (models: ModelID  => ContextualModel[ModelID, Array[Double], ModelData, ModelAction],
      modelKeys: () => List[ModelID],
-     modelRewards: Map[ModelID, BayesianSampleRegressionDistribution])
+     modelRewards: Map[ModelID, BayesianSampleRegressionDistribution])(implicit modelIdDecoder: Decoder[ModelID])
     extends ContextualGreedy[ModelID, Array[Double], ModelData, ModelAction, BayesianSampleRegressionDistribution](
         models,
         modelKeys,
@@ -22,7 +22,7 @@ class ContextualThompsonSampling
 object ContextualThompsonSampling{
     def apply[ModelID, ModelData, ModelAction](
         models: Map[ModelID, ContextualModel[ModelID, Array[Double], ModelData, ModelAction]],
-        modelRewards: Map[ModelID, BayesianSampleRegressionDistribution]) = {
+        modelRewards: Map[ModelID, BayesianSampleRegressionDistribution])(implicit modelIdDecoder: Decoder[ModelID]) = {
             new ContextualThompsonSampling[ModelID, ModelData, ModelAction](
                 key => models(key),
                 () => models.keys.toList,
