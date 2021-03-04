@@ -8,6 +8,7 @@ import ada.interface.Settable
 import io.circe._
 import io.circe.generic.semiauto._
 import io.circe.syntax._
+import io.circe.parser.decode
 
 class BetaDistribution (private var alpha: Double, private var beta: Double, learningRate: Double = 1.0)
     extends SimpleDistribution
@@ -38,10 +39,7 @@ class BetaDistribution (private var alpha: Double, private var beta: Double, lea
         }
     }
 
-    def export: Json = Json.fromFields(Map(
-        "alpha" -> Json.fromDouble(alpha).get,
-        "beta" -> Json.fromDouble(beta).get
-    ))
+    def export: Json = Update(alpha, beta).asJson
 
     def setParameters(parameters: Json): Unit = {
         val pars = parameters.as[Update]
@@ -62,11 +60,7 @@ class MeanDouble extends SimpleDistribution with Settable{
     private var i = 1.0
     private var value = 0.0
 
-    private case class Update(iterations: Double, value: Double)
-    private implicit val updateDecoder: Decoder[Update] = deriveDecoder[Update]
-    private implicit val updateEncoder: Encoder[Update] = deriveEncoder[Update]
 
-    def export: Json = Json.fromDouble(value).get
     def draw: Double = value
     def update(reward: Reward): Unit = {
         val oldValue = value
@@ -75,13 +69,12 @@ class MeanDouble extends SimpleDistribution with Settable{
             i+=1.0
         }
     }
+
+    def export: Json =  Json.fromDouble(value).get
+
     def setParameters(parameters: Json): Unit = {
-        val pars = parameters.as[Update]
-        pars match {
-            case Right(Update(iterationsV, valueV)) => {
-                i = iterationsV
-                value = valueV
-            }
+        decode[Double](parameters.toString) match {
+            case Right(valueV) => {value = valueV; ()}
             case Left(decodingFailure) => println(decodingFailure)
         }
     }
@@ -89,9 +82,9 @@ class MeanDouble extends SimpleDistribution with Settable{
 
 
 
-class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends SimpleDistribution{
+class Exp3Reward(private var value: Double, private var gamma: Double, private var k: Int) extends SimpleDistribution{
 
-    private case class Update(value: Double)
+    private case class Update(value: Double, gamma: Double, k: Int)
     private implicit val updateDecoder: Decoder[Update] = deriveDecoder[Update]
     private implicit val updateEncoder: Encoder[Update] = deriveEncoder[Update]
 
@@ -103,16 +96,12 @@ class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends Simpl
         }
     }
 
-    def export: Json = Json.fromFields(Map(
-        "value" -> Json.fromDouble(value).get,
-        "gamma" -> Json.fromDouble(gamma).get,
-        "k" -> Json.fromInt(k)
-    ))
+    def export: Json = Update(value, gamma, k).asJson
 
     def setParameters(parameters: Json): Unit = {
         val pars = parameters.as[Update]
         pars match {
-            case Right(Update(valueV)) => {value = valueV}
+            case Right(Update(valueV, gammaV, kV)) => {value = valueV; gamma = gammaV; k = kV;}
             case Left(decodingFailure) => println(decodingFailure)
         }
     }
@@ -125,17 +114,15 @@ class Exp3Reward(private var value: Double, gamma: Double, k: Int) extends Simpl
 
 class ExpDouble(private var value: Double) extends SimpleDistribution {
     private case class Update(value: Double)
-    private implicit val updateDecoder: Decoder[Update] = deriveDecoder[Update]
-    private implicit val updateEncoder: Encoder[Update] = deriveEncoder[Update]
 
     def export: Json = Json.fromDouble(value).get
     def draw: Double = value
     def update(reward: Reward): Unit = {if(!(reward.value.isInfinite || reward.value.isNaN() )){value = reward.value}; ()}
 
+
     def setParameters(parameters: Json): Unit = {
-        val pars = parameters.as[Update]
-        pars match {
-            case Right(Update(valueV)) => {value = valueV}
+        decode[Double](parameters.toString) match {
+            case Right(valueV) => {value = valueV; ()}
             case Left(decodingFailure) => println(decodingFailure)
         }
     }

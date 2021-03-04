@@ -11,9 +11,8 @@ import io.circe._
 import io.circe.generic.semiauto._
 import io.circe.syntax._
 
-abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, beta: Double)
+abstract class BayesianLinearRegressionAbstract(private var nfeatures: Int, private var alpha: Double, private var beta: Double)
     extends OnlineRegression[Array[Double]]{
-    private var _beta: Double = beta
     private var mean = DenseVector.zeros[Double](nfeatures)
     private var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
     private var cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
@@ -21,11 +20,11 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
 
     implicit def toVector(array: Array[Double]): DenseVector[Double] = DenseVector(array:_*)
 
-    private case class Update(mean: Array[Double], covInv: Array[Double])
+    private case class Update(nfeatures: Int, alpha: Double, beta: Double, mean: Array[Double], covInv: Array[Double])
     private implicit val updateDecoder: Decoder[Update] = deriveDecoder[Update]
     private implicit val updateEncoder: Encoder[Update] = deriveEncoder[Update]
 
-    def beta(): Double = _beta
+    def getBeta() = beta
 
     def update(x: Array[Double], y: Double): Unit = {
         if(!(y.isInfinite || y.isNaN() )){
@@ -71,26 +70,24 @@ abstract class BayesianLinearRegressionAbstract(nfeatures: Int, alpha: Double, b
     def setParameters(parameters: Json): Unit = {
         val pars = parameters.as[Update]
         pars match {
-            case Right(Update(meanV, covInvV)) => {
+            case Right(Update(nfeaturesV, alphaV, betaV, meanV, covInvV)) => {
+                nfeatures = nfeaturesV
+                alpha = alphaV
+                beta = betaV
                 setMean(DenseVector(meanV))
                 setCovInv(DenseMatrix(covInvV).reshape(nfeatures, nfeatures))
+
             }
             case Left(decodingFailure) => println(decodingFailure)
         }
     }
 
-    def export: Json = Json.fromFields(Map(
-        "nfeatures" -> Json.fromInt(nfeatures),
-        "alpha" -> Json.fromDouble(alpha).get,
-        "beta" -> Json.fromDouble(beta).get,
-        "mean" -> Json.fromValues(mean.map(a => Json.fromDouble(a).get).toArray),
-        "covInv" -> Json.fromValues(covInv.map(c => Json.fromDouble(c).get).toArray)
-    ))
+    def export: Json = Update(nfeatures, alpha, beta, mean.toArray, covInv.toArray).asJson
 
     def changeBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
         val newBeta = math.min((beta+increment)*factor, max)
         println(newBeta)
-        this._beta = newBeta
+        beta = newBeta
     }
 }
 

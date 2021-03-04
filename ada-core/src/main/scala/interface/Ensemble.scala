@@ -35,6 +35,7 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: E
             case Left(decodingFailure) => println(decodingFailure)
         }
     }
+
 }
 
 abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]

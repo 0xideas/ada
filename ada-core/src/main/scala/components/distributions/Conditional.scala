@@ -11,7 +11,8 @@ import breeze.linalg._
 import ada.components.learners.{BayesianSampleLinearRegression, BayesianMeanLinearRegression}
 import ada._
 
-class SmileModelConditionalDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
+//this will be removed
+abstract class SmileModelConditionalDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
     extends ConditionalDistribution[Context]{
         def draw(context: Context): Double = model.predict(context)
         def update(context: Context, reward: Reward): Unit = {
@@ -19,7 +20,6 @@ class SmileModelConditionalDistribution[Context <: Array[Double], SmileModel <: 
                 model.update(context, reward.value)
             }
         } 
-        def export: Json = Json.fromString(model.toString())
         def setParameters(parameters: Json): Unit = {
             model match {
                 case m: Settable => m.setParameters(parameters)
@@ -36,7 +36,9 @@ class PointRegressionDistribution(
     recursive: Boolean = true)
     extends SmileModelConditionalDistribution[Array[Double], LinearModel](
         lm(formula, data, method, stderr, recursive)
-    )
+    ){
+        def export: Json = Json.fromString(model.toString())
+    }
 
 
 class BayesianSampleRegressionDistribution(
@@ -51,11 +53,7 @@ class BayesianSampleRegressionDistribution(
         def setBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
             model.changeBeta(increment, factor, max)
         }
-        def beta(): Double = model.beta
-
-        def setParameters(mean: Array[Double], covInv: Array[Double]): Unit = {
-            model.set(DenseVector(mean), DenseMatrix(covInv).reshape(nfeatures, nfeatures))
-        }
+        def beta(): Double = model.getBeta
 
     }
 
@@ -72,10 +70,5 @@ class BayesianMeanRegressionDistribution(
         def setBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
             model.changeBeta(increment, factor, max)
         }
-        def beta(): Double = model.beta
-
-        def setParameters(mean: Array[Double], covInv: Array[Double]): Unit = {
-            model.set(DenseVector(mean), DenseMatrix(covInv).reshape(nfeatures, nfeatures))
-        } 
-
+        def beta(): Double = model.getBeta
     }
