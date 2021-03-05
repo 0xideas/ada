@@ -18,7 +18,6 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     def models(): Map[ModelID, Model[ModelData, ModelAction]] = modelKeys().map(id => (id, models(id))).toMap
     def modelRewards(): Map[ModelID, AggregateReward] = modelRewards
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
-
 }
 
 abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]

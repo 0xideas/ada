@@ -11,11 +11,11 @@ class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Rewar
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
-    gamma: Double)
+    var gamma: Double)
     extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with Exp3[ModelID, ModelData, ModelAction]{
     
-    private var k: Int = modelKeys().length
+    var k: Int = modelKeys().length
 
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
         _actImpl[AggregateReward](models, modelKeys, modelRewards , 1.0, data, selectedIds, gamma, k)
