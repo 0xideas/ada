@@ -15,7 +15,10 @@ import ai.onnxruntime.OrtUtil
 
 
 
-class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](val path: String, input_name: String, modelActionFn: Double => ModelAction)
+class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](
+    val path: String,
+    input_name: String,
+    modelActionFn: Double => ModelAction)
     extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{

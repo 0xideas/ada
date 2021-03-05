@@ -8,7 +8,7 @@ import ada.interface._
 
 
 
-class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](protected[models] var value: ModelAction)
+class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](var value: ModelAction)
     extends StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]
     with SimpleModel[ModelData, ModelAction]
     with InertModel[ModelID, ModelData, ModelAction]{
