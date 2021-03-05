@@ -2,9 +2,9 @@ package ada.components.distributions
 
 
 import ada._
-import ada.interface.{Model, Exportable, ExportUpdateable, ExportUpdateableContext, Settable}
+import ada.interface.{Model, ExportUpdateable, ExportUpdateableContext}
 
-sealed trait Distribution extends Exportable
+sealed trait Distribution
 
 trait SimpleDistribution 
     extends Distribution

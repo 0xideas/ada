@@ -1,26 +1,18 @@
 package ada.components.distributions
 
 import breeze.stats.distributions.{Beta, Bernoulli}
-import io.circe.Json
 
 import ada._
-import ada.interface.Settable
-import io.circe._
-import io.circe.generic.semiauto._
-import io.circe.syntax._
-import io.circe.parser.decode
 
-class BetaDistribution (private var alpha: Double, private var beta: Double, learningRate: Double = 1.0)
-    extends SimpleDistribution
-    with Settable{
-    private var betaDistribution = Beta(alpha, beta)
+
+class BetaDistribution (protected[distributions] var alpha: Double,
+                        protected[distributions] var beta: Double,
+                        protected[distributions] var learningRate: Double = 1.0)
+    extends SimpleDistribution{
+    protected[distributions] var betaDistribution = Beta(alpha, beta)
     override def toString: String = {
         f"alpha: $alpha beta: $beta"
     }
-
-    private case class Update(alpha: Double, beta: Double)
-    private implicit val updateDecoder: Decoder[Update] = deriveDecoder[Update]
-    private implicit val updateEncoder: Encoder[Update] = deriveEncoder[Update]
 
     def draw = betaDistribution.draw()
 
@@ -39,27 +31,13 @@ class BetaDistribution (private var alpha: Double, private var beta: Double, lea
         }
     }
 
-    def export: Json = Update(alpha, beta).asJson
-
-    def setParameters(parameters: Json): Unit = {
-        val pars = parameters.as[Update]
-        pars match {
-            case Right(Update(alphaV, betaV)) => {
-                alpha = alpha
-                beta = betaV
-                betaDistribution = Beta(alpha, beta)
-            }
-            case Left(decodingFailure) => println(decodingFailure)
-        }
-    }
 }
 
 
 
-class MeanDouble extends SimpleDistribution with Settable{
-    private var i = 1.0
-    private var value = 0.0
-
+class MeanDouble extends SimpleDistribution{
+    protected[distributions] var i = 1.0
+    protected[distributions] var value = 0.0
 
     def draw: Double = value
     def update(reward: Reward): Unit = {
@@ -70,23 +48,13 @@ class MeanDouble extends SimpleDistribution with Settable{
         }
     }
 
-    def export: Json =  Json.fromDouble(value).get
-
-    def setParameters(parameters: Json): Unit = {
-        decode[Double](parameters.toString) match {
-            case Right(valueV) => {value = valueV; ()}
-            case Left(decodingFailure) => println(decodingFailure)
-        }
-    }
 }
 
 
 
-class Exp3Reward(private var value: Double, private var gamma: Double, private var k: Int) extends SimpleDistribution{
-
-    private case class Update(value: Double, gamma: Double, k: Int)
-    private implicit val updateDecoder: Decoder[Update] = deriveDecoder[Update]
-    private implicit val updateEncoder: Encoder[Update] = deriveEncoder[Update]
+class Exp3Reward(protected[distributions] var value: Double,
+                protected[distributions] var gamma: Double,
+                protected[distributions] var k: Int) extends SimpleDistribution{
 
     def draw: Double = value
 
@@ -95,37 +63,16 @@ class Exp3Reward(private var value: Double, private var gamma: Double, private v
             value = value * math.exp(gamma* reward.value/(k))
         }
     }
-
-    def export: Json = Update(value, gamma, k).asJson
-
-    def setParameters(parameters: Json): Unit = {
-        val pars = parameters.as[Update]
-        pars match {
-            case Right(Update(valueV, gammaV, kV)) => {value = valueV; gamma = gammaV; k = kV;}
-            case Left(decodingFailure) => println(decodingFailure)
-        }
-    }
-
 }
 
 
 
 //TEST
 
-class ExpDouble(private var value: Double) extends SimpleDistribution {
-    private case class Update(value: Double)
-
-    def export: Json = Json.fromDouble(value).get
+class ExpDouble(protected[distributions] var value: Double) extends SimpleDistribution {
     def draw: Double = value
     def update(reward: Reward): Unit = {if(!(reward.value.isInfinite || reward.value.isNaN() )){value = reward.value}; ()}
 
-
-    def setParameters(parameters: Json): Unit = {
-        decode[Double](parameters.toString) match {
-            case Right(valueV) => {value = valueV; ()}
-            case Left(decodingFailure) => println(decodingFailure)
-        }
-    }
 }
 
 object ExpDouble{

@@ -1,19 +1,17 @@
 package ada.ensembles
 
 import breeze.stats.mode
-import io.circe.Json
 
 import ada._
 import ada.interface._
 import ada.components.selectors._
 import ada.components.distributions._
-import io.circe.Decoder
 
 class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Reward]
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
-    gamma: Double)(implicit modelIdDecoder: Decoder[ModelID])
+    gamma: Double)
     extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
     with Exp3[ModelID, ModelData, ModelAction]{
     

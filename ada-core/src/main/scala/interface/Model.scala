@@ -2,9 +2,8 @@ package ada.interface
 
 import ada._
 
-import io.circe.Json
 
-trait Model[ModelData, ModelAction] extends Exportable{
+trait Model[ModelData, ModelAction]{
     def report: String = this.toString
 }
 
@@ -65,8 +64,8 @@ trait InertModel[ModelID, ModelData, ModelAction]{
     def update(reward: Reward): Unit =  ()
     def update(data: ModelData, action: ModelAction): Unit = ()
     def evaluate(action: ModelAction, optimalAction: ModelAction): ada.Reward = new Reward(0.0)
-    def setParameters(parameters: Json): Unit = ()
 }
+
 trait InertModelContext[ModelID, Context, ModelData, ModelAction] extends InertModel[ModelID, ModelData, ModelAction]{
 
     def update(modelIds: List[ModelID], context: Context, data: ModelData, reward: Reward): Unit = ()

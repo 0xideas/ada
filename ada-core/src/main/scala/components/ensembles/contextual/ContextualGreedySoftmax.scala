@@ -7,7 +7,6 @@ import ada._
 import ada.interface._
 import ada.components.selectors._
 import ada.components.distributions._
-import io.circe.Decoder
 
 
 class ContextualGreedySoftmax
@@ -16,7 +15,7 @@ class ContextualGreedySoftmax
     (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
-    epsilon: Double)(implicit modelIdDecoder: Decoder[ModelID])
+    epsilon: Double)
     extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with GreedySoftmax[ModelID, ModelData, ModelAction]{
 

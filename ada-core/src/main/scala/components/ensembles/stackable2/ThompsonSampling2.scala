@@ -7,7 +7,6 @@ import ada._
 import ada.interface._
 import ada.components.selectors._
 import ada.components.distributions._
-import io.circe.Decoder
 
 
 
@@ -16,7 +15,7 @@ class ThompsonSamplingEnsemble2
     [ModelID, ModelAction]
     (models: ModelID  => StackableModel[ModelID, Array[Double], ModelAction],
      modelKeys: () => List[ModelID],
-     modelRewards: Map[ModelID, BayesianSampleRegressionDistribution])(implicit modelIdDecoder: Decoder[ModelID])
+     modelRewards: Map[ModelID, BayesianSampleRegressionDistribution])
     extends GreedyEnsemble2[ModelID, Array[Double], ModelAction, BayesianSampleRegressionDistribution](
         models,
         modelKeys,
@@ -28,7 +27,7 @@ class ThompsonSamplingEnsemble2
 object ThompsonSamplingEnsemble2{
     def apply[ModelID, ModelAction](
      models: Map[ModelID, StackableModel[ModelID, Array[Double], ModelAction]],
-     modelRewards: Map[ModelID, BayesianSampleRegressionDistribution])(implicit modelIdDecoder: Decoder[ModelID]) = {
+     modelRewards: Map[ModelID, BayesianSampleRegressionDistribution]) = {
          new ThompsonSamplingEnsemble2[ModelID, ModelAction](
              key => models(key),
              () => models.keys.toList,
