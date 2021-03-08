@@ -6,9 +6,12 @@ import breeze.stats.distributions.{Gaussian, MultivariateGaussian}
 import smile.regression.{OnlineRegression, LinearModel}
 
 import scala.language.implicitConversions
+import ada.components.distributions.ConditionalDistribution
+import ada.`package`.Reward
 
 abstract class BayesianLinearRegressionAbstract(protected[components] var nfeatures: Int, protected[components] var alpha: Double, protected[components] var beta: Double)
-    extends OnlineRegression[Array[Double]]{
+    extends OnlineRegression[Array[Double]]
+    with ConditionalDistribution[Array[Double]]{
     protected[components] var mean = DenseVector.zeros[Double](nfeatures)
     protected[components] var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
     protected[components] var cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
@@ -65,6 +68,10 @@ abstract class BayesianLinearRegressionAbstract(protected[components] var nfeatu
         println(newBeta)
         beta = newBeta
     }
+    def update(context: Array[Double], reward: Reward): Unit = update(context, reward)
+    def predict(x: Array[Double]): Double 
+    def draw(context: Array[Double]): Double = predict(context)
+
 }
 
 
@@ -77,6 +84,7 @@ class BayesianSampleLinearRegression(nfeatures: Int, alpha: Double, beta: Double
 class BayesianMeanLinearRegression(nfeatures: Int, alpha: Double, beta: Double)
     extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta){
     def predict(x: Array[Double]): Double = predictProb(x).mean
+
 }
 
 
