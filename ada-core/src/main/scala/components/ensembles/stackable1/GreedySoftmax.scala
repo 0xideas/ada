@@ -12,7 +12,7 @@ class GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
-    epsilon: Double)
+    var epsilon: Double)
     extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with GreedySoftmax[ModelID, ModelData, ModelAction]
 

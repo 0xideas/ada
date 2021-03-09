@@ -9,13 +9,13 @@ import scala.language.implicitConversions
 import ada.components.distributions.ConditionalDistribution
 import ada.`package`.Reward
 
-abstract class BayesianLinearRegressionAbstract(protected[components] var nfeatures: Int, protected[components] var alpha: Double, protected[components] var beta: Double)
+abstract class BayesianLinearRegressionAbstract(protected[ada] var nfeatures: Int, protected[ada] var alpha: Double, protected[ada] var beta: Double)
     extends OnlineRegression[Array[Double]]
     with ConditionalDistribution[Array[Double]]{
-    protected[components] var mean = DenseVector.zeros[Double](nfeatures)
-    protected[components] var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
-    protected[components] var cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
-    protected[components] var w_cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
+    protected[ada] var mean = DenseVector.zeros[Double](nfeatures)
+    protected[ada] var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
+    protected[ada] var cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
+    protected[ada] var w_cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
 
     implicit def toVector(array: Array[Double]): DenseVector[Double] = DenseVector(array:_*)
 

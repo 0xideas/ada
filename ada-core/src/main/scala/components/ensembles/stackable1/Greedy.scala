@@ -28,7 +28,7 @@ class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleD
     (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
      modelKeys: () => List[ModelID],
     modelRewards: Map[ModelID, AggregateReward],
-    epsilon: Double)
+    var epsilon: Double)
     extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
     with GreedyRandom[ModelID, ModelData, ModelAction]
 
