@@ -12,11 +12,10 @@ import ada.components.distributions._
 class ContextualGreedySoftmax
 	[ModelID, Context, ModelData, ModelAction,
 	 AggregateReward <: ConditionalDistribution[Context]]
-    (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, ContextualModel[ModelID, Context, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
-    extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
+    extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards, epsilon)
     with GreedySoftmax[ModelID, ModelData, ModelAction]{
 
 }

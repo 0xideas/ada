@@ -9,10 +9,9 @@ import ada.components.distributions._
 
 
 class GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward],
-    var epsilon: Double)
-    extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
+    protected[ada] var epsilon: Double)
+    extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models,  modelRewards, epsilon)
     with GreedySoftmax[ModelID, ModelData, ModelAction]
 

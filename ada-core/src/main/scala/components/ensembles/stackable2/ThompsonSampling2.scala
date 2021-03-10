@@ -13,12 +13,10 @@ import ada.components.distributions._
 
 class ThompsonSamplingEnsemble2
     [ModelID, ModelAction]
-    (models: ModelID  => StackableModel[ModelID, Array[Double], ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, StackableModel[ModelID, Array[Double], ModelAction]],
      modelRewards: Map[ModelID, BayesianSampleRegressionDistribution])
     extends GreedyEnsemble2[ModelID, Array[Double], ModelAction, BayesianSampleRegressionDistribution](
         models,
-        modelKeys,
         modelRewards,
         0.0
     )
@@ -29,8 +27,7 @@ object ThompsonSamplingEnsemble2{
      models: Map[ModelID, StackableModel[ModelID, Array[Double], ModelAction]],
      modelRewards: Map[ModelID, BayesianSampleRegressionDistribution]) = {
          new ThompsonSamplingEnsemble2[ModelID, ModelAction](
-             key => models(key),
-             () => models.keys.toList,
+             models,
              modelRewards)
     }
 }

@@ -10,25 +10,23 @@ import io.circe.Decoder
 
 
 abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
-    extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with StackableActor1[ModelID, ModelData, ModelAction]{
 
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) =
-        _actImpl[AggregateReward](models, modelKeys, modelRewards, epsilon, data, selectedIds)
+        _actImpl[AggregateReward](models, modelRewards, epsilon, data, selectedIds)
 
 }
 
 
 
 class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward],
-    var epsilon: Double)
-    extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
+    protected[ada] var epsilon: Double)
+    extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards, epsilon)
     with GreedyRandom[ModelID, ModelData, ModelAction]
 

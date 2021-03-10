@@ -8,17 +8,16 @@ import ada.components.selectors._
 import ada.components.distributions._
 
 class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Reward]
-    (models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward],
-    var gamma: Double)
-    extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    protected[ada] var gamma: Double)
+    extends StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with Exp3[ModelID, ModelData, ModelAction]{
     
-    var k: Int = modelKeys().length
+    var k: Int = models.keys.toList.length
 
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID]) = {
-        _actImpl[AggregateReward](models, modelKeys, modelRewards , 1.0, data, selectedIds, gamma, k)
+        _actImpl[AggregateReward](models, modelRewards , 1.0, data, selectedIds, gamma, k)
     }
 
     override def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {

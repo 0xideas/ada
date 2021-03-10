@@ -10,21 +10,19 @@ import io.circe.generic.semiauto._
 import io.circe.syntax._
 
 abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
-    (models: ModelID  => Model[ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
     extends Model[ModelData, ModelAction]{
 
-    def models(): Map[ModelID, Model[ModelData, ModelAction]] = modelKeys().map(id => (id, models(id))).toMap
+    def models(): Map[ModelID, Model[ModelData, ModelAction]] = models
     def modelRewards(): Map[ModelID, AggregateReward] = modelRewards
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
 }
 
 abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]
-    (models: ModelID  => SimpleModel[ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
-    extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards){
+    extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards){
     def actWithID(data: ModelData): (ModelAction, ModelID)
     def act(data: ModelData): ModelAction = actWithID(data)._1
     def update(modelId: ModelID, reward: Reward): Unit = modelRewards(modelId).update(reward)
@@ -35,10 +33,9 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
 }
 
 abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[Context]]
-    (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, ContextualModel[ModelID, Context, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
-    extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
     with ContextualModel[ModelID, Context, ModelData, ModelAction]{
     def actWithID(context: Context, data: ModelData, modelIds: List[ModelID]): (ModelAction, List[ModelID])
     def act(modelIds: List[ModelID], context: Context, data: ModelData): ModelAction = actWithID(context, data, modelIds)._1
@@ -54,10 +51,9 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 
 
 abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable](
-    models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
-    modelKeys: () => List[ModelID],
+    models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
-    extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with StackableModel[ModelID, ModelData, ModelAction]{
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
     def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
@@ -76,10 +72,9 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
 }
 
 abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData]](
-    models: ModelID  => StackableModel[ModelID, ModelData, ModelAction],
-    modelKeys: () => List[ModelID],
+    models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
-    extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with StackableModel[ModelID, ModelData, ModelAction]{
     def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
     def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1

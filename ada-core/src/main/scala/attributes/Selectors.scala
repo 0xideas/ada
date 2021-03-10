@@ -12,9 +12,9 @@ trait Selector[ModelID, ModelData, ModelAction]{
     protected val mask: ListBuffer[ModelID] = ListBuffer()
 
     def _sortModel[AggregateReward <: SimpleDistribution](
-                 modelKeys: () => List[ModelID],
+                 modelKeys: List[ModelID],
                  modelRewards: ModelID => AggregateReward): List[(ModelID, Reward)] = {
-        val modelIds = modelKeys().filter(id => if(mask.length == 0) true else mask.contains(id) == false)
+        val modelIds = modelKeys.filter(id => if(mask.length == 0) true else mask.contains(id) == false)
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw))
                                         .toList
                                         .sortWith(_._2 > _._2)
@@ -23,10 +23,10 @@ trait Selector[ModelID, ModelData, ModelAction]{
     }
 
     def _sortModel[Context, AggregateReward <: ConditionalDistribution[Context]]
-    			  (modelKeys: () => List[ModelID],
+    			  (modelKeys: List[ModelID],
                    modelRewards: ModelID => AggregateReward,
                    context: Context): List[(ModelID, Reward)] = {
-        val modelIds = modelKeys().filter(id => if(mask.length == 0) true else mask.contains(id) == false)
+        val modelIds = modelKeys.filter(id => if(mask.length == 0) true else mask.contains(id) == false)
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw(context)))
                                         .toList
                                         .sortWith(_._2 > _._2)

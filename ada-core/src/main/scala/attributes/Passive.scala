@@ -17,10 +17,9 @@ trait PassiveSimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
     extends PassiveEnsemble[ModelData, ModelAction]{
     def _updateAllImplSimple(data: ModelData,
                        optimalAction: ModelAction,
-                       models: ModelID => SimpleModel[ModelData, ModelAction],
-                       modelKeys: () => List[ModelID],
+                       models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
                        modelRewards: Map[ModelID, AggregateReward]): Unit = {
-        modelKeys().map{modelId => {
+        models.keys.toList.map{modelId => {
                 val model = models(modelId)
                 val modelAction = model.act(data)
                 val reward = evaluate(modelAction, optimalAction)
@@ -39,11 +38,10 @@ trait PassiveContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggreg
                        (data: ModelData,
                        optimalAction: ModelAction,
                        modelIds: List[ModelID],
-                       models: ModelID => ContextualModelPassive[ModelID, Context, ModelData, ModelAction, AggregateReward],
-                       modelKeys: () => List[ModelID],
+                       models: Map[ModelID, ContextualModelPassive[ModelID, Context, ModelData, ModelAction, AggregateReward]],
                        modelRewards: Map[ModelID, AggregateReward],
                        context: Context): Unit = {
-        modelKeys().map{modelId => {
+        models.keys.toList.map{modelId => {
                 val model = models(modelId)
                 val (modelAction, _) = model.actWithID(context, data, List())
                 val reward = evaluate(modelAction, optimalAction)
@@ -65,11 +63,10 @@ trait PassiveStackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward
                        (data: ModelData,
                        optimalAction: ModelAction,
                        modelIds: List[ModelID],
-                       models: ModelID => StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward],
-                       modelKeys: () => List[ModelID],
+                       models: Map[ModelID, StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]],
                        modelRewards: Map[ModelID, AggregateReward]): Unit = {
 
-        modelKeys().map{modelId => {
+        models.keys.toList.map{modelId => {
                 val model = models(modelId)
                 val (modelAction, _) = model.actWithID(data, List())
                 val reward = evaluate(modelAction, optimalAction)
@@ -90,11 +87,10 @@ trait PassiveStackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward
                        (data: ModelData,
                        optimalAction: ModelAction,
                        modelIds: List[ModelID],
-                       models: ModelID => StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward],
-                       modelKeys: () => List[ModelID],
+                       models: Map[ModelID, StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]],
                        modelRewards: Map[ModelID, AggregateReward]): Unit = {
 
-        modelKeys().map{modelId => {
+        models.keys.toList.map{modelId => {
                 val model = models(modelId)
                 val (modelAction, _) = model.actWithID(data, List())
                 val reward = evaluate(modelAction, optimalAction)

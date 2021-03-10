@@ -12,15 +12,14 @@ import ada.components.distributions._
 abstract class ContextualGreedyAbstract
 	[ModelID, Context, ModelData, ModelAction,
 	 AggregateReward <: ConditionalDistribution[Context]]
-    (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, ContextualModel[ModelID, Context, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
-    extends ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards)
+    extends ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with ContextualActor[ModelID, Context, ModelData, ModelAction]{
 
     def actWithID(context: Context, data: ModelData, modelIds: List[ModelID]): (ModelAction, List[ModelID]) = {
-        _actImpl[Context, AggregateReward](models, modelKeys, modelRewards, epsilon, data, context, modelIds)
+        _actImpl[Context, AggregateReward](models, modelRewards, epsilon, data, context, modelIds)
     }
 
 }
@@ -28,10 +27,9 @@ abstract class ContextualGreedyAbstract
 class ContextualGreedy
 	[ModelID, Context, ModelData, ModelAction,
 	 AggregateReward <: ConditionalDistribution[Context]]
-    (models: ModelID  => ContextualModel[ModelID, Context, ModelData, ModelAction],
-     modelKeys: () => List[ModelID],
+    (models: Map[ModelID, ContextualModel[ModelID, Context, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward],
     epsilon: Double)
-    extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelKeys, modelRewards, epsilon)
+    extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards, epsilon)
     with GreedyRandom[ModelID, ModelData, ModelAction]
 
