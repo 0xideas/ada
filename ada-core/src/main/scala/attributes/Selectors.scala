@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
 
 trait Selector[ModelID, ModelData, ModelAction]{
     protected val rnd = new scala.util.Random(101)
-    protected val mask: ListBuffer[ModelID] = ListBuffer()
+    private[selectors] val mask: ListBuffer[ModelID] = ListBuffer()
 
     def _sortModel[AggregateReward <: SimpleDistribution](
                  modelKeys: List[ModelID],
