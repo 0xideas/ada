@@ -50,7 +50,6 @@ val log4jversion = "2.13.3"
 
 lazy val dependencies = Seq(
   "org.scalacheck" %% "scalacheck" % "1.14.1",
-  "com.github.haifengl" %% "smile-scala" % "2.5.3",
   "org.clapper" %% "grizzled-slf4j" % "1.3.4",
   //"com.stripe" %% "rainier-core" % "0.3.3",
 

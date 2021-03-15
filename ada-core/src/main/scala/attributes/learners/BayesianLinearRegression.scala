@@ -3,15 +3,15 @@ package ada.components.learners
 import breeze.linalg._
 import breeze.numerics._
 import breeze.stats.distributions.{Gaussian, MultivariateGaussian}
-import smile.regression.{OnlineRegression, LinearModel}
 
 import scala.language.implicitConversions
 import ada.components.distributions.ConditionalDistribution
 import ada.`package`.Reward
+import ada.components.distributions.OnlineRegression
 
 abstract class BayesianLinearRegressionAbstract(protected[ada] var nfeatures: Int, protected[ada] var alpha: Double, protected[ada] var beta: Double)
-    extends OnlineRegression[Array[Double]]
-    with ConditionalDistribution[Array[Double]]{
+    extends ConditionalDistribution[Array[Double]]
+    with OnlineRegression[Array[Double]]{
     protected[ada] var mean = DenseVector.zeros[Double](nfeatures)
     protected[ada] var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
     protected[ada] var cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)

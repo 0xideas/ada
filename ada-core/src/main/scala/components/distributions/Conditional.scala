@@ -1,15 +1,15 @@
 package ada.components.distributions
 
-import smile.regression.{OnlineRegression, LinearModel}
-import smile.regression.lm
-import smile.data.formula.Formula
-import smile.data.DataFrame
-
 import ada.components.learners.{BayesianSampleLinearRegression, BayesianMeanLinearRegression}
 import ada._
 
+trait OnlineRegression[Independent]{
+    def predict(data: Independent): Double
+    def update(data: Independent, rewardValue: Double)
+}
+
 //this will be removed
-abstract class SmileModelConditionalDistribution[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
+abstract class ConditionalDistributionI[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
     extends ConditionalDistribution[Context]{
         def draw(context: Context): Double = model.predict(context)
         def update(context: Context, reward: Reward): Unit = {
@@ -19,22 +19,14 @@ abstract class SmileModelConditionalDistribution[Context <: Array[Double], Smile
         }   
 }
 
-class PointRegressionDistribution(
-    formula: Formula,
-    data: DataFrame,
-    method: String = "qr",
-    stderr: Boolean = true,
-    recursive: Boolean = true)
-    extends SmileModelConditionalDistribution[Array[Double], LinearModel](
-        lm(formula, data, method, stderr, recursive)
-    )
+
 
 
 class BayesianSampleRegressionDistribution(
     protected[distributions] var nfeatures: Int,
     protected[distributions] var alpha: Double = 0.3,
     protected[distributions] var beta: Double = 1.0)
-    extends SmileModelConditionalDistribution[Array[Double], BayesianSampleLinearRegression](
+    extends ConditionalDistributionI[Array[Double], BayesianSampleLinearRegression](
         new BayesianSampleLinearRegression(nfeatures, alpha, beta)
     )
     with ConditionalDistribution[Array[Double]]{
@@ -50,7 +42,7 @@ class BayesianMeanRegressionDistribution(
     val nfeatures: Int,
     val alpha: Double = 0.3,
     beta: Double = 1.0)
-    extends SmileModelConditionalDistribution[Array[Double], BayesianMeanLinearRegression](
+    extends ConditionalDistributionI[Array[Double], BayesianMeanLinearRegression](
         new BayesianMeanLinearRegression(nfeatures, alpha, beta)
     )
     with ConditionalDistribution[Array[Double]]{
@@ -59,3 +51,16 @@ class BayesianMeanRegressionDistribution(
         }
         def getBeta(): Double = model.getBeta
     }
+
+
+
+/*
+class PointRegressionDistribution(
+    formula: Formula,
+    data: DataFrame,
+    method: String = "qr",
+    stderr: Boolean = true,
+    recursive: Boolean = true)
+    extends ConditionalDistributionI[Array[Double], LinearModel](
+        lm(formula, data, method, stderr, recursive)
+    )*/
