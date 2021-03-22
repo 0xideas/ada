@@ -14,7 +14,8 @@ trait Selector[ModelID, ModelData, ModelAction]{
     def _sortModel[AggregateReward <: SimpleDistribution](
                  modelKeys: List[ModelID],
                  modelRewards: ModelID => AggregateReward): List[(ModelID, Reward)] = {
-        val modelIds = modelKeys.filter(id => if(mask.length == 0) true else mask.contains(id) == false)
+        val maskNow = mask.toList
+        val modelIds = modelKeys.filter(id => if(mask.length == 0) true else maskNow.contains(id) == false)
         val modelsSorted = modelIds.map(modelId => (modelId, modelRewards(modelId).draw))
                                         .toList
                                         .sortWith(_._2 > _._2)
