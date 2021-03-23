@@ -9,7 +9,7 @@ AdaEnsemble is a framework for creating adaptive ensembles. An adaptive ensemble
 
 ### Built With
 
-AdaEnsemble relies on [Breeze](https://github.com/scalanlp/breeze) for matrix operations, [Smile](https://haifengl.github.io/) for incremental machine learning, [Circe](https://circe.github.io/circe/) for constructing Json representations of ensembles and [JavaCPP](https://github.com/bytedeco/javacpp) for the intergration of [ONNX](https://onnx.ai/) models.
+AdaEnsemble relies on [Breeze](https://github.com/scalanlp/breeze) for matrix operations, [Circe](https://circe.github.io/circe/) for constructing Json representations of ensembles and [JavaCPP](https://github.com/bytedeco/javacpp) for the intergration of [ONNX](https://onnx.ai/) models.
 
 
 
