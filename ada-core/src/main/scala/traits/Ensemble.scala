@@ -19,7 +19,7 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
 }
 
-abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable]
+abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Updateable]
     (models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards){
@@ -32,7 +32,7 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
 
 }
 
-abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[Context]]
+abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: UpdateableContext[Context]]
     (models: Map[ModelID, ContextualModel[ModelID, Context, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
@@ -50,7 +50,7 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 }
 
 
-abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateable](
+abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: Updateable](
     models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
@@ -71,7 +71,7 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
 
 }
 
-abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: ExportUpdateableContext[ModelData]](
+abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: UpdateableContext[ModelData]](
     models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)

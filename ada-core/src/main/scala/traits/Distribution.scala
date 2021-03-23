@@ -2,14 +2,14 @@ package ada.components.distributions
 
 
 import ada._
-import ada.interface.{Model, ExportUpdateable, ExportUpdateableContext}
+import ada.interface.{Model, Updateable, UpdateableContext}
 
 sealed trait Distribution
 
 trait SimpleDistribution 
     extends Distribution
     with Model[Unit, Double]
-    with ExportUpdateable{
+    with Updateable{
     def draw: Double
     def update(reward: Reward): Unit
 
@@ -19,7 +19,7 @@ trait SimpleDistribution
 trait ConditionalDistribution[Context]
     extends Distribution
     with Model[Context, Double]
-    with ExportUpdateableContext[Context]{
+    with UpdateableContext[Context]{
     def draw(context: Context): Double
     def update(context: Context, reward: Reward): Unit
 

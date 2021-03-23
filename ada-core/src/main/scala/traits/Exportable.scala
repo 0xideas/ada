@@ -15,11 +15,3 @@ trait UpdateableContext[Context]{
 trait Updateable{
     def update(reward: ada.Reward): Unit
 }
-
-trait ExportUpdateableContext[Context]
-    extends UpdateableContext[Context]
-
-
-trait ExportUpdateable
-    extends Updateable
-    
