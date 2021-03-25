@@ -1,13 +1,11 @@
 
 lazy val root = (project.
   in(file("."))).
-  aggregate(core, priv, appl).
-  dependsOn(core, priv, appl).
+  aggregate(core).
+  dependsOn(core).
   settings(commonSettings).
   settings(libraryDependencies ++= dependencies)
 
-Compile / unmanagedSourceDirectories += baseDirectory.value / "ada-core"
-scalaSource in Compile := baseDirectory.value / "ada-priv/"
 
 //Compile / sourceDirectories += baseDirectory.value / "ada-appl/"
 

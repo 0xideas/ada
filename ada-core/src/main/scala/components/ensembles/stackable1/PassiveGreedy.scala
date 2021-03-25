@@ -10,11 +10,11 @@ import breeze.stats.distributions.Beta
 class PassiveGreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
     (models: Map[ModelID, StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]],
     modelRewards: Map[ModelID, AggregateReward],
-    evaluateFn: (ModelAction, ModelAction) => Reward)
+    evaluateFn: (LTree[ModelAction], LTree[ModelAction]) => Reward)
     extends GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards, 0.0)
     with PassiveStackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward]{
-        def evaluate(action: ModelAction, optimalAction: ModelAction): Reward = evaluateFn(action, optimalAction)
-        def updateAll(modelIds: List[ModelID], data: ModelData, optimalAction: ModelAction): Unit = {
+        def evaluate(action: LTree[ModelAction], optimalAction: LTree[ModelAction]): Reward = evaluateFn(action, optimalAction)
+        def updateAll(modelIds: LTree[ModelID], data: ModelData, optimalAction: LTree[ModelAction]): Unit = {
             _updateAllImplStackable1(data, optimalAction, modelIds, models, modelRewards)
         }
 }

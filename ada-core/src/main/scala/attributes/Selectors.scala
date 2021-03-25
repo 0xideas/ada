@@ -37,7 +37,15 @@ trait Selector[ModelID, ModelData, ModelAction]{
     }
 
     def _selectModel( aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID
-    
+
+    def appendId(modelId: ModelID, selectedIds: LTree[ModelID]): LTree[ModelID] = {
+        selectedIds match {
+            case LBranch(value, branches) => {
+                new LBranch(value, branches.map(branch => new LBranch(value, List(appendId(modelId, branch)))))
+            }
+            case(LLeaf(value)) => new LBranch(value, List(new LLeaf(modelId)))
+        }
+    }
 }
 
 

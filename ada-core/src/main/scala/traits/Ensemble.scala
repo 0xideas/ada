@@ -23,10 +23,10 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
     (models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards){
-    def actWithID(data: ModelData): (ModelAction, ModelID)
-    def act(data: ModelData): ModelAction = actWithID(data)._1
+    def actWithID(data: ModelData): ( LTree[ModelAction], ModelID)
+    def act(data: ModelData):  LTree[ModelAction] = actWithID(data)._1
     def update(modelId: ModelID, reward: Reward): Unit = modelRewards(modelId).update(reward)
-    def update(modelId: ModelID, data: ModelData, action: ModelAction): Unit = {
+    def update(modelId: ModelID, data: ModelData, action:  LTree[ModelAction]): Unit = {
         models(modelId).update(data, action)
     }
 
@@ -37,14 +37,30 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID,  ModelData, ModelAction, AggregateReward](models, modelRewards)
     with ContextualModel[ModelID, Context, ModelData, ModelAction]{
-    def actWithID(context: Context, data: ModelData, modelIds: List[ModelID]): (ModelAction, List[ModelID])
-    def act(modelIds: List[ModelID], context: Context, data: ModelData): ModelAction = actWithID(context, data, modelIds)._1
-    def update(modelIds: List[ModelID], context: Context, data: ModelData, reward: Reward): Unit = {
-        modelRewards(modelIds.head).update(context, reward)
-        models(modelIds.head).update(modelIds.tail, context, data, reward)
+    def actWithID(context: Context, data: ModelData, modelIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID])
+    def act(modelIds: LTree[ModelID], context: Context, data: ModelData):  LTree[ModelAction] = actWithID(context, data, modelIds)._1
+    def update(modelIds: LTree[ModelID], context: Context, data: ModelData, reward: Reward): Unit = {
+        modelIds match {
+            case LBranch(value, branches) => {
+                modelRewards(value).update(context, reward)
+                branches.map{
+                    branch => models(value).update(branch, context, data, reward)
+                }
+            }
+            case LLeaf(value) => {
+                modelRewards(value).update(context, reward)
+            }
+        }
     }
-    def update(modelIds: List[ModelID], context: Context, data: ModelData, action: ModelAction): Unit = {
-        models(modelIds.head).update(modelIds.tail, context, data, action)
+    def update(modelIds: LTree[ModelID], context: Context, data: ModelData, action:  LTree[ModelAction]): Unit = {
+        modelIds match {
+            case LBranch(value, branches) => {
+                branches.map{
+                    branch => models(value).update(branch, context, data, action)
+                }
+            }
+            case LLeaf(value) => ()
+        }
     }
 
 }
@@ -55,18 +71,33 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with StackableModel[ModelID, ModelData, ModelAction]{
-    def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
-    def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
-    def act(data: ModelData): ModelAction = actWithID(data, List())._1
-    def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
-        modelRewards(modelIds.head).update(reward)
-        models(modelIds.head).update(modelIds.tail, data, reward)
+    def actWithID(data: ModelData, selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID])
+    def act(data: ModelData, selectedIds: LTree[ModelID]):  LTree[ModelAction] = actWithID(data, selectedIds)._1
+    def act(data: ModelData)(implicit dummyId: ModelID):  LTree[ModelAction] = actWithID(data, new LLeaf(dummyId))._1
+    def update(modelIds: LTree[ModelID], data: ModelData, reward: Reward): Unit = {        
+        modelIds match {
+            case LBranch(value, branches) => {
+                modelRewards(value).update(reward)
+                branches.map{
+                    branch => models(value).update(branch, data, reward)
+                }
+            }
+            case LLeaf(value) => {
+                modelRewards(value).update(reward)
+            }
+        }
+        
     }
-    def update(modelIds: List[ModelID], data: ModelData, action: ModelAction): Unit = {
-        models(modelIds.head).update(modelIds.tail, data, action)
+    def update(modelIds: LTree[ModelID], data: ModelData, action:  LTree[ModelAction]): Unit = {
+        modelIds match {
+            case LBranch(value, branches) => {
+                branches.map{
+                    branch => models(value).update(branch, data, action)
+                }
+            }
+            case LLeaf(value) => ()
+        }
     }
-
-
     
 
 }
@@ -76,17 +107,32 @@ abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateRewa
     modelRewards: Map[ModelID, AggregateReward])
     extends AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with StackableModel[ModelID, ModelData, ModelAction]{
-    def actWithID(data: ModelData, selectedIds: List[ModelID]): (ModelAction, List[ModelID])
-    def act(data: ModelData, selectedIds: List[ModelID]): ModelAction = actWithID(data, selectedIds)._1
-    def act(data: ModelData): ModelAction = actWithID(data, List())._1
-    def update(modelIds: List[ModelID], data: ModelData, reward: Reward): Unit = {
-        modelRewards(modelIds.head).update(data, reward)
-        models(modelIds.head).update(modelIds.tail, data, reward)
+    def actWithID(data: ModelData, selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID])
+    def act(data: ModelData, selectedIds: LTree[ModelID]): LTree[ModelAction] = actWithID(data, selectedIds)._1
+    def act(data: ModelData)(implicit dummyId: ModelID): LTree[ModelAction] = actWithID(data, new LLeaf(dummyId))._1
+    def update(modelIds: LTree[ModelID], data: ModelData, reward: Reward): Unit = {
+        modelIds match {
+            case LBranch(value, branches) => {
+                modelRewards(value).update(data, reward)
+                branches.map{
+                    branch => models(value).update(branch, data, reward)
+                }
+            }
+            case LLeaf(value) => {
+                modelRewards(value).update(data, reward)
+            }
+        }
     }
-    def update(modelIds: List[ModelID], data: ModelData, action: ModelAction): Unit = {
-        models(modelIds.head).update(modelIds.tail, data, action)
+    def update(modelIds: LTree[ModelID], data: ModelData, action: LTree[ModelAction]): Unit = {
+        modelIds match {
+            case LBranch(value, branches) => {
+                branches.map{
+                    branch => models(value).update(branch, data, action)
+                }
+            }
+            case LLeaf(value) => ()
+        }
     }
-
 
 }
 

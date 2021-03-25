@@ -1,6 +1,6 @@
 package ada.interface
 
-trait LTree[A]{
+class LTree[A]{
     def disaggregate: List[List[A]] = {
 
         def inner(tree: LTree[A], acc: List[List[A]]): List[List[A]] = {
@@ -16,11 +16,9 @@ trait LTree[A]{
     }
 }
 
-case class LLeaf[A](value: A) extends LTree[A]
-case class LBranch[A](value: A, branches: List[LTree[A]]) extends LTree[A]
+case class LBranch[A](val value: A, branches: List[LTree[A]]) extends LTree[A]
+case class LLeaf[A](val value: A) extends LTree[A]
+case class LTwig[A](branches: List[LTree[A]])
 
 
-
-
-
-val tree = LBranch(4, List(LBranch(3, List(LLeaf(5), LBranch(1, List()), LBranch(9, List(LLeaf(7))))), LBranch(7, List(LLeaf(1)))))
+//val tree = LBranch(4, List(LBranch(3, List(LLeaf(5), LBranch(1, List()), LBranch(9, List(LLeaf(7))))), LBranch(7, List(LLeaf(1)))))

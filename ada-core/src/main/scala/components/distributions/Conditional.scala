@@ -1,11 +1,12 @@
 package ada.components.distributions
+import ada.interface.{LTree, LBranch, LLeaf, LTwig}
 
 import ada.components.learners.{BayesianSampleLinearRegression, BayesianMeanLinearRegression}
 import ada._
 
 trait OnlineRegression[Independent]{
     def predict(data: Independent): Double
-    def update(data: Independent, rewardValue: Double)
+    def update(data: Independent, rewardValue: LTree[Double])
 }
 
 //this will be removed
@@ -13,8 +14,8 @@ abstract class ConditionalDistributionI[Context <: Array[Double], SmileModel <: 
     extends ConditionalDistribution[Context]{
         def draw(context: Context): Double = model.predict(context)
         def update(context: Context, reward: Reward): Unit = {
-            if(!(reward.value.isInfinite || reward.value.isNaN() )){
-                model.update(context, reward.value)
+            if(!(reward.value.isInfinite || reward.value.isNaN())){
+                model.update(context, new LLeaf(reward.value))
             }
         }   
 }
