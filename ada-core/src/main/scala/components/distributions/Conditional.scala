@@ -1,5 +1,5 @@
 package ada.components.distributions
-import ada.interface.{LTree, LBranch, LLeaf, LTwig}
+import ada.interface.{LTree, LBranch, LLeaf, LBough}
 
 import ada.components.learners.{BayesianSampleLinearRegression, BayesianMeanLinearRegression}
 import ada._

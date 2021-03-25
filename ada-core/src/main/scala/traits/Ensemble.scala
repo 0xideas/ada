@@ -41,23 +41,19 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
     def act(modelIds: LTree[ModelID], context: Context, data: ModelData):  LTree[ModelAction] = actWithID(context, data, modelIds)._1
     def update(modelIds: LTree[ModelID], context: Context, data: ModelData, reward: Reward): Unit = {
         modelIds match {
-            case LBranch(value, branches) => {
+            case LBranch(value, branch) => {
                 modelRewards(value).update(context, reward)
-                branches.map{
-                    branch => models(value).update(branch, context, data, reward)
-                }
+                models(value).update(branch, context, data, reward)
             }
             case LLeaf(value) => {
                 modelRewards(value).update(context, reward)
             }
         }
     }
-    def update(modelIds: LTree[ModelID], context: Context, data: ModelData, action:  LTree[ModelAction]): Unit = {
+    def update(modelIds: LTree[ModelID], context: Context, data: ModelData, action: LTree[ModelAction]): Unit = {
         modelIds match {
-            case LBranch(value, branches) => {
-                branches.map{
-                    branch => models(value).update(branch, context, data, action)
-                }
+            case LBranch(value, branch) => {
+                models(value).update(branch, context, data, action)
             }
             case LLeaf(value) => ()
         }
@@ -76,11 +72,9 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
     def act(data: ModelData)(implicit dummyId: ModelID):  LTree[ModelAction] = actWithID(data, new LLeaf(dummyId))._1
     def update(modelIds: LTree[ModelID], data: ModelData, reward: Reward): Unit = {        
         modelIds match {
-            case LBranch(value, branches) => {
+            case LBranch(value, branch) => {
                 modelRewards(value).update(reward)
-                branches.map{
-                    branch => models(value).update(branch, data, reward)
-                }
+                models(value).update(branch, data, reward)
             }
             case LLeaf(value) => {
                 modelRewards(value).update(reward)
@@ -90,10 +84,8 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
     }
     def update(modelIds: LTree[ModelID], data: ModelData, action:  LTree[ModelAction]): Unit = {
         modelIds match {
-            case LBranch(value, branches) => {
-                branches.map{
-                    branch => models(value).update(branch, data, action)
-                }
+            case LBranch(value, branch) => {
+                models(value).update(branch, data, action)
             }
             case LLeaf(value) => ()
         }
@@ -112,11 +104,9 @@ abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateRewa
     def act(data: ModelData)(implicit dummyId: ModelID): LTree[ModelAction] = actWithID(data, new LLeaf(dummyId))._1
     def update(modelIds: LTree[ModelID], data: ModelData, reward: Reward): Unit = {
         modelIds match {
-            case LBranch(value, branches) => {
+            case LBranch(value, branch) => {
                 modelRewards(value).update(data, reward)
-                branches.map{
-                    branch => models(value).update(branch, data, reward)
-                }
+                models(value).update(branch, data, reward)
             }
             case LLeaf(value) => {
                 modelRewards(value).update(data, reward)
@@ -125,10 +115,8 @@ abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateRewa
     }
     def update(modelIds: LTree[ModelID], data: ModelData, action: LTree[ModelAction]): Unit = {
         modelIds match {
-            case LBranch(value, branches) => {
-                branches.map{
-                    branch => models(value).update(branch, data, action)
-                }
+            case LBranch(value, branch) => {
+                models(value).update(branch, data, action)
             }
             case LLeaf(value) => ()
         }

@@ -24,11 +24,9 @@ class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Rewar
                                             //this variable comes from the Exp3 Actor Trait
         val probability = (1.0-gamma)*reward.value/totalReward.value + gamma/k
         modelIds match {
-            case LBranch(value, branches) => {
+            case LBranch(value, branch) => {
                 modelRewards(value).update(reward)
-                branches.map{
-                    branch => models(value).update(branch, data, reward)
-                }
+                models(value).update(branch, data, reward)
             }
             case LLeaf(value) => {
                 modelRewards(value).update(reward)

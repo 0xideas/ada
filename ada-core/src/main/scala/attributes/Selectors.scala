@@ -40,10 +40,12 @@ trait Selector[ModelID, ModelData, ModelAction]{
 
     def appendId(modelId: ModelID, selectedIds: LTree[ModelID]): LTree[ModelID] = {
         selectedIds match {
-            case LBranch(value, branches) => {
-                new LBranch(value, branches.map(branch => new LBranch(value, List(appendId(modelId, branch)))))
+            case LBranch(value, branch) => {
+                new LBranch(value, new LBranch(modelId, appendId(value, branch)))
             }
-            case(LLeaf(value)) => new LBranch(value, List(new LLeaf(modelId)))
+            case(LLeaf(value)) => new LBranch(modelId, new LLeaf(value))
+            case(LStub()) => new LLeaf(modelId)
+
         }
     }
 }
