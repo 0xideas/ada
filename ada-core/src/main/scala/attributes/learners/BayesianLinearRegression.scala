@@ -8,7 +8,7 @@ import scala.language.implicitConversions
 import ada.components.distributions.ConditionalDistribution
 import ada.`package`.Reward
 import ada.components.distributions.OnlineRegression
-import ada.interface.{LLeaf, LTree, LBranch}
+import ada.interface.{Leaf, Tree, Twig}
 
 abstract class BayesianLinearRegressionAbstract(protected[ada] var nfeatures: Int, protected[ada] var alpha: Double, protected[ada] var beta: Double)
     extends ConditionalDistribution[Array[Double]]
@@ -36,10 +36,10 @@ abstract class BayesianLinearRegressionAbstract(protected[ada] var nfeatures: In
         //w_cov = inv(covInv)
     }
 
-    def update(x: Array[Double], y: LTree[Double]): Unit = {
+    def update(x: Array[Double], y: Tree[Double]): Unit = {
         y match {
-            case(LLeaf(value)) => update(x, value)
-            case _ => throw new Exception("Could not update Bayesian regression from non LLeaf LTree.")
+            case(Leaf(value)) => update(x, value)
+            case _ => throw new Exception("Could not update Bayesian regression from non Leaf Tree.")
         }
     }
 

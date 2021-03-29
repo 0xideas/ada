@@ -1,7 +1,7 @@
 
 lazy val root = (project.
   in(file("."))).
-  aggregate(core, priv, appl).
+  aggregate(core).
   dependsOn(core, priv, appl).
   settings(commonSettings).
   settings(libraryDependencies ++= dependencies)

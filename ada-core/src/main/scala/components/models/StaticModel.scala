@@ -14,13 +14,13 @@ class GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](var v
     with InertModel[ModelID, ModelData, ModelAction]{
 
     def getValue: ModelAction = value
-    def act(data: ModelData): LTree[ModelAction] = new LLeaf(value)
+    def act(data: ModelData): Tree[ModelAction] = new Leaf(value)
 
     def update(value: ModelAction): Unit = this.value = value
 
     override def toString: String = "$Model: " + value.toString() + "$"
 
-    def actWithID(data: ModelData, selectedIds: LTree[ModelID]): (LTree[ModelAction], LTree[ModelID]) = (new LLeaf(value), selectedIds)
+    def actWithID(data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) = (new Leaf(value), selectedIds)
 } 
 
 
@@ -28,7 +28,7 @@ class GenericStaticModelContext[ModelID, Context, ModelData, ModelAction, Aggreg
     extends GenericStaticModel[ModelID, ModelData, ModelAction, AggregateReward](value)
     with ContextualModel[ModelID, Context, ModelData, ModelAction]
     with InertModelContext[ModelID, Context, ModelData, ModelAction]{
-        def actWithID(context: Context,data: ModelData, selectedIds: LTree[ModelID]): (LTree[ModelAction], LTree[ModelID]) = (new LLeaf(value), selectedIds)
+        def actWithID(context: Context,data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) = (new Leaf(value), selectedIds)
 }
 
 

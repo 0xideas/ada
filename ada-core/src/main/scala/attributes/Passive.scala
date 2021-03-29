@@ -10,13 +10,13 @@ import ada.components.selectors.Selector
 
 
 trait PassiveEnsemble[ModelData, ModelAction]{
-    def evaluate(action: LTree[ModelAction], optimalAction: LTree[ModelAction]): Reward
+    def evaluate(action: Tree[ModelAction], optimalAction: Tree[ModelAction]): Reward
 }
 
 trait PassiveSimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Updateable]
     extends PassiveEnsemble[ModelData, ModelAction]{
     def _updateAllImplSimple(data: ModelData,
-                       optimalAction:  LTree[ModelAction],
+                       optimalAction:  Tree[ModelAction],
                        models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
                        modelRewards: Map[ModelID, AggregateReward]): Unit = {
         models.keys.toList.map{modelId => {
@@ -36,8 +36,8 @@ trait PassiveContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggreg
     
     def _updateAllImplContextual
                        (data: ModelData,
-                       optimalAction: LTree[ModelAction],
-                       modelIds: LTree[ModelID],
+                       optimalAction: Tree[ModelAction],
+                       modelIds: Tree[ModelID],
                        models: Map[ModelID, ContextualModelPassive[ModelID, Context, ModelData, ModelAction, AggregateReward]],
                        modelRewards: Map[ModelID, AggregateReward],
                        context: Context): Unit = {
@@ -62,8 +62,8 @@ trait PassiveStackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward
 
     def _updateAllImplStackable1
                        (data: ModelData,
-                       optimalAction: LTree[ModelAction],
-                       modelIds: LTree[ModelID],
+                       optimalAction: Tree[ModelAction],
+                       modelIds: Tree[ModelID],
                        models: Map[ModelID, StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]],
                        modelRewards: Map[ModelID, AggregateReward]): Unit = {
 
@@ -86,8 +86,8 @@ trait PassiveStackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward
 
     def _updateAllImplStackable2
                        (data: ModelData,
-                       optimalAction: LTree[ModelAction],
-                       modelIds: LTree[ModelID],
+                       optimalAction: Tree[ModelAction],
+                       modelIds: Tree[ModelID],
                        models: Map[ModelID, StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]],
                        modelRewards: Map[ModelID, AggregateReward]): Unit = {
 

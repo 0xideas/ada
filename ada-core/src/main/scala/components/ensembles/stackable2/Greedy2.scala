@@ -15,7 +15,7 @@ abstract class GreedyEnsembleAbstract2[ModelID, ModelData, ModelAction, Aggregat
     extends StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with StackableActor2[ModelID, ModelData, ModelAction]{
 
-    def actWithID(data: ModelData, selectedIds: LTree[ModelID]): (LTree[ModelAction], LTree[ModelID]) =
+    def actWithID(data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) =
     	_actImpl2[AggregateReward](models, modelRewards, epsilon, data, selectedIds)
 
 }

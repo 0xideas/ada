@@ -23,7 +23,7 @@ trait SimpleActor[ModelID, ModelData, ModelAction]
                 (models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
-                data: ModelData): ( LTree[ModelAction], ModelID) 
+                data: ModelData): ( Tree[ModelAction], ModelID) 
 }
 
 trait ContextualActor[ModelID, Context, ModelData, ModelAction]
@@ -35,7 +35,7 @@ trait ContextualActor[ModelID, Context, ModelData, ModelAction]
                 epsilon: Double,
                 data: ModelData,
                 context: Context,
-                modelIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID]) 
+                modelIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) 
 }
 
 trait StackableActor1[ModelID, ModelData, ModelAction]
@@ -46,7 +46,7 @@ trait StackableActor1[ModelID, ModelData, ModelAction]
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData,
-                selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID]) 
+                selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) 
 }
 
 trait StackableActor2[ModelID, ModelData, ModelAction]
@@ -57,7 +57,7 @@ trait StackableActor2[ModelID, ModelData, ModelAction]
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData,
-                selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID])
+                selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID])
 }
 
 trait AbstractGreedy[ModelID, ModelData, ModelAction]
@@ -68,7 +68,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
                 (models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
-                data: ModelData): ( LTree[ModelAction], ModelID) = {
+                data: ModelData): ( Tree[ModelAction], ModelID) = {
 
         val modelsSorted = _sortModel[AggregateReward](models.keys.toList, modelRewards)
 
@@ -90,7 +90,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
                 epsilon: Double,
                 data: ModelData,
                 context: Context,
-                selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID]) = {
+                selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) = {
 
         val modelsSorted = _sortModel[Context, AggregateReward](models.keys.toList, modelRewards, context)
 
@@ -111,7 +111,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData,
-                selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID]) = {
+                selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) = {
 
         val modelsSorted = _sortModel[AggregateReward](models.keys.toList, modelRewards)
 
@@ -131,7 +131,7 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData,
-                selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID]) = {
+                selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) = {
                                     //ModelData is also used as Context!!!
         val modelsSorted = _sortModel[ModelData, AggregateReward](models.keys.toList, modelRewards, data)
 
@@ -157,7 +157,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
                 epsilon: Double,
                 data: ModelData,
                 context: Context,
-                selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID]) = {
+                selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) = {
         val modelsSorted = _sortModel[Context, AggregateReward](models.keys.toList, modelRewards, context)
         val selectedModelId = _selectModel(modelsSorted)
         models(selectedModelId).actWithID(context, data,  appendId(selectedModelId, selectedIds))
@@ -168,7 +168,7 @@ trait Softmax[ModelID, ModelData, ModelAction]
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData,
-                selectedIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID]) = {
+                selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) = {
         val modelsSorted = _sortModel[AggregateReward](models.keys.toList, modelRewards)
         val selectedModelId = _selectModel(modelsSorted)
         models(selectedModelId).actWithID(data, appendId(selectedModelId, selectedIds))
@@ -192,9 +192,9 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 epsilon: Double,
                 data: ModelData,
                 context: Context,
-                selectedIds: LTree[ModelID],
+                selectedIds: Tree[ModelID],
                 gamma: Double,
-                k: Int): ( LTree[ModelAction], LTree[ModelID]) = {
+                k: Int): ( Tree[ModelAction], Tree[ModelID]) = {
         val modelsSorted = _sortModel[Context, AggregateReward](models.keys.toList, modelRewards, context)
         val selectedModelId = _selectModel(_adjustRewards(modelsSorted, gamma, k))
         models(selectedModelId).actWithID(context, data,  appendId(selectedModelId, selectedIds))
@@ -205,9 +205,9 @@ trait Exp3[ModelID, ModelData, ModelAction]
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData,
-                selectedIds: LTree[ModelID],
+                selectedIds: Tree[ModelID],
                 gamma: Double,
-                k: Int): ( LTree[ModelAction], LTree[ModelID]) = {
+                k: Int): ( Tree[ModelAction], Tree[ModelID]) = {
         val modelsSorted = _sortModel[AggregateReward](models.keys.toList, modelRewards)
         val selectedModelId = _selectModel(modelsSorted)
         models(selectedModelId).actWithID(data,  appendId(selectedModelId, selectedIds))

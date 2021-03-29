@@ -38,13 +38,13 @@ trait Selector[ModelID, ModelData, ModelAction]{
 
     def _selectModel( aggregateRewardsDouble: List[(ModelID, Reward)]): ModelID
 
-    def appendId(modelId: ModelID, selectedIds: LTree[ModelID]): LTree[ModelID] = {
+    def appendId(modelId: ModelID, selectedIds: Tree[ModelID]): Tree[ModelID] = {
         selectedIds match {
-            case LBranch(value, branch) => {
-                new LBranch(value, new LBranch(modelId, appendId(value, branch)))
+            case Twig(value, branch) => {
+                new Twig(value, new Twig(modelId, appendId(value, branch)))
             }
-            case(LLeaf(value)) => new LBranch(modelId, new LLeaf(value))
-            case(LStub()) => new LLeaf(modelId)
+            case(Leaf(value)) => new Twig(modelId, new Leaf(value))
+            case(Stub()) => new Leaf(modelId)
 
         }
     }

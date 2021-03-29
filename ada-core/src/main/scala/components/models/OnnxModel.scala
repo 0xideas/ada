@@ -27,14 +27,14 @@ class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](
     val session = env.createSession(path ,new OrtSession.SessionOptions());
     val loadingTime = java.time.LocalDateTime.now().toString()
 
-    def act(data: ModelData): LTree[ModelAction] = {
+    def act(data: ModelData): Tree[ModelAction] = {
         val inputs = OnnxTensor.createTensor(env, data)
         val result = session.run(Map(input_name -> inputs).asJava)
         //predictions
-        new LLeaf(result.get(0).getValue().asInstanceOf[Array[Array[ModelAction]]](0)(0))
+        new Leaf(result.get(0).getValue().asInstanceOf[Array[Array[ModelAction]]](0)(0))
     }
 
-    def actWithID(data: ModelData, selectedIds: LTree[ModelID]): (LTree[ModelAction], LTree[ModelID]) = 
+    def actWithID(data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) = 
         (act(data), selectedIds)
 
     def export: Json = Json.fromString(loadingTime + "   " + path)
@@ -53,15 +53,15 @@ class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
     val session = env.createSession(path ,new OrtSession.SessionOptions());
     val loadingTime = java.time.LocalDateTime.now().toString()
 
-    def act(data: ModelData): LTree[ModelAction] = {
+    def act(data: ModelData): Tree[ModelAction] = {
         val inputs = OnnxTensor.createTensor(env, data)
         val result = session.run(Map(input_name -> inputs).asJava)
         //predictions
         val probabilities = result.get(0).getValue().asInstanceOf[Array[Array[Float]]](0)
-        new LLeaf(modelActionFn(probabilities.indexOf(probabilities.max)))
+        new Leaf(modelActionFn(probabilities.indexOf(probabilities.max)))
     }
 
-    def actWithID(data: ModelData, selectedIds: LTree[ModelID]): (LTree[ModelAction], LTree[ModelID]) = 
+    def actWithID(data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) = 
         (act(data), selectedIds)
 
     def export: Json = Json.fromString(loadingTime + "   " + path)

@@ -18,7 +18,7 @@ abstract class ContextualGreedyAbstract
     extends ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards)
     with ContextualActor[ModelID, Context, ModelData, ModelAction]{
 
-    def actWithID(context: Context, data: ModelData, modelIds: LTree[ModelID]): ( LTree[ModelAction], LTree[ModelID]) = {
+    def actWithID(context: Context, data: ModelData, modelIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) = {
         _actImpl[Context, AggregateReward](models, modelRewards, epsilon, data, context, modelIds)
     }
 
