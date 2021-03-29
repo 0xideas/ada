@@ -71,6 +71,8 @@ lazy val dependencies = Seq(
   "com.microsoft.onnxruntime" % "onnxruntime" % "1.5.2"
 )
 
+scalaSource in Test := baseDirectory.value / "ada-appl/src/test/scala"
+
 
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "1")
 mainClass in (Compile, run) := Some("ada.demos.Main")
