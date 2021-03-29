@@ -31,6 +31,7 @@ class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Rewar
             case Leaf(value) => {
                 modelRewards(value).update(reward)
             }
+            case _ => throw new Exception("Ensemble update modelIds must be Leaf or Twig")
         }
     }
 }

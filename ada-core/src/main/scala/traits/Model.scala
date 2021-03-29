@@ -36,6 +36,8 @@ trait ContextualModelPassive[ModelID, Context, ModelData, ModelAction, Aggregate
         def updateAll(modelIds: Tree[ModelID], context: Context,  data: ModelData, optimalAction:  Tree[ModelAction]): Unit
 }
 
+
+
 trait StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]
     extends StackableModel[ModelID, ModelData, ModelAction]{
         def update(data: ModelData, optimalAction:  Tree[ModelAction]): Unit
@@ -43,7 +45,6 @@ trait StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]
         //def update(modelIds: Tree[ModelID], data: ModelData, reward: Reward): Unit
         def updateAll(modelIds: Tree[ModelID], data: ModelData, optimalAction:  Tree[ModelAction]): Unit
 }
-
 
 
 trait StackableModelPassiveBottom[ModelID, ModelData, ModelAction, AggregateReward]

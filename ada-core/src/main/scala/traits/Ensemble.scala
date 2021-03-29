@@ -48,14 +48,17 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
             case Leaf(value) => {
                 modelRewards(value).update(context, reward)
             }
+            case _ => throw new Exception("Ensemble update modelIds must be Leaf or Twig")
         }
+
     }
     def update(modelIds: Tree[ModelID], context: Context, data: ModelData, action: Tree[ModelAction]): Unit = {
         modelIds match {
             case Twig(value, branch) => {
+                val m = models(value)
                 models(value).update(branch, context, data, action)
             }
-            case Leaf(value) => ()
+
         }
     }
 
@@ -79,6 +82,7 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
             case Leaf(value) => {
                 modelRewards(value).update(reward)
             }
+            case _ => throw new Exception("Ensemble update modelIds must be Leaf or Twig")
         }
         
     }
@@ -88,6 +92,7 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
                 models(value).update(branch, data, action)
             }
             case Leaf(value) => ()
+            case _ => throw new Exception("Ensemble update modelIds must be Leaf or Twig")
         }
     }
     
@@ -111,6 +116,7 @@ abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateRewa
             case Leaf(value) => {
                 modelRewards(value).update(data, reward)
             }
+            case _ => throw new Exception("Ensemble update modelIds must be Leaf or Twig")
         }
     }
     def update(modelIds: Tree[ModelID], data: ModelData, action: Tree[ModelAction]): Unit = {
