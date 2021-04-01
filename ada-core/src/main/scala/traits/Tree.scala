@@ -2,9 +2,9 @@ package ada.interface
 
 trait Tree[A]
 
-case class Twig[A](val value: A, branch: Tree[A]) extends Tree[A]
+case class Twig[A](val value: A, tree: Tree[A]) extends Tree[A]
 case class Leaf[A](val value: A) extends Tree[A]
-case class Branch[A](branches: List[Tree[A]]) extends Tree[A]
+case class Branch[A](trees: List[Tree[A]]) extends Tree[A]
 case class Stub[A]() extends Tree[A]
 
 
