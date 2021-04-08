@@ -8,19 +8,19 @@ import breeze.stats.distributions.Beta
 
 class ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]
     (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
-    modelsMap: Map[ModelID, BetaDistribution],
+    rewardsMap: Map[ModelID, BetaDistribution],
     epsilon: Double = 0.0)
     extends GreedyEnsemble[ModelID, ModelData, ModelAction, BetaDistribution](
         models,
-        modelsMap,
+        rewardsMap,
         epsilon)
 
 object ThompsonSamplingEnsemble{
     def apply[ModelID, ModelData, ModelAction] (
                 models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],
-                modelsMap: Map[ModelID, BetaDistribution],
+                rewardsMap: Map[ModelID, BetaDistribution],
                 epsilon: Double = 0.0) = new ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction](
         models,
-        modelsMap,
+        rewardsMap,
         epsilon)
 }
