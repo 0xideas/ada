@@ -26,6 +26,3 @@ class GreedyEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: Condit
     epsilon: Double)
     extends GreedyEnsembleAbstract2[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards, epsilon)
     with GreedyRandom[ModelID, ModelData, ModelAction]
-
-
-    

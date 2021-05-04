@@ -9,8 +9,6 @@ import ada.components.selectors._
 import ada.components.distributions._
 
 
-
-
 class ThompsonSamplingEnsemble2
     [ModelID, ModelAction]
     (models: Map[ModelID, StackableModel[ModelID, Array[Double], ModelAction]],

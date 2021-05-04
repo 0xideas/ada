@@ -17,5 +17,4 @@ class ContextualGreedySoftmax
     epsilon: Double)
     extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards, epsilon)
     with GreedySoftmax[ModelID, ModelData, ModelAction]{
-
 }

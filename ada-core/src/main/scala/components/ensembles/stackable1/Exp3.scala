@@ -35,4 +35,3 @@ class Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward <: Exp3Rewar
         }
     }
 }
-

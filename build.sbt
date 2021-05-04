@@ -13,6 +13,8 @@ scalaSource in Compile := baseDirectory.value / "ada-priv/"
 
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oS")
 
+scalaJSUseMainModuleInitializer := true
+enablePlugins(ScalaJSPlugin)
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.4",
@@ -75,4 +77,5 @@ scalaSource in Test := baseDirectory.value / "ada-appl/src/test/scala"
 
 
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "1")
-mainClass in (Compile, run) := Some("ada.demos.Main")
+mainClass in (Compile, run) := Some("ada.products.PageGenerator")
+

@@ -15,7 +15,6 @@ trait SimpleModel[ModelData, ModelAction] extends Model[ModelData, ModelAction]{
 trait ContextualModel[ModelID, Context, ModelData, ModelAction] 
     extends Model[ModelData, ModelAction]{
     def update(modelIds: Tree[ModelID], context: Context, data: ModelData, reward: Reward): Unit
-    //def update(context: Context, data: ModelData, reward: Reward): Unit
     def update(modelIds: Tree[ModelID], context: Context, data: ModelData, action:  Tree[ModelAction]): Unit
     def actWithID(context: Context, data: ModelData, modelIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID])
 }
@@ -32,7 +31,6 @@ trait ContextualModelPassive[ModelID, Context, ModelData, ModelAction, Aggregate
     extends ContextualModel[ModelID, Context, ModelData, ModelAction]{
         def update(context: Context, data: ModelData, optimalAction:  Tree[ModelAction]): Unit
         def evaluate(action: Tree[ModelAction], optimalAction:  Tree[ModelAction]): ada.Reward
-        //def update(modelIds: Tree[ModelID], data: ModelData, reward: Reward): Unit
         def updateAll(modelIds: Tree[ModelID], context: Context,  data: ModelData, optimalAction:  Tree[ModelAction]): Unit
 }
 
@@ -42,7 +40,6 @@ trait StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward]
     extends StackableModel[ModelID, ModelData, ModelAction]{
         def update(data: ModelData, optimalAction:  Tree[ModelAction]): Unit
         def evaluate(action:  Tree[ModelAction],optimalAction:  Tree[ModelAction]): ada.Reward
-        //def update(modelIds: Tree[ModelID], data: ModelData, reward: Reward): Unit
         def updateAll(modelIds: Tree[ModelID], data: ModelData, optimalAction:  Tree[ModelAction]): Unit
 }
 
@@ -68,8 +65,6 @@ trait InertModel[ModelID, ModelData, ModelAction]{
 }
 
 trait InertModelContext[ModelID, Context, ModelData, ModelAction] extends InertModel[ModelID, ModelData, ModelAction]{
-
     def update(modelIds: Tree[ModelID], context: Context, data: ModelData, reward: Reward): Unit = ()
-    //def update(context: Context, data: ModelData, reward: Reward): Unit
     def update(modelIds: Tree[ModelID], context: Context, data: ModelData, action:  Tree[ModelAction]): Unit = ()
 }

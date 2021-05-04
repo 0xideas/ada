@@ -30,9 +30,7 @@ class BetaDistribution (protected[distributions] var alpha: Double,
             betaDistribution = Beta(alpha, beta)
         }
     }
-
 }
-
 
 
 class MeanDouble extends SimpleDistribution{
@@ -47,9 +45,7 @@ class MeanDouble extends SimpleDistribution{
             i+=1.0
         }
     }
-
 }
-
 
 
 class Exp3Reward(protected[distributions] var value: Double,
@@ -66,14 +62,11 @@ class Exp3Reward(protected[distributions] var value: Double,
 }
 
 
-
-//TEST
-
 class ExpDouble(protected[distributions] var value: Double) extends SimpleDistribution {
     def draw: Double = value
     def update(reward: Reward): Unit = {if(!(reward.value.isInfinite || reward.value.isNaN() )){value = reward.value}; ()}
-
 }
+
 
 object ExpDouble{
     implicit def expDouble: Double => ExpDouble = (d:Double) => new ExpDouble( d)

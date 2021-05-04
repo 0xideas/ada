@@ -4,7 +4,7 @@ import ada.components.distributions._
 import ada.components.learners._
 import ada.interface._
 import ada.`package`.Reward
-trait BottomModel
+
 
 abstract class BayesianLinearRegressionModelAbstract[ModelID, AggregateReward]
     (nfeatures: Int, alpha: Double, beta: Double, evaluationFn: (Tree[Double], Tree[Double]) => ada.`package`.Reward = BayesianRegressionEvaluationFn.evaluationFn)
@@ -18,21 +18,23 @@ abstract class BayesianLinearRegressionModelAbstract[ModelID, AggregateReward]
     def evaluate(action: Tree[Double], optimalAction: Tree[Double]): ada.Reward = evaluationFn(action, optimalAction)
 }
 
+
 object BayesianRegressionEvaluationFn{
     val evaluationFn = (action: Tree[Double], optimalAction: Tree[Double]) => {
         (action, optimalAction) match {
             case(Leaf(value1), Leaf(value2)) => new Reward(math.pow(value1-value2, 2))
             case(_, _) => throw new Exception("Could not compute reward for Bayesian regression from non Leaf Tree(s).")
         }
-
     }
 }
+
 
 class BayesianMeanRegressionModel[ModelID, AggregateReward]
     (nfeatures: Int, alpha: Double, beta: Double,  evaluationFn: (Tree[Double], Tree[Double]) => ada.`package`.Reward = BayesianRegressionEvaluationFn.evaluationFn)
     extends BayesianLinearRegressionModelAbstract[ModelID, AggregateReward](nfeatures, alpha, beta, evaluationFn) {
         def predict(x: Array[Double]): Double = predictProb(x).mean
 }
+
 
 class BayesianSampleRegressionModel[ModelID, AggregateReward]
     (nfeatures: Int, alpha: Double, beta: Double, evaluationFn: (Tree[Double], Tree[Double]) => ada.`package`.Reward = BayesianRegressionEvaluationFn.evaluationFn)

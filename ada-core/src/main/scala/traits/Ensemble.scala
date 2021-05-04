@@ -1,23 +1,18 @@
 package ada.interface
 
-
-import ada._
+import ada.Reward
 import ada.components.distributions.ConditionalDistribution
-import org.apache.logging.log4j.core.appender.rewrite.MapRewritePolicy.Mode
-import io.circe.Json
-import io.circe._
-import io.circe.generic.semiauto._
-import io.circe.syntax._
+
 
 abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     (models: Map[ModelID, Model[ModelData, ModelAction]],
     modelRewards: Map[ModelID, AggregateReward])
     extends Model[ModelData, ModelAction]{
-
     def models(): Map[ModelID, Model[ModelData, ModelAction]] = models
     def modelRewards(): Map[ModelID, AggregateReward] = modelRewards
     def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
 }
+
 
 abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Updateable]
     (models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
@@ -29,8 +24,8 @@ abstract class SimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <
     def update(modelId: ModelID, data: ModelData, action:  Tree[ModelAction]): Unit = {
         models(modelId).update(data, action)
     }
-
 }
+
 
 abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: UpdateableContext[Context]]
     (models: Map[ModelID, ContextualModel[ModelID, Context, ModelData, ModelAction]],
@@ -50,7 +45,6 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
             }
             case _ => throw new Exception("Ensemble update modelIds must be Leaf or Twig")
         }
-
     }
     def update(modelIds: Tree[ModelID], context: Context, data: ModelData, action: Tree[ModelAction]): Unit = {
         modelIds match {
@@ -61,7 +55,6 @@ abstract class ContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggr
 
         }
     }
-
 }
 
 
@@ -83,8 +76,7 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
                 modelRewards(value).update(reward)
             }
             case _ => throw new Exception("Ensemble update modelIds must be Leaf or Twig")
-        }
-        
+        }   
     }
     def update(modelIds: Tree[ModelID], data: ModelData, action:  Tree[ModelAction]): Unit = {
         modelIds match {
@@ -95,9 +87,8 @@ abstract class StackableEnsemble1[ModelID, ModelData, ModelAction, AggregateRewa
             case _ => throw new Exception("Ensemble update modelIds must be Leaf or Twig")
         }
     }
-    
-
 }
+
 
 abstract class StackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: UpdateableContext[ModelData]](
     models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],

@@ -7,6 +7,7 @@ import ada.interface._
 import ada.components.distributions._
 import scala.collection.mutable.ListBuffer
 
+
 trait Selector[ModelID, ModelData, ModelAction]{
     protected val rnd = new scala.util.Random(101)
     private[selectors] val mask: ListBuffer[ModelID] = ListBuffer()
@@ -45,7 +46,6 @@ trait Selector[ModelID, ModelData, ModelAction]{
             }
             case(Leaf(value)) => new Twig(modelId, new Leaf(value))
             case(Stub()) => new Leaf(modelId)
-
         }
     }
 }
@@ -68,11 +68,10 @@ trait SoftmaxSelector[ModelID, ModelData, ModelAction]
         val selectedModelId: ModelID = 
         	modelsCumulativeProb.filter{case(model, bounds) => 
         								(selector >= bounds._1.value) && (selector <= bounds._2.value)}(0)._1
-
-
         selectedModelId
     }
 }
+
 
 trait RandomSelector[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]{
@@ -84,4 +83,3 @@ trait RandomSelector[ModelID, ModelData, ModelAction]
         selectedModelId
     }
 }
-

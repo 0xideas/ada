@@ -16,6 +16,7 @@ class ContextualThompsonSampling
         0.0
     )
 
+
 object ContextualThompsonSampling{
     def apply[ModelID, ModelData, ModelAction](
         models: Map[ModelID, ContextualModel[ModelID, Array[Double], ModelData, ModelAction]],
@@ -25,6 +26,4 @@ object ContextualThompsonSampling{
                 modelRewards
             )
         }
-
 }
-    

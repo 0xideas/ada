@@ -32,4 +32,3 @@ class ContextualGreedy
     epsilon: Double)
     extends ContextualGreedyAbstract[ModelID, Context, ModelData, ModelAction, AggregateReward](models, modelRewards, epsilon)
     with GreedyRandom[ModelID, ModelData, ModelAction]
-

@@ -7,7 +7,6 @@ import ada.interface._
 import ada.components.distributions._
 
 
-
 sealed trait Actor
 
 trait CombinedActor[ModelID, ModelData, ModelAction]
@@ -15,16 +14,17 @@ trait CombinedActor[ModelID, ModelData, ModelAction]
     with StackableActor1[ModelID, ModelData, ModelAction]
     with StackableActor2[ModelID, ModelData, ModelAction]
 
+
 trait SimpleActor[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
     with Actor{
-
     def _actImpl[AggregateReward <: SimpleDistribution]
                 (models: Map[ModelID, SimpleModel[ModelData, ModelAction]],
                 modelRewards: ModelID => AggregateReward,
                 epsilon: Double,
                 data: ModelData): ( Tree[ModelAction], ModelID) 
 }
+
 
 trait ContextualActor[ModelID, Context, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
@@ -38,6 +38,7 @@ trait ContextualActor[ModelID, Context, ModelData, ModelAction]
                 modelIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) 
 }
 
+
 trait StackableActor1[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
     with Actor{
@@ -49,6 +50,7 @@ trait StackableActor1[ModelID, ModelData, ModelAction]
                 selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID]) 
 }
 
+
 trait StackableActor2[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
     with Actor{
@@ -59,6 +61,7 @@ trait StackableActor2[ModelID, ModelData, ModelAction]
                 data: ModelData,
                 selectedIds: Tree[ModelID]): ( Tree[ModelAction], Tree[ModelID])
 }
+
 
 trait AbstractGreedy[ModelID, ModelData, ModelAction]
     extends Selector[ModelID, ModelData, ModelAction]
@@ -83,7 +86,6 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
         }
     }
 
-
     def _actImpl[Context, AggregateReward <: ConditionalDistribution[Context]]
     			(models: Map[ModelID, ContextualModel[ModelID, Context, ModelData, ModelAction]],
                 modelRewards: ModelID => AggregateReward,
@@ -104,7 +106,6 @@ trait AbstractGreedy[ModelID, ModelData, ModelAction]
             models(selectedModelId).actWithID(context, data, appendId(selectedModelId, selectedIds))
         }
     }
-
 
     def _actImpl[AggregateReward <: SimpleDistribution]
                 (models: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]],

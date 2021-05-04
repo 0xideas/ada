@@ -4,11 +4,10 @@ import breeze.linalg._
 import breeze.numerics._
 import breeze.stats.distributions.{Gaussian, MultivariateGaussian}
 
-import scala.language.implicitConversions
-import ada.components.distributions.ConditionalDistribution
+import ada.components.distributions.{ConditionalDistribution, OnlineRegression}
 import ada.`package`.Reward
-import ada.components.distributions.OnlineRegression
 import ada.interface.{Leaf, Tree, Twig}
+
 
 abstract class BayesianLinearRegressionAbstract(protected[ada] var nfeatures: Int, protected[ada] var alpha: Double, protected[ada] var beta: Double)
     extends ConditionalDistribution[Array[Double]]
@@ -17,6 +16,10 @@ abstract class BayesianLinearRegressionAbstract(protected[ada] var nfeatures: In
     protected[ada] var covInv = DenseMatrix.eye[Double](nfeatures).map(_/alpha)
     protected[ada] var cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
     protected[ada] var w_cov = DenseMatrix.zeros[Double](nfeatures, nfeatures)
+
+    def sampleParameters(): DenseVector[Double] = {
+        MultivariateGaussian(mean, cov).sample()
+    }
 
     implicit def toVector(array: Array[Double]): DenseVector[Double] = DenseVector(array:_*)
 
@@ -94,7 +97,3 @@ class BayesianMeanLinearRegression(nfeatures: Int, alpha: Double, beta: Double)
     def predict(x: Array[Double]): Double = predictProb(x).mean
 
 }
-
-
-
-

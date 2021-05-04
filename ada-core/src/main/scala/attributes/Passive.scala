@@ -13,6 +13,7 @@ trait PassiveEnsemble[ModelData, ModelAction]{
     def evaluate(action: Tree[ModelAction], optimalAction: Tree[ModelAction]): Reward
 }
 
+
 trait PassiveSimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Updateable]
     extends PassiveEnsemble[ModelData, ModelAction]{
     def _updateAllImplSimple(data: ModelData,
@@ -28,12 +29,11 @@ trait PassiveSimpleEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: 
             }
         } 
     }
-
 }
+
 
 trait PassiveContextualEnsemble[ModelID, Context, ModelData, ModelAction, AggregateReward <: UpdateableContext[Context]]
     extends PassiveEnsemble[ModelData, ModelAction]{
-    
     def _updateAllImplContextual
                        (data: ModelData,
                        optimalAction: Tree[ModelAction],
@@ -51,15 +51,12 @@ trait PassiveContextualEnsemble[ModelID, Context, ModelData, ModelAction, Aggreg
             }
         }
     }
-
-
 }
 
 
 trait PassiveStackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward <: Updateable]
     extends PassiveEnsemble[ModelData, ModelAction]
     with Selector[ModelID, ModelData, ModelAction]{
-
     def _updateAllImplStackable1
                        (data: ModelData,
                        optimalAction: Tree[ModelAction],
@@ -76,14 +73,11 @@ trait PassiveStackableEnsemble1[ModelID, ModelData, ModelAction, AggregateReward
             }
         } 
     }
-
-
 }
 
 
 trait PassiveStackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <: UpdateableContext[ModelData]]
     extends PassiveEnsemble[ModelData, ModelAction]{
-
     def _updateAllImplStackable2
                        (data: ModelData,
                        optimalAction: Tree[ModelAction],
@@ -100,6 +94,4 @@ trait PassiveStackableEnsemble2[ModelID, ModelData, ModelAction, AggregateReward
             }
         } 
     }
-
-
 }

@@ -14,4 +14,3 @@ class GreedySoftmaxEnsemble2[ModelID, ModelData, ModelAction, AggregateReward <:
     epsilon: Double)
     extends GreedyEnsembleAbstract2[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards, epsilon)
     with GreedySoftmax[ModelID, ModelData, ModelAction]
-

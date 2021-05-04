@@ -19,9 +19,7 @@ abstract class GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, Aggregate
     def actWithID(data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) = {
         _actImpl[AggregateReward](models, modelRewards, epsilon, data, selectedIds)
     }
-
 }
-
 
 
 class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleDistribution]
@@ -30,4 +28,3 @@ class GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: SimpleD
     protected[ada] var epsilon: Double)
     extends GreedyEnsembleAbstract[ModelID, ModelData, ModelAction, AggregateReward](models, modelRewards, epsilon)
     with GreedyRandom[ModelID, ModelData, ModelAction]
-

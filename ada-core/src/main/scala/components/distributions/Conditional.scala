@@ -4,12 +4,13 @@ import ada.interface.{Tree, Twig, Leaf, Branch}
 import ada.components.learners.{BayesianSampleLinearRegression, BayesianMeanLinearRegression}
 import ada._
 
+
 trait OnlineRegression[Independent]{
     def predict(data: Independent): Double
     def update(data: Independent, rewardValue: Tree[Double])
 }
 
-//this will be removed
+
 abstract class ConditionalDistributionI[Context <: Array[Double], SmileModel <: OnlineRegression[Context]](val model: SmileModel)
     extends ConditionalDistribution[Context]{
         def draw(context: Context): Double = model.predict(context)
@@ -19,8 +20,6 @@ abstract class ConditionalDistributionI[Context <: Array[Double], SmileModel <: 
             }
         }   
 }
-
-
 
 
 class BayesianSampleRegressionDistribution(
