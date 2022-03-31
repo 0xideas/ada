@@ -6,3 +6,4 @@ target/
 notebooks/
 project/
 .vscode/
+.bsp/
