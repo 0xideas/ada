@@ -1,0 +1,6 @@
+SMILE - LGPL 3 - No commercial relicensing without payment
+MOA - GPL - No commercial relicensing
+Mahout - Apache v2 - attach NOTICE to distribution
+Deeplearning4j - Apache v2 - attach NOTICE to distribution
+Breeze - Apache v2
+JSAT - GPL - No commercial relicensing
