@@ -12,7 +12,6 @@ abstract class BayesianLinearRegressionModelAbstract[ModelID, AggregateReward]
     with StackableModelPassiveBottom[ModelID, Array[Double], Double, AggregateReward]{
     def predict(x: Array[Double]): Double
     def actWithID(data: Array[Double], selectedIds: Tree[ModelID]): (Tree[Double], Tree[ModelID]) = (new Leaf(predict(data)), selectedIds)
-    //def update(modelIds: Tree[ModelID], data: Array[Double], reward: ada.Reward): Unit = ()
     def update(modelIds: Tree[ModelID], data: Array[Double], optimalAction: Tree[Double]): Unit = update(data, optimalAction)
     def update(modelIds: Tree[ModelID], data: Array[Double],  reward: ada.Reward): Unit = ()
     def evaluate(action: Tree[Double], optimalAction: Tree[Double]): ada.Reward = evaluationFn(action, optimalAction)
