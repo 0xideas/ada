@@ -83,3 +83,11 @@ trait RandomSelector[ModelID, ModelData, ModelAction]
         selectedModelId
     }
 }
+
+trait MaskedSelector[ModelID, ModelData, ModelAction] 
+    extends Selector[ModelID, ModelData, ModelAction]{
+    def setMask(maskX: ListBuffer[ModelID]): Unit = {
+        mask.clear()
+        maskX.map(id => mask += id)
+    }
+}
