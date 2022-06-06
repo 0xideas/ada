@@ -28,7 +28,7 @@ class OnlineModelSelection{
         measureRecall()
     }
 
-    def measure(iterList: List[Int]){
+    def measure(iterList: List[Int]) = {
         if(Files.exists(Paths.get(f"/home/leon/projects/ada-scratchpad/ts-${iterList(0)}.txt")) == false){
             iterList.map{ iter => Files.write(Paths.get(f"/home/leon/projects/ada-scratchpad/ts-${iter}.txt"), "".getBytes(StandardCharsets.UTF_8))}
         }
@@ -93,7 +93,7 @@ class OnlineModelSelection{
 
         val c = correct.zipWithIndex.groupBy{
             case(preds, i) => fine_labels(i)
-        }.mapValues(v => v.map(_._1))
+        }.view.mapValues(v => v.map(_._1))
         
         c.map{
             case(fine_label, accur) => println(f"${fine_label} recall: " + calcAccuracy(accur, accur.length))

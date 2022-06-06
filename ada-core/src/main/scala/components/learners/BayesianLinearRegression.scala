@@ -1,4 +1,5 @@
 package ada.components.learners
+import scala.language.implicitConversions
 
 import breeze.linalg._
 import breeze.numerics._

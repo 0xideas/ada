@@ -36,14 +36,14 @@ object SafeIncrementalLearning{
 
     val rewards = (0 until 4).map(i => new MeanDouble)
 
-    implicit val evaluateFn = (a: Tree[Double], b: Tree[Double]) => {
+    implicit val evaluateFn: (Tree[Double], Tree[Double]) => Reward = (a: Tree[Double], b: Tree[Double]) => {
         val step = 1.0-math.sqrt(math.abs(ada.demos.utility.Utilities.extractSingleValue(a)-ada.demos.utility.Utilities.extractSingleValue(b)))
         if( !(step.isNaN() || step.isInfinite()) && step > 0){new Reward(step)}
         else {/*println(f"a: ${a} b: ${b}");*/ new Reward(0.0)}
     }
     val ensemble = new PassiveGreedyEnsemble[Int, Array[Double], Double, MeanDouble](
                             (0 until 4).zip(models).toMap,
-                            modelRewards_=(0 until 4).map(i => (i, rewards(i))).toMap,
+                            modelRewards=(0 until 4).map(i => (i, rewards(i))).toMap,
                             evaluateFn=evaluateFn)
 
     
