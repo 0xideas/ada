@@ -143,7 +143,7 @@ class PageGeneratorX[Generatee](nFieldsI: Int, var candidatesX: Map[Int, List[Li
     val firstKey = candidatesX.keys.toList(0)
     import ada.enhancements.GetSetEnsemble; val getSetEnsemble = new GetSetEnsemble[ModelID, Unit, Generatee, BetaDistribution](); import getSetEnsemble.buildExportEnsembleParameters
     implicit val (ensembleEncoder, ensembleDecoder) = buildExportEnsembleParameters[ThompsonSamplingEnsemble[ModelID, Unit, Generatee]]()
-    implicit val modelEncoder = new Encoder[StackableModel[ModelID, Unit, Generatee]]{
+    implicit val modelEncoder: Encoder[StackableModel[ModelID, Unit, Generatee]] = new Encoder[StackableModel[ModelID, Unit, Generatee]]{
         final def apply(model: StackableModel[ModelID, Unit, Generatee]): Json = {
             model match {
                 case(m: ThompsonSamplingEnsemble[ModelID, Unit, Generatee]) => ensembleEncoder(m)
@@ -151,7 +151,7 @@ class PageGeneratorX[Generatee](nFieldsI: Int, var candidatesX: Map[Int, List[Li
             }
         }
     }
-    implicit val modelDecoder = new Decoder[StackableModel[ModelID, Unit, Generatee]]{
+    implicit val modelDecoder: Decoder[StackableModel[ModelID, Unit, Generatee]] = new Decoder[StackableModel[ModelID, Unit, Generatee]]{
         final def apply(c: HCursor): Decoder.Result[StackableModel[ModelID, Unit, Generatee]] = {
             ensembleDecoder(c)
         }
