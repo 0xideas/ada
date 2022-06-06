@@ -7,7 +7,7 @@ import ada._
 
 trait OnlineRegression[Independent]{
     def predict(data: Independent): Double
-    def update(data: Independent, rewardValue: Tree[Double])
+    def update(data: Independent, rewardValue: Tree[Double]): Unit
 }
 
 

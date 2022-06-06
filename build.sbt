@@ -15,6 +15,11 @@ testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oS")
 
 //scalaJSUseMainModuleInitializer := true
 //enablePlugins(ScalaJSPlugin)
+scalacOptions ++= Seq(
+    "-Xsource:3",
+    "-deprecation",
+    "-feature"
+)
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.13.4",
