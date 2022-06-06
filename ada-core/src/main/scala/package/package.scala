@@ -5,13 +5,12 @@ package object ada {
     }
 
     abstract class SpecialDouble[A <: DoubleValue](make: Double => A) extends DoubleValue{
-        implicit def g: A => Double = a => a.value
         def op(that: Double)(f: (Double, Double) => Double): A = make(f(value, that))
 
-        def +(that: A): A = op(that)((d, dd) => d + dd)
-        def -(that: A): A = op(that)((d, dd) => d - dd)
-        def *(that: A): A = op(that)((d, dd) => d * dd)
-        def /(that: A): A = op(that)((d, dd) => d / dd)
+        def +(that: A): A = op(that.value)((d, dd) => d + dd)
+        def -(that: A): A = op(that.value)((d, dd) => d - dd)
+        def *(that: A): A = op(that.value)((d, dd) => d * dd)
+        def /(that: A): A = op(that.value)((d, dd) => d / dd)
 
         def +(that: Double): A = op(that)((d, dd) => d + dd)
         def -(that: Double): A = op(that)((d, dd) => d - dd)
