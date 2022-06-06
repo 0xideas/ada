@@ -35,7 +35,8 @@ class OnnxRegression[ModelID, ModelData, ModelAction, AggregateReward](
     }
     def actWithID(data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) = 
         (act(data), selectedIds)
-    def export(): Json = Json.fromString(loadingTime + "   " + path)
+    
+    def exportModel(): Json = Json.fromString(s"$loadingTime $path")
 }
 
 class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
@@ -61,5 +62,5 @@ class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
     def actWithID(data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) = 
         (act(data), selectedIds)
 
-    def export(): Json = Json.fromString(loadingTime + "   " + path)
+    def exportModel(): Json = Json.fromString(s"$loadingTime $path")
 }

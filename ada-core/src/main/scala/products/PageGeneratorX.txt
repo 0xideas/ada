@@ -165,7 +165,7 @@ class PageGeneratorX[Generatee](nFieldsI: Int, var candidatesX: Map[Int, List[Li
 
     import ada.enhancements.GetSetAssembly; val getSetAssembly2 = new GetSetAssembly[ArticleID, Unit, StackableAssembly1[ModelID, Unit, Generatee, BetaDistribution], BetaDistribution](); import getSetAssembly2.{setAssemblyParameters, getAssemblyParameters}
 
-    def export(): Json = getAssemblyParameters(assembly)
+    def exportEnsemble(): Json = getAssemblyParameters(assembly)
 
     def set(parameters: Json): Unit = setAssemblyParameters(assembly, parameters)
     
