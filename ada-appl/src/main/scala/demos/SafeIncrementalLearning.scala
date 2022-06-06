@@ -43,7 +43,7 @@ object SafeIncrementalLearning{
     }
     val ensemble = new PassiveGreedyEnsemble[Int, Array[Double], Double, MeanDouble](
                             (0 until 4).zip(models).toMap,
-                            modelRewards=(0 until 4).map(i => (i, rewards(i))).toMap,
+                            modelRewards_=(0 until 4).map(i => (i, rewards(i))).toMap,
                             evaluateFn=evaluateFn)
 
     

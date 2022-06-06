@@ -42,7 +42,7 @@ class GetSetEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Distrib
         val modelKeys = models.keys.toList.sorted
         val ensembleParameters = getSpecificEnsembleParameters(ensemble)
         val modelParameters: List[(ModelID, Json)] = modelKeys.map(id => (id, getSpecificModelParameters(models(id)))).toList
-        val rewardParameters: List[(ModelID, Json)] =  modelKeys.map(id => (id, exportReward(ensemble.modelRewards(id)))).toList
+        val rewardParameters: List[(ModelID, Json)] =  modelKeys.map(id => (id, exportReward(ensemble.getModelRewards(id)))).toList
         EnsembleParameters(ensembleParameters, modelParameters, rewardParameters).asJson
     } 
 
@@ -52,7 +52,7 @@ class GetSetEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Distrib
         pars match {
             case Right(EnsembleParameters(ensembleParameters, modelParameters, rewardParameters)) => {
                 setSpecificEnsembleParameters(ensemble, ensembleParameters)
-                rewardParameters.map{case(modelId, rewardParameter) => setReward(ensemble.modelRewards()(modelId), rewardParameter)}
+                rewardParameters.map{case(modelId, rewardParameter) => setReward(ensemble.getModelRewards()(modelId), rewardParameter)}
                 modelParameters.map{case(modelId, modelParameter) =>  setSpecificModelParameters(models(modelId), modelParameter)}
             }
             case Left(decodingFailure) => throw decodingFailure

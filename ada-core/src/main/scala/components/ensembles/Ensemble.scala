@@ -9,8 +9,8 @@ abstract class AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
     modelRewards: Map[ModelID, AggregateReward])
     extends Model[ModelData, ModelAction]{
     def getModels(): Map[ModelID, Model[ModelData, ModelAction]] = models
-    def modelRewards(): Map[ModelID, AggregateReward] = modelRewards
-    def modelRewards(id: ModelID):  AggregateReward = modelRewards()(id)
+    def getModelRewards(): Map[ModelID, AggregateReward] = modelRewards
+    def getModelRewards(id: ModelID):  AggregateReward = getModelRewards()(id)
 }
 
 
