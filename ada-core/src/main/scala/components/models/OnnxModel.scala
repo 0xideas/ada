@@ -57,7 +57,9 @@ class OnnxClassifier[ModelID, ModelData, ModelAction, AggregateReward]
         val probabilities = result.get(0).getValue().asInstanceOf[Array[Array[Float]]](0)
         new Leaf(modelActionFn(probabilities.indexOf(probabilities.max)))
     }
+
     def actWithID(data: ModelData, selectedIds: Tree[ModelID]): (Tree[ModelAction], Tree[ModelID]) = 
         (act(data), selectedIds)
+
     def export: Json = Json.fromString(loadingTime + "   " + path)
 }

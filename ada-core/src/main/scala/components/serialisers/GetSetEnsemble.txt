@@ -38,7 +38,7 @@ class GetSetEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Distrib
     implicit val updateEncoderEnsemble: Encoder[EnsembleParameters[ModelID]] = deriveEncoder[EnsembleParameters[ModelID]]
 
     def getEnsembleParameters(ensemble: EnsembleType): Json = {
-        val models = ensemble.models()
+        val models = ensemble.getModels()
         val modelKeys = models.keys.toList.sorted
         val ensembleParameters = getSpecificEnsembleParameters(ensemble)
         val modelParameters: List[(ModelID, Json)] = modelKeys.map(id => (id, getSpecificModelParameters(models(id)))).toList
@@ -47,7 +47,7 @@ class GetSetEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Distrib
     } 
 
     def setEnsembleParameters(ensemble: EnsembleType, parameters: Json): Unit = {
-        val models = ensemble.models()
+        val models = ensemble.getModels()
         val pars = parameters.as[EnsembleParameters[ModelID]]
         pars match {
             case Right(EnsembleParameters(ensembleParameters, modelParameters, rewardParameters)) => {
