@@ -38,5 +38,5 @@ class BayesianMeanRegressionModel[ModelID, AggregateReward]
 class BayesianSampleRegressionModel[ModelID, AggregateReward]
     (nfeatures: Int, alpha: Double, beta: Double, evaluationFn: (Tree[Double], Tree[Double]) => ada.`package`.Reward = BayesianRegressionEvaluationFn.evaluationFn)
     extends BayesianLinearRegressionModelAbstract[ModelID, AggregateReward](nfeatures, alpha, beta, evaluationFn) {
-        def predict(x: Array[Double]): Double = predictProb(x).sample
+        def predict(x: Array[Double]): Double = predictProb(x).sample()
 }

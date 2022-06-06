@@ -126,9 +126,9 @@ class PageGenerator[Generatee](nFieldsI: Int, private var candidatesI: Map[Int, 
     //GET SET
     val firstKey = candidatesI.keys.toList(0)
     import ada.enhancements.GetSetEnsemble; val getSetEnsemble = new GetSetEnsemble[ModelID, Unit, Generatee, BetaDistribution](); import getSetEnsemble.buildExportEnsembleParameters
-    implicit val (ensembleEncoder, ensembleDecoder) = buildExportEnsembleParameters[ThompsonSamplingEnsemble[ModelID, Unit, Generatee]]                              
+    implicit val (ensembleEncoder, ensembleDecoder) = buildExportEnsembleParameters[ThompsonSamplingEnsemble[ModelID, Unit, Generatee]]()                
     val getSetEnsemble1 = new GetSetEnsemble[ModelID, Unit, ThompsonSamplingEnsemble[ModelID, Unit, Generatee], BetaDistribution](); import getSetEnsemble1.{buildExportEnsembleParameters => buildExportEnsembleParameters1} 
-    implicit val (ensembleEncoder1, ensembleDecoder1) = buildExportEnsembleParameters1
+    implicit val (ensembleEncoder1, ensembleDecoder1) = buildExportEnsembleParameters1()
 
     import ada.enhancements.GetSetAssembly; val getSetAssembly = new GetSetAssembly[ArticleID, Unit, ThompsonSamplingEnsemble[ModelID, Unit, Generatee], BetaDistribution](); import getSetAssembly._
 

@@ -158,7 +158,7 @@ class PageGeneratorX[Generatee](nFieldsI: Int, var candidatesX: Map[Int, List[Li
     }
                                             
     import ada.enhancements.GetSetAssembly; val getSetAssembly = new GetSetAssembly[ModelID, Unit, Generatee, BetaDistribution]()
-    implicit val (assemblyEncoder, assemblyDecoder) = getSetAssembly.buildExportAssemblyParameters
+    implicit val (assemblyEncoder, assemblyDecoder) = getSetAssembly.buildExportAssemblyParameters()
 
     //val getSetEnsemble2 = new GetSetEnsemble[ModelID, Unit, StackableAssembly1[ModelID, Unit, Generatee, BetaDistribution], BetaDistribution]();
     //val (ensembleEncoder2, ensembleDecoder2) = getSetEnsemble2.buildExportEnsembleParameters[ThompsonSamplingEnsemble[ModelID, Unit, StackableAssembly1[ModelID, Unit, Generatee, BetaDistribution]]](ensembles(0)._2)

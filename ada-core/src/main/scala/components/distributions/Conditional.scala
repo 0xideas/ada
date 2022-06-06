@@ -33,7 +33,7 @@ class BayesianSampleRegressionDistribution(
         def setBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
             model.changeBeta(increment, factor, max)
         }
-        def getBeta(): Double = model.getBeta
+        def getBeta(): Double = model.getBeta()
 
     }
 
@@ -49,7 +49,7 @@ class BayesianMeanRegressionDistribution(
         def setBeta(increment: Double = 0.0, factor: Double = 1.0, max: Double = 5000.0): Unit = {
             model.changeBeta(increment, factor, max)
         }
-        def getBeta(): Double = model.getBeta
+        def getBeta(): Double = model.getBeta()
     }
 
 

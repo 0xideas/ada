@@ -88,7 +88,7 @@ abstract class BayesianLinearRegressionAbstract(protected[ada] var nfeatures: In
 
 class BayesianSampleLinearRegression(nfeatures: Int, alpha: Double, beta: Double)
     extends BayesianLinearRegressionAbstract(nfeatures, alpha, beta){
-    def predict(x: Array[Double]): Double = predictProb(x).sample
+    def predict(x: Array[Double]): Double = predictProb(x).sample()
 }
 
 //basically identical to point estimate linear regression - not used at the moment
