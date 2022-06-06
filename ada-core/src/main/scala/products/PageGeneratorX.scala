@@ -112,7 +112,7 @@ class PageGeneratorX[Generatee](nFieldsI: Int, var candidatesX: Map[Int, List[Li
         (articleRewards, generateeRewards)
     }
 
-    def listOfMapsToMapOfLists[A, B](list: List[Map[A, B]]): Map[A, List[B]] = list.flatten.groupBy(_._1).mapValues(_.map(_._2)).toMap
+    def listOfMapsToMapOfLists[A, B](list: List[Map[A, B]]): Map[A, List[B]] = list.flatten.groupBy(_._1).view.mapValues(_.map(_._2)).toMap
     //val models1 = (0 until 5).map(i => (i, new ThompsonSamplingEnsemble[Int, Unit, String](Map(0 -> new GenericStaticModel[Int, Unit, String, BetaDistribution](letters(i).toString), 1 -> new GenericStaticModel[Int, Unit, String, BetaDistribution](letters(i+5).toString)), initialiseRewards(List(0, 1)) )))
     //val models2 = (0 until 5).map(i => (i+1, new ThompsonSamplingEnsemble[Int, Unit, String](Map(0 -> new GenericStaticModel[Int, Unit, String, BetaDistribution](letters(i+10).toString), 1 -> new GenericStaticModel[Int, Unit, String, BetaDistribution](letters(i+15).toString)), initialiseRewards(List(0, 1)) )))
     //val assemblies = (0 until 5).map(i => new StackableAssembly1[Int, Unit, String, BetaDistribution](List(models1(i), models2(i))))
@@ -227,7 +227,7 @@ class PageGeneratorX[Generatee](nFieldsI: Int, var candidatesX: Map[Int, List[Li
             }.toMap
             reinitialise(nFieldsI, candidatesX)
         } else{
-            throw new Exception(articleId + " cannot be found")
+            throw new Exception(s"$articleId cannot be found")
         }
     }
 
@@ -245,7 +245,7 @@ class PageGeneratorX[Generatee](nFieldsI: Int, var candidatesX: Map[Int, List[Li
             candidatesX =  candidatesX.filter{case(id, list) => id != articleId}.toMap
             reinitialise(nFieldsI, candidatesX)
         } else {
-            throw new Exception(articleId + " cannot be found")
+            throw new Exception(s"$articleId cannot be found")
         }
     }
 
@@ -266,7 +266,7 @@ class PageGeneratorX[Generatee](nFieldsI: Int, var candidatesX: Map[Int, List[Li
             }.toMap
             reinitialise(nFieldsI, candidatesX)
         } else{
-            throw new Exception(articleId + " cannot be found")
+            throw new Exception(s"$articleId cannot be found")
         }
         def filterAndCompare(list1: List[Generatee], generatee: Generatee): (ModelID, List[Generatee]) = {
             val (target, list) = list1.zipWithIndex.partition{case(gen,i) => identityGeneratees(gen, generatee)} 

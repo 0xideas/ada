@@ -187,7 +187,7 @@ class PageGenerator[Generatee](nFieldsI: Int, private var candidatesI: Map[Int, 
             }.toMap
             reinitialise(nFieldsI, candidatesI)
         } else{
-            throw new Exception(articleId + " cannot be found")
+            throw new Exception(s"$articleId cannot be found")
         }
     }
 
@@ -205,7 +205,7 @@ class PageGenerator[Generatee](nFieldsI: Int, private var candidatesI: Map[Int, 
             candidatesI =  candidatesI.filter{case(id, list) => id != articleId}.toMap
             reinitialise(nFieldsI, candidatesI)
         } else {
-            throw new Exception(articleId + " cannot be found")
+            throw new Exception(s"$articleId cannot be found")
         }
     }
 
@@ -221,7 +221,7 @@ class PageGenerator[Generatee](nFieldsI: Int, private var candidatesI: Map[Int, 
             }.toMap
             reinitialise(nFieldsI, candidatesI)
         } else{
-            throw new Exception(articleId + " cannot be found")
+            throw new Exception(s"$articleId cannot be found")
         }
         def filterAndCompare(list1: List[Generatee], generatee: Generatee): (ModelID, List[Generatee]) = {
             val (target, list) = list1.zipWithIndex.partition{case(gen,i) => identityGeneratees(gen, generatee)} 
