@@ -1,0 +1,236 @@
+package ada.enhancements
+
+import ada.interface.{AdaEnsemble, Model, StackableModel, StackableModelPassive}
+import io.circe.Json
+import ada.components.distributions.Exp3Reward
+import io.circe.{Decoder, Encoder, HCursor}
+import ada.components.distributions.Distribution
+import ada.ensembles._
+import io.circe.parser.decode
+import breeze.stats.mode
+
+import io.circe._
+import io.circe.generic.semiauto._
+import io.circe.syntax._
+import io.circe.Json
+import io.circe.parser.decode
+import spire.syntax.truncatedDivision
+import ada.components.distributions.SimpleDistribution
+
+import reflect.runtime.universe._
+import scala.reflect._
+import ada.components.distributions.BetaDistribution
+
+class GetSetEnsemble[ModelID, ModelData, ModelAction, AggregateReward <: Distribution](
+    implicit modelIdEncoder: Encoder[ModelID],
+    modelIdDecoder: Decoder[ModelID],
+    modelIdOrd: Ordering[ModelID],
+    modelActionEncoder: Encoder[ModelAction],
+    modelActionDecoder: Decoder[ModelAction]){
+
+    type EnsembleType = AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]
+
+    import ada.components.distributions.GetSetDistribution; val getSetDistribution = new GetSetDistribution[AggregateReward]; import getSetDistribution._
+    import ada.models.GetSetSpecificModel; val getSetSpecificModel = new GetSetSpecificModel[ModelID, ModelData,ModelAction,AggregateReward](); import getSetSpecificModel.{reconstructModel, getSpecificModelParameters, setSpecificModelParameters}
+
+    case class EnsembleParameters[ModelID](ensembleParameters: Json, modelParameters: List[(ModelID, Json)], rewardParameters: List[(ModelID, Json)])
+    implicit val updateDecoderEnsemble: Decoder[EnsembleParameters[ModelID]] = deriveDecoder[EnsembleParameters[ModelID]]
+    implicit val updateEncoderEnsemble: Encoder[EnsembleParameters[ModelID]] = deriveEncoder[EnsembleParameters[ModelID]]
+
+    def getEnsembleParameters(ensemble: EnsembleType): Json = {
+        val models = ensemble.models()
+        val modelKeys = models.keys.toList.sorted
+        val ensembleParameters = getSpecificEnsembleParameters(ensemble)
+        val modelParameters: List[(ModelID, Json)] = modelKeys.map(id => (id, getSpecificModelParameters(models(id)))).toList
+        val rewardParameters: List[(ModelID, Json)] =  modelKeys.map(id => (id, exportReward(ensemble.modelRewards(id)))).toList
+        EnsembleParameters(ensembleParameters, modelParameters, rewardParameters).asJson
+    } 
+
+    def setEnsembleParameters(ensemble: EnsembleType, parameters: Json): Unit = {
+        val models = ensemble.models()
+        val pars = parameters.as[EnsembleParameters[ModelID]]
+        pars match {
+            case Right(EnsembleParameters(ensembleParameters, modelParameters, rewardParameters)) => {
+                setSpecificEnsembleParameters(ensemble, ensembleParameters)
+                rewardParameters.map{case(modelId, rewardParameter) => setReward(ensemble.modelRewards()(modelId), rewardParameter)}
+                modelParameters.map{case(modelId, modelParameter) =>  setSpecificModelParameters(models(modelId), modelParameter)}
+            }
+            case Left(decodingFailure) => throw decodingFailure
+        }
+    }
+
+    def getSpecificEnsembleParameters(ensemble: EnsembleType): Json = {
+        ensemble match {
+            case(ens: ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]) => ThompsonSamplingEnsembleParameters("ThompsonSamplingEnsemble", ens.epsilon).asJson
+            case(ens: Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward]) => Exp3EnsembleParameters("Exp3Ensemble", ens.gamma).asJson
+            case(ens: GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward]) => GreedySoftmaxEnsembleParameters("GreedySoftmaxEnsemble", ens.epsilon).asJson
+            case(ens: PassiveGreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward]) => PassiveGreedyEnsembleParameters("PassiveGreedyEnsemble").asJson
+            case(ens: GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward]) => GreedyEnsembleParameters("GreedyEnsemble", ens.epsilon).asJson
+            case(_) => Json.fromString("Ensemble not found")
+        }
+    } 
+
+    //NO ENSEMBLE CLASS CAN BE BELOW THEIR PARENT
+    def setSpecificEnsembleParameters(ensemble: EnsembleType, ensembleParameters: Json): Unit = {
+        ensemble match {
+            case(ens: ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]) => {
+                ensembleParameters.as[ThompsonSamplingEnsembleParameters] match {
+                    case(Right(ThompsonSamplingEnsembleParameters("ThompsonSamplingEnsemble", epsilonV))) => {ens.epsilon = epsilonV; ()}
+                    case(Left(_)) => throw new Exception("ThompsonSamplingEnsemble could not be decoded")
+                }
+            }
+            case(ens: Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward]) => {
+                ensembleParameters.as[Exp3EnsembleParameters] match {
+                    case(Right(Exp3EnsembleParameters("Exp3Ensemble", gammaV))) => {ens.gamma = gammaV; ()}
+                    case(Left(_)) => throw new Exception("Exp3Ensemble could not be decoded")
+                }
+            }
+            case(ens: GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward]) => {
+                ensembleParameters.as[GreedySoftmaxEnsembleParameters] match {
+                    case(Right(GreedySoftmaxEnsembleParameters("GreedySoftmaxEnsemble", epsilonV))) => {ens.epsilon = epsilonV; ()}
+                    case(Left(_)) => throw new Exception("GreedySoftmaxEnsemble could not be decoded")
+                }
+            }
+            case(ens: PassiveGreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward]) => {
+                ensembleParameters.as[PassiveGreedyEnsembleParameters] match {
+                    case(Right(PassiveGreedyEnsembleParameters("PassiveGreedyEnsemble"))) => ()
+                    case(Left(_)) => throw new Exception("PassiveGreedyEnsemble could not be decoded")
+                }
+            }
+            case(ens: GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward]) => {
+                ensembleParameters.as[GreedyEnsembleParameters] match {
+                    case(Right(GreedyEnsembleParameters("GreedyEnsemble", epsilonV))) => {ens.epsilon = epsilonV; ()}
+                    case(Left(_)) => throw new Exception("GreedyEnsemble could not be decoded")
+                }
+            }
+            case(_) => Json.fromString("Ensemble could not be decoded")
+        }
+    }
+
+
+    def buildExportEnsembleParameters[EnsembleType2 <: AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]](): (Encoder[EnsembleType2], Decoder[EnsembleType2]) = {
+        type CustomEnsemble = EnsembleType2
+        implicit val encodeEnsemble: Encoder[CustomEnsemble] = new Encoder[CustomEnsemble] {
+            final def apply(ensemble: CustomEnsemble): Json = getEnsembleParameters(ensemble)
+        }
+        implicit val decodeEnsemble: Decoder[CustomEnsemble] = new Decoder[CustomEnsemble] {
+            final def apply(c: HCursor): Decoder.Result[CustomEnsemble] = {
+                for {
+                    ensembleParameters <- c.downField("ensembleParameters").as[Json]
+                    modelParameters <- c.downField("modelParameters").as[List[(ModelID, Json)]]
+                    rewardParameters <- c.downField("rewardParameters").as[List[(ModelID, Json)]]
+                } yield {
+                    var rewardMap: Map[ModelID, AggregateReward] = rewardParameters.map{case(id, reward) => (id, reconstructReward(reward))}.toMap
+                    reconstructEnsemble[CustomEnsemble](ensembleParameters,
+                                        modelParameters.map{case(id, model) => (id, reconstructModel(model))}.toMap,
+                                        rewardMap)
+                }                
+            } 
+        }
+        (encodeEnsemble, decodeEnsemble)
+    }
+    
+
+
+
+    def reconstructEnsemble[EnsembleType2 <: AdaEnsemble[ModelID, ModelData, ModelAction, AggregateReward]](ensembleParameters: Json,
+                                modelsMap: Map[ModelID, Model[ModelData, ModelAction]],
+                                rewardsMap: Map[ModelID, AggregateReward]): EnsembleType2 = {
+        val cursor = ensembleParameters.hcursor
+        val ensembleType: String = cursor.downField("kind").as[String] match {
+            case(Right(ensType)) => ensType
+            case(Left(decodeError)) => throw new Exception(decodeError) 
+        }
+
+        (ensembleType, modelsMap, rewardsMap) match {
+            case(("ThompsonSamplingEnsemble", mm: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]], rm: Map[ModelID, BetaDistribution])) =>
+                h[BetaDistribution, EnsembleType2, ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]](reconstructThompsonSamplingEnsemble(ensembleParameters, mm, rm))
+
+            case(("Exp3Ensemble", mm: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]], rm: Map[ModelID, Exp3Reward])) =>
+                h[Exp3Reward, EnsembleType2, Exp3Ensemble[ModelID, ModelData, ModelAction, Exp3Reward]](reconstructExp3Ensemble[Exp3Reward](ensembleParameters, mm, rm))
+
+            case(("GreedySoftmaxEnsemble", mm: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]], rm: Map[ModelID, SimpleDistribution])) =>
+                h[SimpleDistribution, EnsembleType2, GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, SimpleDistribution]](reconstructGreedySoftmaxEnsemble[SimpleDistribution](ensembleParameters, mm, rm))
+
+            case(("PassiveGreedyEnsemble", mm: Map[ModelID, StackableModelPassive[ModelID, ModelData, ModelAction, SimpleDistribution]], rm: Map[ModelID, SimpleDistribution])) =>
+                h[SimpleDistribution, EnsembleType2, PassiveGreedyEnsemble[ModelID, ModelData, ModelAction, SimpleDistribution]](reconstructPassiveGreedyEnsemble[SimpleDistribution](ensembleParameters, mm, rm))
+
+            case(("GreedyEnsemble", mm: Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]], rm: Map[ModelID, SimpleDistribution])) =>
+                h[SimpleDistribution, EnsembleType2, GreedyEnsemble[ModelID, ModelData, ModelAction, SimpleDistribution]](reconstructGreedyEnsemble[SimpleDistribution](ensembleParameters, mm, rm))
+        }
+
+    }
+    
+
+
+    implicit def h[AltAggregateReward, EnsembleType2,  EnsembleAlt <: AdaEnsemble[ModelID, ModelData, ModelAction, AltAggregateReward]](ensemble: EnsembleAlt): EnsembleType2 = {
+        ensemble match{
+            case(ens : EnsembleType2) => ens
+            case(ens) => throw new Exception(ens.toString() + " cannot be decoded")
+        }
+    }
+    case class ThompsonSamplingEnsembleParameters(kind: String, epsilon: Double)
+    implicit val ThompsonSamplingEnsembleParametersDecoder: Decoder[ThompsonSamplingEnsembleParameters] = deriveDecoder[ThompsonSamplingEnsembleParameters]
+    implicit val ThompsonSamplingEnsembleParametersEncoder: Encoder[ThompsonSamplingEnsembleParameters] = deriveEncoder[ThompsonSamplingEnsembleParameters]
+    
+    def reconstructThompsonSamplingEnsemble(ensembleParameters: Json, modelsMap:  Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]], rewardsMap: Map[ModelID, BetaDistribution]):  ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction]= {
+        val pars = ensembleParameters.as[ThompsonSamplingEnsembleParameters]
+        pars match {
+            case (Right(ThompsonSamplingEnsembleParameters("ThompsonSamplingEnsemble", epsilon))) => {
+                
+                new ThompsonSamplingEnsemble[ModelID, ModelData, ModelAction](modelsMap, rewardsMap, epsilon)
+            } 
+            case (_) => throw new Exception("ThompsonSamplingEnsemble could not be reconstructed")
+        }
+    }
+
+    case class Exp3EnsembleParameters(kind: String, gamma: Double)
+    private implicit val Exp3EnsembleParametersDecoder: Decoder[Exp3EnsembleParameters] = deriveDecoder[Exp3EnsembleParameters]
+    private implicit val Exp3EnsembleParametersEncoder: Encoder[Exp3EnsembleParameters] = deriveEncoder[Exp3EnsembleParameters]
+
+    def reconstructExp3Ensemble[AggregateReward2 <: Exp3Reward](ensembleParameters: Json, modelsMap:  Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]], rewardsMap: Map[ModelID, AggregateReward2]):  Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward2]= {
+        val pars = ensembleParameters.as[Exp3EnsembleParameters]
+        pars match {
+            case (Right(Exp3EnsembleParameters("Exp3Ensemble", gammaV))) => {
+                new Exp3Ensemble[ModelID, ModelData, ModelAction, AggregateReward2](modelsMap, rewardsMap, gammaV)
+            } 
+            case (_) => throw new Exception("Exp3Ensemble could not be reconstructed")
+        }
+    }
+
+    
+    case class GreedyEnsembleParameters(kind: String, epsilon: Double)
+    private implicit val GreedyEnsembleParametersDecoder: Decoder[GreedyEnsembleParameters] = deriveDecoder[GreedyEnsembleParameters]
+    private implicit val GreedyEnsembleParametersEncoder: Encoder[GreedyEnsembleParameters] = deriveEncoder[GreedyEnsembleParameters]
+
+    def reconstructGreedyEnsemble[AggregateReward2 <: SimpleDistribution](ensembleParameters: Json, modelsMap:  Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]], rewardsMap: Map[ModelID, AggregateReward2]):  GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward2]= {
+        val pars = ensembleParameters.as[GreedyEnsembleParameters]
+        pars match {
+            case Right(GreedyEnsembleParameters("GreedyEnsemble", epsilonV)) => {
+                new GreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward2](modelsMap, rewardsMap, epsilonV)
+            } 
+            case (_) => throw new Exception("GreedyEnsemble could not be reconstructed")
+        }
+    }
+
+    case class GreedySoftmaxEnsembleParameters(kind: String, epsilon: Double)
+    private implicit val GreedySoftmaxEnsembleParametersDecoder: Decoder[GreedySoftmaxEnsembleParameters] = deriveDecoder[GreedySoftmaxEnsembleParameters]
+    private implicit val GreedySoftmaxEnsembleParametersEncoder: Encoder[GreedySoftmaxEnsembleParameters] = deriveEncoder[GreedySoftmaxEnsembleParameters]
+
+    def reconstructGreedySoftmaxEnsemble[AggregateReward2 <: SimpleDistribution](ensembleParameters: Json, modelsMap:  Map[ModelID, StackableModel[ModelID, ModelData, ModelAction]], rewardsMap: Map[ModelID, AggregateReward2]):  GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward2]= {
+        val pars = ensembleParameters.as[GreedySoftmaxEnsembleParameters]
+        pars match {
+            case Right(GreedySoftmaxEnsembleParameters("GreedySoftmaxEnsemble", epsilonV)) => {
+                new GreedySoftmaxEnsemble[ModelID, ModelData, ModelAction, AggregateReward2](modelsMap, rewardsMap, epsilonV)
+            } 
+            case (_) => throw new Exception("GreedySoftmaxEnsemble could not be reconstructed")
+        }
+    }
+    
+    case class PassiveGreedyEnsembleParameters(kind: String)
+    private implicit val PassiveGreedyEnsembleParametersDecoder: Decoder[PassiveGreedyEnsembleParameters] = deriveDecoder[PassiveGreedyEnsembleParameters]
+    private implicit val PassiveGreedyEnsembleParametersEncoder: Encoder[PassiveGreedyEnsembleParameters] = deriveEncoder[PassiveGreedyEnsembleParameters]
+    def reconstructPassiveGreedyEnsemble[AggregateReward2 <: SimpleDistribution](ensembleParameters: Json, modelsMap:  Map[ModelID, StackableModelPassive[ModelID, ModelData, ModelAction, AggregateReward2]], rewardsMap: Map[ModelID, AggregateReward2]):  PassiveGreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward2]= {
+        new PassiveGreedyEnsemble[ModelID, ModelData, ModelAction, AggregateReward2](modelsMap, rewardsMap, (g1, g2) => new ada.`package`.Reward(0.0))
+    }
+}
